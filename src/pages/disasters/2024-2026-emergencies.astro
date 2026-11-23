@@ -1,0 +1,356 @@
+---
+import Entry from '../../layouts/Entry.astro';
+import { url } from '../../lib/site';
+import edition from '../../../public/data/disaster-editions/fema-2024-2026/edition.json';
+import manifest from '../../../public/data/disaster-editions/fema-2024-2026/manifest.json';
+
+const title = '2024–2026 Federal Disaster Captures (OpenFEMA)';
+const asset = '/data/disaster-editions/fema-2024-2026/';
+const count = (v: number | null) => (v === null ? 'Not reported (null)' : v.toLocaleString('en-US'));
+const usd = (v: number | null) => {
+  if (v === null) return 'Not reported (null)';
+  if (Math.abs(v) >= 1e9) return `$${(v / 1e9).toFixed(2)}B`;
+  if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(2)}M`;
+  return `$${v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
+const sources = [
+  {
+    title: 'OpenFEMA Web Disaster Declarations (v1) — DR-4724, DR-4827, DR-4856, DR-4946, DR-4955',
+    publisher: 'Federal Emergency Management Agency (FEMA)',
+    url: 'https://www.fema.gov/about/openfema/data-sets/fema-web-disaster-declarations-v1',
+  },
+  {
+    title: 'OpenFEMA Web Disaster Summaries (v1) — Individual, Public & Hazard Mitigation totals',
+    publisher: 'Federal Emergency Management Agency (FEMA)',
+    url: 'https://www.fema.gov/about/openfema/data-sets/fema-web-disaster-summaries-v1',
+  },
+  {
+    title: 'OpenFEMA Disaster Declarations Summaries (v2) — County & tribal designated areas',
+    publisher: 'Federal Emergency Management Agency (FEMA)',
+    url: 'https://www.fema.gov/about/openfema/data-sets/disaster-declarations-summaries-v2',
+  },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Disaster Desk · 2024–2026 OpenFEMA Expansion"
+  summary="Inspect SHA-256-pinned OpenFEMA federal disaster declarations, approved Individual Assistance households, and Public Assistance / Hazard Mitigation obligations across 2024–2026 emergencies alongside a 2023 Maui benchmark."
+  crumbs={[
+    { label: 'Tools', href: '/tools/' },
+    { label: 'Disaster Desk', href: '/disasters/' },
+    { label: '2024–2026 Emergencies' },
+  ]}
+  sources={sources}
+>
+  <p>
+    This SHA-256-pinned companion edition complements the immutable{' '}
+    <a href={url('/disasters/')}>Disaster Desk (<code>initial-bounded-capture</code>)</a>{' '}
+    without modifying any historical record. Every row below comes directly from U.S. Government{' '}
+    <strong>OpenFEMA API v1 &amp; v2</strong> data captured on{' '}
+    <time datetime={edition.capturedOn}>{edition.capturedOn}</time>. Across all five major disasters — from August 2023 Maui
+    through October 2026 Guam and Florida — <strong>every declaration remains open with <code>closeoutDate: null</code></strong>,
+    illustrating how multi-year public recovery outlasts news cycles while early weeks show rapid Individual Assistance approvals
+    before Hazard Mitigation (<code>HMGP</code>) obligations even begin (preserved explicitly as <code>null</code>, never coerced to zero).
+  </p>
+
+  <section class="card" aria-label="Snapshot summary">
+    <p class="eyebrow">OpenFEMA capture · {edition.capturedOn}</p>
+    <ul>
+      <li><strong>{edition.counts.totalDisasters} major federal disasters</strong> ({edition.counts.expansion2024to2026Disasters} new 2024–2026 emergencies + {edition.counts.benchmark2023Disasters} 2023 Maui federal benchmark), spanning <strong>{edition.counts.totalDesignatedAreas} designated areas</strong>.</li>
+      <li><strong>{edition.counts.openWithoutCloseoutDate} of {edition.counts.totalDisasters}</strong> remain open without a federal closeout date (<code>closeoutDate: null</code>).</li>
+      <li><strong>{count(edition.counts.totalIaHouseholdsApproved)}</strong> Individual Assistance households approved; <strong>{usd(edition.counts.totalIhpApprovedUsd)}</strong> IHP approved; <strong>{usd(edition.counts.totalPaObligatedUsd)}</strong> Public Assistance obligated; <strong>{usd(edition.counts.totalHmgpObligatedUsd)}</strong> Hazard Mitigation obligated across the 3 older declarations (the 2 October 2026 declarations retain <code>HMGP: null</code>).</li>
+    </ul>
+  </section>
+
+  <h2 id="fema-explorer">Filter captured 2023–2026 major disasters</h2>
+  <section class="charity-financial-search" data-fema-disasters data-edition={JSON.stringify(edition)}>
+    <div class="search-controls">
+      <div class="inline-field">
+        <label for="fema-cohort-filter">Cohort</label>
+        <select id="fema-cohort-filter" data-fema-cohort>
+          <option value="all">All captured disasters ({edition.counts.totalDisasters})</option>
+          <option value="2024-2026-expansion">2024–2026 expansion only ({edition.counts.expansion2024to2026Disasters})</option>
+          <option value="2023-benchmark">2023 Maui benchmark ({edition.counts.benchmark2023Disasters})</option>
+        </select>
+      </div>
+      <div class="inline-field">
+        <label for="fema-hazard-filter">Hazard type</label>
+        <select id="fema-hazard-filter" data-fema-hazard>
+          <option value="all">All hazard types</option>
+          <option value="Hurricane">Hurricane</option>
+          <option value="Typhoon">Typhoon</option>
+          <option value="Tropical Storm">Tropical Storm</option>
+          <option value="Fire">Fire</option>
+        </select>
+      </div>
+      <div class="inline-field">
+        <label for="fema-text-filter">Filter name, state, or county</label>
+        <input id="fema-text-filter" type="search" placeholder="e.g. Helene, Los Angeles, Buncombe, Guam" data-fema-query />
+      </div>
+      <div class="button-row">
+        <button type="button" class="button" data-fema-export-csv>Export filtered CSV</button>
+        <button type="button" class="button" data-fema-export-json>Export filtered JSON</button>
+      </div>
+    </div>
+    <p class="note" role="status" aria-live="polite" data-fema-status>
+      Showing all {edition.counts.totalDisasters} captured OpenFEMA declarations.
+    </p>
+    <div class="table-wrap">
+      <table class="fema-table">
+        <caption>OpenFEMA federal declarations and obligations (captured {edition.capturedOn}; USD, nominal; null preserved)</caption>
+        <thead>
+          <tr>
+            <th scope="col">FEMA ID &amp; Disaster</th>
+            <th scope="col">Declared</th>
+            <th scope="col">Areas</th>
+            <th scope="col">IA Households</th>
+            <th scope="col">IHP Approved</th>
+            <th scope="col">PA Obligated</th>
+            <th scope="col">HMGP Obligated</th>
+            <th scope="col">Closeout</th>
+          </tr>
+        </thead>
+        <tbody data-fema-tbody>
+          {edition.disasters.map((d) => (
+            <tr data-fema-row={d.femaId}>
+              <th scope="row">
+                <code>{d.femaId}</code> · {d.commonTitle}
+                <br />
+                <span class="note">
+                  {d.incidentType} · {d.stateName}
+                  {d.linkedDeskIncident && (
+                    <> · <a href={url(d.linkedDeskIncident)}>Immutable Disaster Desk incident</a></>
+                  )}
+                  {' '}· <a href={d.femaDisasterPageUrl}>FEMA page ↗</a>
+                </span>
+              </th>
+              <td>{d.declarationDate}</td>
+              <td>{d.designatedAreaCount}</td>
+              <td>{count(d.financialsUsd.iaHouseholdsApproved)}</td>
+              <td>{usd(d.financialsUsd.ihpApprovedUsd)}</td>
+              <td>{usd(d.financialsUsd.paObligatedUsd)}</td>
+              <td>{usd(d.financialsUsd.hmgpObligatedUsd)}</td>
+              <td>{d.closeoutDate ?? 'Open (null)'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <h2 id="three-phase-pattern">Why early weeks and year-two recovery look completely different</h2>
+  <p>
+    Comparing October 2026 emergencies (<strong>DR-4955-FL Hurricane Isaias</strong> and <strong>DR-4946-GU Super Typhoon Bavi</strong>,
+    captured 4–7 weeks after declaration) against 2023–2025 recoveries (<strong>DR-4856-CA Los Angeles Wildfires</strong>,
+    <strong>DR-4827-NC Hurricane Helene</strong>, and <strong>DR-4724-HI Maui Wildfires</strong>) illustrates the core timing gap
+    covered in the <a href={url('/tools/disaster-response-guide/')}>Disaster Response Guide</a>:
+  </p>
+  <ul>
+    <li><strong>Immediate Individual Assistance moves first:</strong> Within weeks, thousands of households receive Individual &amp; Households Program approvals (<code>17,846</code> in Florida; <code>4,162</code> in Guam), while Hazard Mitigation (<code>HMGP</code>) remains <code>null</code> (unreported) because multi-year mitigation grants lag initial emergency response.</li>
+    <li><strong>Long-horizon infrastructure &amp; mitigation dominate years 2–3:</strong> In North Carolina after Hurricane Helene (<code>40</code> designated counties/areas), federal Public Assistance obligations (<code>$2.85B</code>) are five times larger than Individual Assistance approvals (<code>$568.49M</code> across <code>161,046</code> households), and Hazard Mitigation reaches <code>$264.16M</code> — yet federal closeout remains open.</li>
+    <li><strong>International humanitarian gaps sit in a separate system:</strong> For cross-border UN crisis appeals outside U.S. FEMA jurisdiction, inspect the <a href={url('/record/funding-flows/ocha-fts-global-clusters/')}>UN OCHA FTS Global Humanitarian Funding Gaps Explorer (2019–2026)</a> across 58 crisis country codes.</li>
+  </ul>
+
+  <h2 id="boundaries-downloads">Boundaries, missingness and downloads</h2>
+  <ul>
+    {edition.boundaries.map((b) => <li>{b}</li>)}
+  </ul>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download SHA-256 manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="download" href={url(asset + 'edition.json')} download>Download complete edition with county lists (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(asset + 'fema-2023-2026-summary.csv')} download>Download 5-disaster summary (CSV)</a> ·{' '}
+    <a class="identity-link" href={url('/disasters/')}>Return to immutable Disaster Desk (initial-bounded-capture)</a>.
+  </p>
+</Entry>
+
+<style>
+  .fema-table {
+    min-inline-size: 52rem;
+  }
+  [data-fema-disasters] .inline-field {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    flex-wrap: wrap;
+  }
+  [data-fema-disasters] select,
+  [data-fema-disasters] input {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+  [data-fema-disasters] .button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-start: 0.75rem;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../lib/client/dom';
+  import { download, toCsv } from '../../lib/client/files';
+
+  type DisasterRow = {
+    disasterNumber: number;
+    femaId: string;
+    cohort: string;
+    commonTitle: string;
+    officialDisasterName: string;
+    incidentType: string;
+    stateCode: string;
+    stateName: string;
+    declarationDate: string | null;
+    incidentBeginDate: string | null;
+    incidentEndDate: string | null;
+    closeoutDate: string | null;
+    designatedAreaCount: number;
+    designatedAreas: string[];
+    financialsUsd: {
+      iaHouseholdsApproved: number | null;
+      ihpApprovedUsd: number | null;
+      housingAssistanceUsd: number | null;
+      otherNeedsAssistanceUsd: number | null;
+      paObligatedUsd: number | null;
+      paEmergencyCatAbUsd: number | null;
+      paPermanentCatCgUsd: number | null;
+      hmgpObligatedUsd: number | null;
+      iaLoadDate: string | null;
+      paLoadDate: string | null;
+    };
+    femaDisasterPageUrl: string | null;
+    linkedDeskIncident: string | null;
+  };
+
+  type EditionDoc = {
+    capturedOn: string;
+    publisher: string;
+    disasters: DisasterRow[];
+  };
+
+  const root = $<HTMLElement>('[data-fema-disasters]');
+  if (root && root.dataset.edition) {
+    const editionDoc: EditionDoc = JSON.parse(root.dataset.edition);
+    const cohortEl = $<HTMLSelectElement>('[data-fema-cohort]', root);
+    const hazardEl = $<HTMLSelectElement>('[data-fema-hazard]', root);
+    const queryEl = $<HTMLInputElement>('[data-fema-query]', root);
+    const statusEl = $<HTMLElement>('[data-fema-status]', root);
+    const tbody = $<HTMLElement>('[data-fema-tbody]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-fema-export-csv]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-fema-export-json]', root);
+
+    let filtered: DisasterRow[] = [...editionDoc.disasters];
+
+    const fmtCount = (v: number | null) => (v === null ? 'Not reported (null)' : v.toLocaleString('en-US'));
+    const fmtUsd = (v: number | null) => {
+      if (v === null) return 'Not reported (null)';
+      if (Math.abs(v) >= 1e9) return `$${(v / 1e9).toFixed(2)}B`;
+      if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(2)}M`;
+      return `$${v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
+
+    function renderRows(rows: DisasterRow[]) {
+      if (!tbody || !statusEl) return;
+      tbody.replaceChildren(
+        ...rows.map((d) =>
+          h(
+            'tr',
+            { 'data-fema-row': d.femaId },
+            h(
+              'th',
+              { scope: 'row' },
+              h('code', {}, d.femaId),
+              ` · ${d.commonTitle}`,
+              h('br'),
+              h(
+                'span',
+                { class: 'note' },
+                `${d.incidentType} · ${d.stateName}`,
+                d.femaDisasterPageUrl ? ' · ' : '',
+                d.femaDisasterPageUrl
+                  ? h('a', { href: d.femaDisasterPageUrl }, 'FEMA page ↗')
+                  : '',
+              ),
+            ),
+            h('td', {}, d.declarationDate || '—'),
+            h('td', {}, String(d.designatedAreaCount)),
+            h('td', {}, fmtCount(d.financialsUsd.iaHouseholdsApproved)),
+            h('td', {}, fmtUsd(d.financialsUsd.ihpApprovedUsd)),
+            h('td', {}, fmtUsd(d.financialsUsd.paObligatedUsd)),
+            h('td', {}, fmtUsd(d.financialsUsd.hmgpObligatedUsd)),
+            h('td', {}, d.closeoutDate ?? 'Open (null)'),
+          ),
+        ),
+      );
+      statusEl.textContent = rows.length
+        ? `Showing ${rows.length} of ${editionDoc.disasters.length} captured OpenFEMA declarations.`
+        : 'No captured disasters match the active filters.';
+    }
+
+    function applyFilter() {
+      const cohort = cohortEl?.value || 'all';
+      const hazard = hazardEl?.value || 'all';
+      const q = (queryEl?.value || '').trim().toLowerCase();
+      filtered = editionDoc.disasters.filter((d) => {
+        if (cohort !== 'all' && d.cohort !== cohort) return false;
+        if (hazard !== 'all' && d.incidentType !== hazard) return false;
+        if (q) {
+          const hay = [
+            d.femaId,
+            d.commonTitle,
+            d.officialDisasterName,
+            d.stateName,
+            d.stateCode,
+            d.incidentType,
+            ...d.designatedAreas,
+          ]
+            .join(' ')
+            .toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+      renderRows(filtered);
+    }
+
+    cohortEl?.addEventListener('change', applyFilter);
+    hazardEl?.addEventListener('change', applyFilter);
+    queryEl?.addEventListener('input', applyFilter);
+
+    csvBtn?.addEventListener('click', () => {
+      applyFilter();
+      const rows = filtered.map((d) => ({
+        fema_id: d.femaId,
+        cohort: d.cohort,
+        common_title: d.commonTitle,
+        incident_type: d.incidentType,
+        state_code: d.stateCode,
+        declaration_date: d.declarationDate ?? '',
+        closeout_date: d.closeoutDate ?? '',
+        designated_area_count: d.designatedAreaCount,
+        ia_households_approved: d.financialsUsd.iaHouseholdsApproved ?? '',
+        ihp_approved_usd: d.financialsUsd.ihpApprovedUsd ?? '',
+        pa_obligated_usd: d.financialsUsd.paObligatedUsd ?? '',
+        hmgp_obligated_usd: d.financialsUsd.hmgpObligatedUsd ?? '',
+        fema_page_url: d.femaDisasterPageUrl ?? '',
+      }));
+      download('charitology-openfema-2023-2026-disasters.csv', toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    jsonBtn?.addEventListener('click', () => {
+      applyFilter();
+      const payload = {
+        format: 'charitology-disaster-fema-export-v1',
+        capturedOn: editionDoc.capturedOn,
+        publisher: editionDoc.publisher,
+        filteredCount: filtered.length,
+        disasters: filtered,
+      };
+      download(
+        'charitology-openfema-2023-2026-disasters.json',
+        JSON.stringify(payload, null, 2) + '\n',
+        'application/json;charset=utf-8',
+      );
+    });
+  }
+</script>

@@ -160,6 +160,16 @@ const yearlyEntries = manifest.counts.yearsCovered.map((y) => (manifest.yearly a
     </table>
   </div>
 
+  <h2 id="visegrad-compare">Compare Visegrád tax-assignment models</h2>
+  <p>
+    Hungary, Poland, and Slovakia operate three neighboring statutory percentage-designation systems with sharply different recipient outcomes:
+  </p>
+  <ul>
+    <li><strong>Hungary (this page — 1% civil + 1% church/national-budget SZJA):</strong> Exact donor counts are disclosed for every recipient; Top-10 civil concentration is <code>15.04%</code> of 2026 payouts (<code>HUF 21.40B</code> across <code>31,299</code> organizations), led by independent journalism and pediatric/emergency hospital foundations, while <code>186</code> technical-number recipients draw <code>HUF 23.95B</code> on the separate second 1%.</li>
+    <li><strong><a href={url('/record/funding-flows/poland-pit-1-5-percent/')}>Poland (1.5% individual PIT)</a>:</strong> Patient/disability sub-accounts (<em>cel szczegółowy</em>) drive Top-10 concentration to <code>45.69%</code> of 2025 payouts (<code>PLN 2.61B</code> across <code>9,450</code> funded OPPs), while taxpayer counts omit recipients below 100 donors.</li>
+    <li><strong><a href={url('/record/funding-flows/slovakia-pit-2-percent/')}>Slovakia (2%/3% individual + 1%/2% corporate PIT)</a>:</strong> Allowing corporate income-tax assignment puts corporate foundations in 8 of the Top 10 spots, with <code>416</code> <em>Nadácia</em> foundations absorbing <code>30.87%</code> of 2025 payouts (<code>EUR 107.04M</code> across <code>17,457</code> recipients).</li>
+  </ul>
+
   <h2 id="downloads">Downloads, privacy boundaries and provenance</h2>
   <p>
     Every figure is parsed directly from NAV’s official 2024–2026 XLSX announcements (SHA-256 pinned in <code>src/data/hungary-index-sources.tsv</code>).

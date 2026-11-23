@@ -1,0 +1,51 @@
+{
+  "format": "charitology-disaster-fema-manifest-v1",
+  "editionId": "fema-2024-2026-captures",
+  "capturedOn": "2026-11-23",
+  "publisher": "Federal Emergency Management Agency (OpenFEMA API v1 & v2)",
+  "license": "U.S. Government Public Domain (OpenFEMA Terms)",
+  "catalogueUrl": "https://www.fema.gov/about/openfema/data-sets",
+  "counts": {
+    "totalDisasters": 5,
+    "expansion2024to2026Disasters": 4,
+    "benchmark2023Disasters": 1,
+    "openWithoutCloseoutDate": 5,
+    "totalDesignatedAreas": 59,
+    "totalIaHouseholdsApproved": 225383,
+    "totalIhpApprovedUsd": 961353736.3,
+    "totalPaObligatedUsd": 3766628973.47,
+    "totalHmgpObligatedUsd": 385083915.95,
+    "disastersWithNullHmgp": 2
+  },
+  "sourceCaptures": [
+    {
+      "filename": "fema-declared-areas.json",
+      "bytes": 54433,
+      "sha256": "6c18b66f4f5d8d3fac1f163f78122e01c27b42c9d49eb5784f2d58edccf79bfd"
+    },
+    {
+      "filename": "fema-web-declarations.json",
+      "bytes": 6287,
+      "sha256": "45fe270ae693fc8df292bcbff286cfaf9387f59f247722d0a6ac34155dceb152"
+    },
+    {
+      "filename": "fema-web-summaries.json",
+      "bytes": 3295,
+      "sha256": "4bed0d2fd425608f0f492a53d88a1a226ba74dca72700b6a805fd4bc11559ee4"
+    }
+  ],
+  "artifacts": {
+    "editionJson": {
+      "path": "edition.json",
+      "bytes": 10319,
+      "sha256": "2ec07e20f9c9aa1fac35d97b7ba5e9836dc008fd48909a4f62f37acf6812f350",
+      "rows": 5
+    },
+    "summaryCsv": {
+      "path": "fema-2023-2026-summary.csv",
+      "bytes": 1840,
+      "sha256": "5b3ef5ff93569b22abecee2506d6aa8e8258f6fd932487d5af95be403ce34c3c",
+      "rows": 5
+    }
+  }
+}

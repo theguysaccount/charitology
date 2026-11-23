@@ -48,7 +48,12 @@ Before changing anything inside `services/charity-os/`:
 
 ## 5. Backup & Clean-Restore Verification Drill
 
-Each Charity OS organization can export a validated JSON workspace backup directly from the authenticated UI (`Backup & restore` panel, verified by `services/charity-os/public/backup-json.test.js`). Before onboarding live pilot data:
+Each Charity OS organization can export a validated JSON workspace backup directly from the authenticated UI (`Backup & restore` panel, verified by `services/charity-os/public/backup-json.test.js`).
+
+- **Local unit & admission drill verified (`2026-11-23`, PR #160 baseline):** All **81/81** backup-restore and lexical admission tests passed locally across `test/backup-json.test.mjs`, `test/directory-resource-backup.test.mjs`, `test/intake-backup.test.mjs`, `test/learning-backup.test.mjs`, `test/learning-backup-integration.test.mjs`, `test/participant-check-in-backup.test.mjs`, `test/participation-group-backup.test.mjs`, `test/participation-interval-backup.test.mjs`, `test/restore-incubator-counter-shape.test.mjs`, `public/backup-json.test.js`, `public/shell-mobile-a11y.test.js`, and `public/pilot-feedback.test.js` — including exact 64 MiB padded old-backup restore and 58.35 MiB near-quota generated backup restore (`2,000` records, `2,000` snapshots, `12` complete files) — while keeping all 207 files inside `services/charity-os/lib/` untouched.
+- **Additional live public shell checks verified (`2026-11-23`, PR #160):** `https://os.charitology.org/intake` returns `HTTP 200` (rewritten to `/intake.html` with a client-side non-`/p/` guard preventing spurious `/api/public/intake/intake/html` 404 calls) and `https://os.charitology.org/mcp.html` serves styled documentation with `<link rel="canonical">` and skip-link navigation.
+
+Before onboarding live pilot organizations with production data, complete an isolated Postgres restore rehearsal:
 
 1. Provision a clean, empty Postgres 17 database (for example a temporary Neon branch or isolated local Postgres instance) — never test restores against production.
 2. Run Charity OS database migrations and suite checks (`npm --prefix services/charity-os test`).

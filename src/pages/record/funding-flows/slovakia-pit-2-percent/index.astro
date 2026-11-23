@@ -130,6 +130,16 @@ const yearlyEntries = manifest.counts.yearsCovered.map((y) => (manifest.yearly a
     </table>
   </div>
 
+  <h2 id="visegrad-compare">Compare Visegrád tax-assignment models</h2>
+  <p>
+    Slovakia, Poland, and Hungary operate three neighboring statutory percentage-designation systems with sharply different recipient outcomes:
+  </p>
+  <ul>
+    <li><strong>Slovakia (this page — 2%/3% individual + 1%/2% corporate PIT):</strong> Permitting corporate income-tax assignment channels <code>30.87%</code> of 2025 payouts (<code>EUR 107.04M</code> across <code>17,457</code> recipients) to <code>416</code> <em>Nadácia</em> foundations, with corporate foundations holding 8 of the Top 10 spots.</li>
+    <li><strong><a href={url('/record/funding-flows/poland-pit-1-5-percent/')}>Poland (1.5% individual PIT)</a>:</strong> Statutory patient/disability sub-accounts (<em>cel szczegółowy</em>) lift Top-10 intermediary concentration to <code>45.69%</code> of 2025 payouts (<code>PLN 2.61B</code> across <code>9,450</code> funded OPPs), while taxpayer counts omit recipients below 100 donors.</li>
+    <li><strong><a href={url('/record/funding-flows/hungary-szja-1-percent/')}>Hungary (1% civil + 1% church/national-budget SZJA)</a>:</strong> Individual-only civil designations produce lower Top-10 concentration (<code>15.04%</code> of <code>HUF 21.40B</code> across <code>31,299</code> charities in 2026) with exact taxpayer counts for every recipient, led by independent journalism and hospital foundations alongside a separate <code>HUF 23.95B</code> technical-number track.</li>
+  </ul>
+
   <h2 id="downloads">Downloads and provenance</h2>
   <p>Source: Ten official annual CSV exports from Finančné riaditeľstvo SR (<code>2016</code>–<code>2025</code>, pinned by SHA-256 in <code>src/data/slovakia-index-sources.tsv</code>). The 2020 dip (EUR 51.27M) reflects COVID-19 tax-filing deadline deferrals pushed into 2021 (EUR 83.72M). Sixty same-year duplicate <em>IČO</em> rows (1 in 2016, 56 in 2018, 3 in 2020) are summed cleanly per IČO and documented in <code>anomalies.json</code> alongside the 2022 <code>cp852</code> encoding recovery.</p>
   <p>

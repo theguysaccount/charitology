@@ -2,9 +2,21 @@
 import Entry from "../../layouts/Entry.astro";
 import DisasterDesk from "../../components/DisasterDesk.astro";
 import { loadDisasters } from "../../lib/disaster-incidents/public.mjs";
+import { url } from "../../lib/site";
 const data = loadDisasters();
 ---
 <Entry title="Disaster Desk" eyebrow="Relief, recovery and preparedness" summary="Follow dated reports through recovery, with exact sources, visible gaps and retained editions." crumbs={[{label:"Tools",href:"/tools/"},{label:"Disaster Desk"}]}>
   <p>Relief addresses immediate harm. Recovery repairs what was lost. Preparedness can prevent future harm. Each matters; a change in the news cycle does not establish that needs have ended.</p>
+  <section class="card" aria-label="2024 to 2026 emergency captures and global humanitarian gaps">
+    <p class="eyebrow">Companion 2024–2026 captures</p>
+    <p>
+      The immutable <code>initial-bounded-capture</code> edition below retains the original 2023 Maui and Türkiye records unchanged.
+      For newer federal emergencies (<strong>Hurricane Helene 2024</strong>, <strong>Los Angeles Wildfires 2025</strong>,
+      <strong>Super Typhoon Bavi Oct 2026</strong>, and <strong>Hurricane Isaias Oct 2026</strong> alongside a 2023 Maui federal benchmark),
+      open <a class="identity-link" href={url("/disasters/2024-2026-emergencies/")}>2024–2026 Federal Disaster Captures (OpenFEMA)</a>.
+      For international UN crisis funding shortfalls across 58 country codes, open the{' '}
+      <a class="identity-link" href={url("/record/funding-flows/ocha-fts-global-clusters/")}>UN OCHA FTS Global Humanitarian Funding Gaps Explorer</a>.
+    </p>
+  </section>
   {data ? <DisasterDesk projection={data.selected.projection} view="index" editions={data.editions.map(e=>e.projection.packet.edition)} /> : <p>No source edition has been captured yet. Source admission and publication checks must pass before incident reports appear.</p>}
 </Entry>
