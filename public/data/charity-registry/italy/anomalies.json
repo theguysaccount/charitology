@@ -1,0 +1,142 @@
+{
+  "format": "charitology-italy-anomalies-v1",
+  "asOf": "2026-11-05",
+  "summary": {
+    "duplicateCodiceFiscale": 0,
+    "invalidNumericCodiceFiscale": 0,
+    "arithmeticSumMismatches": 0,
+    "leadingZeroCodiceFiscalePreserved": 22354,
+    "multiCategoryEntities": 537,
+    "comuniWithAdditionalCategory": 155,
+    "unflaggedCategoryEntities": 2023,
+    "subThresholdChoicesWithZeroPayout": 8216,
+    "zeroChoicesWithZeroPayout": 11130
+  },
+  "notes": [
+    "In AF 2025, Agenzia delle Entrate renamed column 6 from 'ETS e ONLUS' (used in AF 2023) to 'ETS'. As a result, 2,023 admitted entities (primarily transitional ONLUS, including Medici Senza Frontiere ONLUS at rank #7 with EUR 9.44M) carry no 'X' flag in columns 6-12 yet remain admitted beneficiaries with exact choice counts and disbursements. Charitology preserves these explicitly under 'onlus_unflagged' without altering upstream records.",
+    "8,216 admitted entities received one or more taxpayer choices yet show EUR 0.00 disbursable because Italy's statutory EUR 100 minimum disbursement threshold redistributes sub-threshold amounts proportionally across qualifying recipients (totaling EUR 441,871.12 across AF 2025).",
+    "537 entities qualify in two or more statutory 5 per mille categories simultaneously (e.g., Fondazione AIRC qualifies in ETS, Scientific Research, and Health Research). Category totals therefore overlap on multi-category recipients while the overall national sum (EUR 603,099,780.80) counts each recipient exactly once."
+  ],
+  "topUnflaggedEntities": [
+    {
+      "rank": 7,
+      "cf": "97096120585",
+      "name": "MEDICI SENZA FRONTIERE ONLUS",
+      "reg": "LAZIO",
+      "ch": 210939,
+      "totEur": "9441974.40"
+    },
+    {
+      "rank": 64,
+      "cf": "00677540288",
+      "name": "CUAMM MEDICI CON L'AFRICA",
+      "reg": "VENETO",
+      "ch": 12243,
+      "totEur": "721348.95"
+    },
+    {
+      "rank": 99,
+      "cf": "00310810221",
+      "name": "COMUNITA' PAPA GIOVANNI XXIII",
+      "reg": "EMILIA ROMAGNA",
+      "ch": 13417,
+      "totEur": "454937.46"
+    },
+    {
+      "rank": 125,
+      "cf": "02261871202",
+      "name": "FONDAZIONE HOSPICE MARIA TERESA CHIANTORE SERAGNOLI",
+      "reg": "EMILIA ROMAGNA",
+      "ch": 7866,
+      "totEur": "367734.92"
+    },
+    {
+      "rank": 155,
+      "cf": "97723460586",
+      "name": "ASSOCIAZIONE ORIZZONTI FUTURI ETS",
+      "reg": "LAZIO",
+      "ch": 12369,
+      "totEur": "284006.35"
+    },
+    {
+      "rank": 169,
+      "cf": "94242100488",
+      "name": "ASSOCIAZIONE ITALIANA RICERCA ALZHEIMER ONLUS",
+      "reg": "TOSCANA",
+      "ch": 6866,
+      "totEur": "246655.01"
+    },
+    {
+      "rank": 203,
+      "cf": "95099690240",
+      "name": "FONDAZIONE SAN BORTOLO ONLUS",
+      "reg": "VENETO",
+      "ch": 4745,
+      "totEur": "200337.81"
+    },
+    {
+      "rank": 250,
+      "cf": "90033250029",
+      "name": "LEGA ITALIANA PER LA LOTTA CONTRO I TUMORI (LILT)- ASSOCIAZIONE DI BIELLA ETS",
+      "reg": "PIEMONTE",
+      "ch": 4867,
+      "totEur": "155812.83"
+    },
+    {
+      "rank": 261,
+      "cf": "05915101009",
+      "name": "FONDAZIONE DIABETE RICERCA ONLUS",
+      "reg": "LAZIO",
+      "ch": 4537,
+      "totEur": "147594.57"
+    },
+    {
+      "rank": 267,
+      "cf": "80004030195",
+      "name": "ISITUTO OSPEDALIERO DI SOSPIRO - ONLUS",
+      "reg": "LOMBARDIA",
+      "ch": 3693,
+      "totEur": "145817.36"
+    },
+    {
+      "rank": 269,
+      "cf": "97210180580",
+      "name": "FONDAZIONE DI RELIGIONE DON BOSCO NEL MONDO",
+      "reg": "LAZIO",
+      "ch": 3802,
+      "totEur": "145538.19"
+    },
+    {
+      "rank": 275,
+      "cf": "97534500018",
+      "name": "FONDAZIONE SER.MI.G.",
+      "reg": "PIEMONTE",
+      "ch": 2904,
+      "totEur": "143253.70"
+    },
+    {
+      "rank": 285,
+      "cf": "98660080791",
+      "name": "FONDAZIONE CUORE IMMACOLATO DI MARIA",
+      "reg": "CALABRIA",
+      "ch": 4240,
+      "totEur": "137758.67"
+    },
+    {
+      "rank": 299,
+      "cf": "03732841006",
+      "name": "FONDAZIONE ALLEANZA DEL RINNOVVAMENTO NELLO SPIRITO SANTO ONLUS",
+      "reg": "LAZIO",
+      "ch": 4513,
+      "totEur": "132131.61"
+    },
+    {
+      "rank": 313,
+      "cf": "93138170233",
+      "name": "MISSIONARI COMBONIANI MONDO APERTO ONLUS",
+      "reg": "VENETO",
+      "ch": 3182,
+      "totEur": "126848.90"
+    }
+  ]
+}

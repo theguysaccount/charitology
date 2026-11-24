@@ -1,0 +1,454 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/italy/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Italy 5 per mille admitted charities & beneficiaries (AF 2025)';
+const dataPath = '/data/charity-registry/italy/';
+const flowPath = '/record/funding-flows/italy-five-per-mille/';
+const count = (value: number) => value.toLocaleString('en-US');
+const eurM = (cents: number) => `EUR ${(cents / 100_000_000).toFixed(2)}M`;
+const eurExact = (cents: number) =>
+  `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const catLabels: Record<string, string> = {
+  ets: 'ETS (Third Sector)',
+  asd: 'ASD (Amateur Sport)',
+  comuni: 'Comuni (Municipal)',
+  onlus_unflagged: 'Transitional ONLUS (unflagged)',
+  ricerca_scientifica: 'Scientific Research',
+  beni_culturali: 'Cultural Heritage',
+  ricerca_sanitaria: 'Health Research',
+  aree_protette: 'Protected Areas',
+};
+
+const sources = [
+  {
+    title: '5 per mille AF 2025 — Elenco complessivo degli enti destinatari ammessi al contributo (7 official CSV parts, updated 2026-11-05)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.admittedList2025,
+  },
+  {
+    title: 'Contributo del 5 per mille 2025 — Program documentation and rules',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.programOverview2025,
+  },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Global Charity Index · Italy"
+  summary="Search 96,059 Italian charities, Third Sector entities (ETS), ONLUS, research bodies, cultural institutions, sports clubs, and municipalities admitted to Italy’s 5 per mille (0.5% IRPEF) tax allocation for AF 2025 (EUR 603.10M across 15.56M taxpayer choices)."
+  crumbs={[{ label: 'The Record', href: '/record/' }, { label: 'Global Charity Index', href: '/record/charity-index/' }, { label: 'Italy' }]}
+  filePath="src/pages/record/charity-index/italy.astro"
+  sources={sources}
+>
+  <p>
+    Italy’s <strong>5 per mille</strong> (0.5% of personal income tax, <em>IRPEF</em>) is Europe’s largest statutory taxpayer-directed charitable
+    allocation mechanism by euro volume. This edition combines all seven official CSV extracts of the{' '}
+    <em>Elenco complessivo degli enti destinatari ammessi al contributo</em> published by Italy’s Revenue Agency
+    (<em>Agenzia delle Entrate</em>) for fiscal year <strong>AF 2025</strong> (updated <time datetime={manifest.asOf}>{manifest.asOf}</time>,
+    captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>):{' '}
+    <strong>{count(manifest.counts.includedOrganizations)} distinct admitted entities</strong> across all{' '}
+    <strong>{manifest.counts.regionsCovered} Italian regions</strong> ({count(manifest.counts.nonMunicipalOrganizations)} non-municipal
+    civil-society, research, heritage, and sport organizations plus {count(manifest.counts.municipalOnlyEntities)} municipal-only social-activity
+    entries), capturing <strong>{count(manifest.counts.totalChoices)} expressed taxpayer choices</strong> and{' '}
+    <strong>{eurExact(manifest.counts.totalDisbursableEurCents)}</strong> in exact disbursable allocations.
+  </p>
+  <p>
+    Every single one of the <strong>{count(manifest.counts.validatedCodiceFiscale)}</strong> organization tax codes (<em>Codice Fiscale</em>)
+    passes Italian 11-digit Luhn checksum validation (<code>0</code> invalid; <strong>{count(manifest.counts.leadingZeroCodiceFiscale)}</strong>{' '}
+    leading-zero codes preserved as strings), and every row reconciles to the exact euro cent across expressed choices (
+    {eurM(manifest.counts.expressedEurCents)}), proportional generic choices ({eurM(manifest.counts.genericEurCents)}), and redistribution of
+    sub-EUR-100 entitlements ({eurExact(manifest.counts.under100RedistEurCents)}).
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-italy-registry
+    data-base={url(dataPath)}
+    data-flow={url(flowPath)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="it-search-heading"
+  >
+    <h2 id="it-search-heading">Search Italian 5 per mille charities and beneficiaries</h2>
+    <p id="it-search-hint">
+      Enter the beginning of an organization’s name (Italian accents optional, e.g., <code>airc</code>, <code>emergency</code>,{' '}
+      <code>medici senza frontiere</code>, <code>save the children</code>, <code>telethon</code>, or <code>caritas</code>) or an exact 11-digit{' '}
+      <em>Codice Fiscale</em> (including leading zeros, e.g., <code>80051890152</code> or <code>08691440153</code>). Search loads one compressed
+      shard locally in your browser.
+    </p>
+    <form aria-describedby="it-search-hint">
+      <label for="it-query">Organization name or 11-digit Codice Fiscale</label>
+      <div class="finance-actions">
+        <input type="search" id="it-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="it-category">Statutory category</label>
+          <select id="it-category" disabled>
+            <option value="">All admitted categories ({count(manifest.counts.includedOrganizations)})</option>
+            {
+              manifest.categories.map((c) => (
+                <option value={c.key}>
+                  {catLabels[c.key] ?? c.sourceLabel} ({count(c.entities)})
+                </option>
+              ))
+            }
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="it-region">Region</label>
+          <select id="it-region" disabled>
+            <option value="">All 20 regions</option>
+            {
+              manifest.regions.map((r) => (
+                <option value={r.region}>
+                  {r.region} ({count(r.entities)})
+                </option>
+              ))
+            }
+          </select>
+        </span>
+        <label class="inline-check">
+          <input type="checkbox" id="it-funded-only" disabled /> Disbursable &gt; EUR 0 ({count(manifest.counts.fundedOrganizations)})
+        </label>
+        <button type="submit" class="btn" disabled>Search organizations</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you are ready to load an Italy registry shard.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="romanArch" aria-label="Italy 5 per mille registry results" data-results></ol>
+    <noscript>
+      <p>
+        Without JavaScript, inspect all seven official AF 2025 CSV files directly on{' '}
+        <a href={manifest.catalogues.admittedList2025}>agenziaentrate.gov.it</a>.
+      </p>
+    </noscript>
+  </section>
+
+  <h2 id="top-2025">Top 20 Italian 5 per mille recipients in AF 2025</h2>
+  <p>
+    Click any 11-digit <em>Codice Fiscale</em> below to load its full expressed, generic, and sub-EUR-100 redistribution breakdown in the search tool
+    above.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Top 20 Italian 5 per mille recipients in AF 2025" tabindex="0">
+    <table class="data it-table">
+      <caption>Top 20 Italian 5 per mille beneficiaries in AF 2025 (Agenzia delle Entrate, updated {manifest.asOf})</caption>
+      <thead>
+        <tr>
+          <th scope="col">Rank</th>
+          <th scope="col">Codice Fiscale</th>
+          <th scope="col">Organization</th>
+          <th scope="col">Region</th>
+          <th scope="col">Categories</th>
+          <th scope="col">Choices</th>
+          <th scope="col">Total disbursable</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.top20.map((item) => (
+            <tr>
+              <td>#{item.rank}</td>
+              <td>
+                <button type="button" class="inline-lookup-btn" data-lookup-it={item.cf}>
+                  <code>{item.cf}</code>
+                </button>
+              </td>
+              <th scope="row">
+                <span lang="it">{item.name}</span>
+              </th>
+              <td>{item.reg}</td>
+              <td>{item.cats.map((k) => catLabels[k] ?? k).join(', ')}</td>
+              <td>{count(item.ch)}</td>
+              <td>{eurM(item.totC)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="funding">Follow Italy’s EUR 603.10M 5 per mille funding flow</h2>
+  <p>
+    Explore the Top-250 recipients across all statutory categories and 20 Italian regions, inspect how proportional generic-choice pools add{' '}
+    <strong>{eurM(manifest.counts.genericEurCents)}</strong> on top of expressed choices, and compare Italy’s 0.5% IRPEF designation model alongside
+    Poland (1.5%), Slovakia (2%/3%), and Hungary (1%+1%).{' '}
+    <a class="identity-link" href={url(flowPath)}>Open Italy’s AF 2025 5 per mille funding-flow explorer (EUR 603.10M)</a>.
+  </p>
+
+  <h2 id="coverage">Scope, Codice Fiscale validation, anomalies and privacy boundaries</h2>
+  <p>
+    <strong>What is included vs. excluded:</strong> Agenzia delle Entrate’s <em>Elenco complessivo</em> covers all{' '}
+    {count(manifest.counts.includedOrganizations)} organizations admitted to receive 5 per mille designations for AF 2025 across Third Sector
+    entities (<em>ETS</em>), amateur sports clubs (<em>ASD</em>), scientific and health research bodies, cultural-heritage institutions, protected
+    areas, transitional ONLUS, and municipal social-activity funds (<em>Comuni</em>). Organizations excluded from AF 2025 or registered in RUNTS
+    without applying for 5 per mille sit outside this extract. Note that {count(manifest.counts.subThresholdOrganizations)} organizations received
+    positive taxpayer choices yet show EUR 0.00 disbursable because amounts below Italy’s statutory EUR 100 payout floor are redistributed
+    proportionally across qualifying recipients.
+  </p>
+  <p>
+    <strong>Structural note on AF 2025 unflagged ONLUS rows &amp; privacy:</strong> In AF 2025, Agenzia delle Entrate narrowed column 6 from{' '}
+    <code>ETS e ONLUS</code> to <code>ETS</code>; {count(manifest.counts.unflaggedCategoryOrganizations)} admitted organizations (primarily
+    transitional ONLUS such as <em>Medici Senza Frontiere ONLUS</em> at rank #7 with EUR 9.44M) carry no <code>X</code> mark in columns 6–12 yet
+    appear with full verified choices and euro disbursements. Charitology labels these transparently under <code>onlus_unflagged</code> and logs all
+    structural edge cases verbatim in{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + manifest.anomalies.path)} download>anomalies.json</a>. The upstream
+    Agenzia delle Entrate files publish only region, province, and municipality (zero personal emails or street addresses).{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download SHA-256 manifest (JSON)</a> ·{' '}
+    <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.
+  </p>
+</Entry>
+
+<style>
+  .it-table {
+    min-inline-size: 52rem;
+  }
+  [data-italy-registry] .inline-field {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    flex-wrap: wrap;
+  }
+  [data-italy-registry] select {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName, financialShardLoader, type FinancialShard } from '../../../lib/client/financial-directory';
+
+  type ItRow = {
+    rank: number;
+    cf: string;
+    name: string;
+    norm: string;
+    reg: string;
+    pr: string;
+    muni: string;
+    cats: string[];
+    ch: number;
+    expC: number;
+    genC: number;
+    u100C: number;
+    totC: number;
+  };
+  type ItManifest = {
+    publisher: string;
+    fiscalYear: number;
+    asOf: string;
+    shards: {
+      names: Record<string, FinancialShard>;
+      ids: Record<string, FinancialShard>;
+    };
+  };
+
+  const catLabels: Record<string, string> = {
+    ets: 'ETS',
+    asd: 'ASD',
+    comuni: 'Comuni',
+    onlus_unflagged: 'Transitional ONLUS (unflagged)',
+    ricerca_scientifica: 'Scientific Research',
+    beni_culturali: 'Cultural Heritage',
+    ricerca_sanitaria: 'Health Research',
+    aree_protette: 'Protected Areas',
+  };
+
+  const foldIt = (text: string) =>
+    text
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  const bucketFor = (norm: string) => {
+    const first = norm[0] ?? '';
+    return first >= 'a' && first <= 'z' ? first : '0-9';
+  };
+
+  const eur = (cents: number) =>
+    `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const limit = 35;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-italy-registry]')) {
+    const manifest: ItManifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const loadNameShard = financialShardLoader<ItRow>(base, manifest.shards.names);
+    const loadIdShard = financialShardLoader<ItRow>(base, manifest.shards.ids);
+
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#it-query', root) as HTMLInputElement;
+    const catSel = $('#it-category', root) as HTMLSelectElement;
+    const regSel = $('#it-region', root) as HTMLSelectElement;
+    const fundedCheck = $('#it-funded-only', root) as HTMLInputElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    for (const el of [queryEl, catSel, regSel, fundedCheck, submitBtn, clearBtn]) el.disabled = false;
+    let shown: ItRow[] = [];
+
+    const render = (rows: ItRow[], total: number, q: string) => {
+      shown = rows;
+      listEl.replaceChildren();
+      jsonBtn.disabled = rows.length === 0;
+      csvBtn.disabled = rows.length === 0;
+      if (!rows.length) {
+        statusEl.textContent = q
+          ? `No Italian 5 per mille recipients matched “${q}” under the selected filters.`
+          : 'No Italian 5 per mille recipients matched the selected filters.';
+        return;
+      }
+      statusEl.textContent =
+        total > rows.length
+          ? `Showing the first ${rows.length} of ${total.toLocaleString('en-US')} matching organizations.`
+          : `Showing ${total.toLocaleString('en-US')} matching organization${total === 1 ? '' : 's'}.`;
+
+      for (const r of rows) {
+        const avg = r.ch > 0 ? eur(Math.round(r.totC / r.ch)) : '—';
+        const loc = [r.muni, r.pr ? `(${r.pr})` : '', r.reg].filter(Boolean).join(' ');
+        const catStr = r.cats.map((k) => catLabels[k] ?? k).join(' · ');
+        const detail =
+          r.totC > 0
+            ? `AF 2025 disbursable: ${eur(r.totC)} (${r.ch.toLocaleString('en-US')} choices; avg ${avg}/choice) — Expressed ${eur(r.expC)} + Generic ${eur(r.genC)} + Sub-EUR-100 pool ${eur(r.u100C)}`
+            : r.ch > 0
+              ? `AF 2025 disbursable: EUR 0.00 (${r.ch.toLocaleString('en-US')} taxpayer choice${r.ch === 1 ? '' : 's'} — below statutory EUR 100 payout floor)`
+              : 'AF 2025 disbursable: EUR 0.00 (0 taxpayer choices recorded)';
+
+        listEl.append(
+          h(
+            'li',
+            {},
+            h('strong', { lang: 'it' }, r.name),
+            ' ',
+            h('code', {}, `CF ${r.cf}`),
+            ' ',
+            h('span', { class: 'note' }, `Rank #${r.rank.toLocaleString('en-US')}`),
+            h('div', { class: 'note' }, `${catStr} · ${loc}`),
+            h('div', { class: 'note' }, detail),
+          ),
+        );
+      }
+    };
+
+    const runSearch = async () => {
+      const rawQ = queryEl.value.trim();
+      const catVal = catSel.value;
+      const regVal = regSel.value;
+      const fundedOnly = fundedCheck.checked;
+
+      if (!rawQ) {
+        statusEl.textContent =
+          'Enter the beginning of an organization name (e.g., airc, emergency, medici) or an exact 11-digit Codice Fiscale (e.g., 80051890152).';
+        return;
+      }
+
+      const digits = rawQ.replace(/[^0-9]/g, '');
+      const isCf = digits.length === 11 && /^\d+$/.test(rawQ.replace(/[\s'-]/g, ''));
+      const normQ = foldIt(rawQ);
+
+      statusEl.textContent = 'Loading Italy 5 per mille shard…';
+      try {
+        let rows: ItRow[];
+        if (isCf) {
+          const prefix = digits.slice(0, 2);
+          const shardRows = manifest.shards.ids[prefix] ? await loadIdShard(prefix) : [];
+          rows = shardRows.filter((r) => r.cf === digits);
+        } else {
+          const bkt = bucketFor(normQ);
+          rows = (await loadNameShard(bkt)).filter((r) => r.norm.startsWith(normQ) || r.norm.includes(normQ));
+        }
+
+        const filtered = rows.filter((r) => {
+          if (catVal && !r.cats.includes(catVal)) return false;
+          if (regVal && r.reg !== regVal) return false;
+          if (fundedOnly && r.totC <= 0) return false;
+          return true;
+        });
+
+        filtered.sort((a, b) => {
+          const aExact = a.norm.startsWith(normQ) ? 0 : 1;
+          const bExact = b.norm.startsWith(normQ) ? 0 : 1;
+          return aExact - bExact || b.totC - a.totC || b.ch - a.ch || a.name.localeCompare(b.name, 'it');
+        });
+        render(filtered.slice(0, limit), filtered.length, rawQ);
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load Italy registry shard.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void runSearch();
+    });
+    for (const el of [catSel, regSel, fundedCheck]) {
+      el.addEventListener('change', () => {
+        if (queryEl.value.trim()) void runSearch();
+      });
+    }
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      catSel.value = '';
+      regSel.value = '';
+      fundedCheck.checked = false;
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Search cleared.';
+      queryEl.focus();
+    });
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-italy-5xmille-af2025.json',
+        JSON.stringify({ source: manifest.publisher, fiscalYear: manifest.fiscalYear, asOf: manifest.asOf, rows: shown }, null, 2),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      const csvText = toCsv(
+        shown.map((r) => ({
+          rank: r.rank,
+          codice_fiscale: r.cf,
+          name: financialCsvName(r.name),
+          region: financialCsvName(r.reg),
+          province: r.pr,
+          municipality: financialCsvName(r.muni),
+          categories: r.cats.join('; '),
+          taxpayer_choices: r.ch,
+          expressed_eur: (r.expC / 100).toFixed(2),
+          generic_eur: (r.genC / 100).toFixed(2),
+          under_100_redistribution_eur: (r.u100C / 100).toFixed(2),
+          total_disbursable_eur: (r.totC / 100).toFixed(2),
+        })),
+      );
+      download('charitology-italy-5xmille-af2025.csv', '\uFEFF' + csvText, 'text/csv;charset=utf-8');
+    });
+
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-it]')) {
+      btn.addEventListener('click', () => {
+        const cf = btn.dataset.lookupIt ?? '';
+        queryEl.value = cf;
+        catSel.value = '';
+        regSel.value = '';
+        fundedCheck.checked = false;
+        void runSearch();
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+</script>

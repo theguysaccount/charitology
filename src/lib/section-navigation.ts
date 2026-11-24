@@ -217,6 +217,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['domains', 'Statutory activity domains across Croatian associations', 'layers'],
     ['coverage', 'Scope, ISO-7064 OIB validation, anomalies and privacy boundaries', 'archive'],
   ],
+  '/record/charity-index/italy/': [
+    ['it-search-heading', 'Search Italian 5 per mille charities and beneficiaries', 'lens'],
+    ['top-2025', 'Top 20 Italian 5 per mille recipients in AF 2025', 'table'],
+    ['funding', 'Follow Italy’s EUR 603.10M 5 per mille funding flow', 'coins'],
+    ['coverage', 'Scope, Codice Fiscale validation, anomalies and privacy boundaries', 'archive'],
+  ],
   '/record/charity-index/czechia/': [
     ['cz-search-heading', 'Search Czech nonprofits', 'lens'],
     ['endowments', 'Largest statutory foundation endowments', 'coins'],
@@ -557,6 +563,13 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['three-year-trend', 'Three-year civil 1% trajectory (2024–2026) and the second 1%', 'chart'],
     ['visegrad-compare', 'Compare Visegrád tax-assignment models', 'globe'],
     ['downloads', 'Downloads, privacy boundaries and provenance', 'download'],
+  ],
+  '/record/funding-flows/italy-five-per-mille/': [
+    ['it-flow-heading', 'Explore Italy’s Top-250 5 per mille recipients (AF 2025)', 'lens'],
+    ['category-pools', 'Statutory category pools and generic-choice amplification', 'layers'],
+    ['regional-distribution', 'Geographic concentration across all 20 Italian regions', 'globe'],
+    ['europe-tax-assignment-compare', 'Compare four European statutory tax-assignment systems', 'compare'],
+    ['downloads', 'Downloads, methodology and provenance', 'download'],
   ],
   '/record/funding-flows/israel-foreign-state-donations/': [
     ['il-fsd-heading', 'Search disclosed recipients', 'lens'],

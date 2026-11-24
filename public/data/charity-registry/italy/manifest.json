@@ -1,0 +1,1198 @@
+{
+  "format": "charitology-italy-registry-v1",
+  "jurisdiction": "IT",
+  "fiscalYear": 2025,
+  "publisher": "Agenzia delle Entrate (Italian Revenue Agency)",
+  "asOf": "2026-11-05",
+  "capturedOn": "2026-11-23",
+  "catalogues": {
+    "admittedList2025": "https://www.agenziaentrate.gov.it/portale/elenco-complessivo-degli-enti-ammessi-in-una-o-pi%C3%B9-categorie-di-beneficiari1",
+    "programOverview2025": "https://www.agenziaentrate.gov.it/portale/contributo-del-5-per-mille-2025"
+  },
+  "sources": [
+    {
+      "filename": "italy-5x1000-af2025-part1.csv",
+      "bytes": 1706716,
+      "sha256": "280559352c8e65eb83817d11fe8518d3cbd7dcffc9d640365b29f9d3673645c7",
+      "rows": 13770
+    },
+    {
+      "filename": "italy-5x1000-af2025-part2.csv",
+      "bytes": 1684157,
+      "sha256": "824db54feed40d57bc745648ae27f4c1f91816c6f6de1e4a7366101dc65bc15a",
+      "rows": 13770
+    },
+    {
+      "filename": "italy-5x1000-af2025-part3.csv",
+      "bytes": 1668959,
+      "sha256": "0c2dc956bd364c4cf26f0304156871a921ffe0053609f25a36fb6f18176b8a57",
+      "rows": 13770
+    },
+    {
+      "filename": "italy-5x1000-af2025-part4.csv",
+      "bytes": 1604614,
+      "sha256": "37ebd8b5e011da428cbd397c1a5fbe14a5b64f0a06c13f0f347854dee43f2378",
+      "rows": 13770
+    },
+    {
+      "filename": "italy-5x1000-af2025-part5.csv",
+      "bytes": 1571915,
+      "sha256": "0eff35cbfbcb435a100899f196422849c32c8d0f714802aa22a153ac66a920f9",
+      "rows": 13770
+    },
+    {
+      "filename": "italy-5x1000-af2025-part6.csv",
+      "bytes": 1421613,
+      "sha256": "79400d13b5d5eab8a1875083c49b1dec116d07c0a2a3b5bd5f6de22396860aef",
+      "rows": 13770
+    },
+    {
+      "filename": "italy-5x1000-af2025-part7.csv",
+      "bytes": 1247007,
+      "sha256": "8c050b7f4007ff7d2a6b31b1d37ef9b5c9b313061503a31af344aefe993e2e66",
+      "rows": 13439
+    }
+  ],
+  "counts": {
+    "includedOrganizations": 96059,
+    "nonMunicipalOrganizations": 88310,
+    "municipalOnlyEntities": 7749,
+    "fundedOrganizations": 76713,
+    "zeroPayoutOrganizations": 19346,
+    "subThresholdOrganizations": 8216,
+    "zeroChoiceOrganizations": 11130,
+    "validatedCodiceFiscale": 96059,
+    "invalidCodiceFiscale": 0,
+    "leadingZeroCodiceFiscale": 22354,
+    "multiCategoryOrganizations": 537,
+    "unflaggedCategoryOrganizations": 2023,
+    "regionsCovered": 20,
+    "totalChoices": 15562797,
+    "expressedEurCents": 52050594042,
+    "genericEurCents": 8215196926,
+    "under100RedistEurCents": 44187112,
+    "totalDisbursableEurCents": 60309978080,
+    "avgTotalEurPerChoiceCents": 3875,
+    "avgExpressedEurPerChoiceCents": 3345,
+    "top10SharePct": 28.76,
+    "top50SharePct": 44.2,
+    "top250SharePct": 56.03,
+    "byCategory": {
+      "ets": 70913,
+      "asd": 14914,
+      "comuni": 7904,
+      "onlus_unflagged": 2023,
+      "ricerca_scientifica": 485,
+      "beni_culturali": 237,
+      "ricerca_sanitaria": 107,
+      "aree_protette": 24
+    }
+  },
+  "categories": [
+    {
+      "key": "ets",
+      "sourceLabel": "ETS",
+      "labelEn": "Third Sector Entities (Enti del Terzo Settore / RUNTS)",
+      "entities": 70913,
+      "fundedEntities": 54490,
+      "choices": 12582095,
+      "expressedEurCents": 41188588958,
+      "genericEurCents": 5240996171,
+      "under100EurCents": 34988255,
+      "totalEurCents": 46464573384
+    },
+    {
+      "key": "asd",
+      "sourceLabel": "ASD",
+      "labelEn": "Amateur Sports Associations (Associazioni Sportive Dilettantistiche)",
+      "entities": 14914,
+      "fundedEntities": 12272,
+      "choices": 582374,
+      "expressedEurCents": 1904652866,
+      "genericEurCents": 266323654,
+      "under100EurCents": 7379949,
+      "totalEurCents": 2178356469
+    },
+    {
+      "key": "comuni",
+      "sourceLabel": "Comuni",
+      "labelEn": "Municipal Social Activities (Comuni)",
+      "entities": 7904,
+      "fundedEntities": 7717,
+      "choices": 538251,
+      "expressedEurCents": 1706848314,
+      "genericEurCents": 513097,
+      "under100EurCents": 772,
+      "totalEurCents": 1707362183
+    },
+    {
+      "key": "onlus_unflagged",
+      "sourceLabel": "Senza flag categoria (ONLUS in transizione)",
+      "labelEn": "Admitted without category X flag (primarily transitional ONLUS)",
+      "entities": 2023,
+      "fundedEntities": 1928,
+      "choices": 570298,
+      "expressedEurCents": 2326896125,
+      "genericEurCents": 89669745,
+      "under100EurCents": 1928250,
+      "totalEurCents": 2418494120
+    },
+    {
+      "key": "ricerca_scientifica",
+      "sourceLabel": "Ricerca scientifica",
+      "labelEn": "Scientific Research & Universities",
+      "entities": 485,
+      "fundedEntities": 476,
+      "choices": 3675598,
+      "expressedEurCents": 12530965683,
+      "genericEurCents": 4718605265,
+      "under100EurCents": 2958081,
+      "totalEurCents": 17252529029
+    },
+    {
+      "key": "beni_culturali",
+      "sourceLabel": "Beni culturali e paesaggistici",
+      "labelEn": "Cultural & Landscape Heritage",
+      "entities": 237,
+      "fundedEntities": 208,
+      "choices": 104032,
+      "expressedEurCents": 364371694,
+      "genericEurCents": 141423344,
+      "under100EurCents": 120934,
+      "totalEurCents": 505915972
+    },
+    {
+      "key": "ricerca_sanitaria",
+      "sourceLabel": "Ricerca sanitaria",
+      "labelEn": "Health & Biomedical Research",
+      "entities": 107,
+      "fundedEntities": 107,
+      "choices": 3544054,
+      "expressedEurCents": 11988730889,
+      "genericEurCents": 5707948371,
+      "under100EurCents": 1326954,
+      "totalEurCents": 17698006214
+    },
+    {
+      "key": "aree_protette",
+      "sourceLabel": "Enti Gestori aree protette",
+      "labelEn": "Protected Natural Area Managers",
+      "entities": 24,
+      "fundedEntities": 24,
+      "choices": 4646,
+      "expressedEurCents": 15990224,
+      "genericEurCents": 61749649,
+      "under100EurCents": 7,
+      "totalEurCents": 77739880
+    }
+  ],
+  "regions": [
+    {
+      "region": "LOMBARDIA",
+      "entities": 15902,
+      "fundedEntities": 13592,
+      "choices": 4672530,
+      "totalEurCents": 21564289643
+    },
+    {
+      "region": "LAZIO",
+      "entities": 9027,
+      "fundedEntities": 6772,
+      "choices": 3196263,
+      "totalEurCents": 11398337216
+    },
+    {
+      "region": "EMILIA ROMAGNA",
+      "entities": 8245,
+      "fundedEntities": 6668,
+      "choices": 1074897,
+      "totalEurCents": 3978386905
+    },
+    {
+      "region": "PIEMONTE",
+      "entities": 8435,
+      "fundedEntities": 6886,
+      "choices": 888630,
+      "totalEurCents": 3695715072
+    },
+    {
+      "region": "VENETO",
+      "entities": 8107,
+      "fundedEntities": 6784,
+      "choices": 941229,
+      "totalEurCents": 3585210831
+    },
+    {
+      "region": "TOSCANA",
+      "entities": 6096,
+      "fundedEntities": 4822,
+      "choices": 699423,
+      "totalEurCents": 2482655897
+    },
+    {
+      "region": "LIGURIA",
+      "entities": 2405,
+      "fundedEntities": 1999,
+      "choices": 536010,
+      "totalEurCents": 2353432399
+    },
+    {
+      "region": "CAMPANIA",
+      "entities": 6022,
+      "fundedEntities": 4434,
+      "choices": 591844,
+      "totalEurCents": 1859862319
+    },
+    {
+      "region": "MARCHE",
+      "entities": 2640,
+      "fundedEntities": 2075,
+      "choices": 526450,
+      "totalEurCents": 1801993182
+    },
+    {
+      "region": "PUGLIA",
+      "entities": 5454,
+      "fundedEntities": 4133,
+      "choices": 591740,
+      "totalEurCents": 1651652759
+    },
+    {
+      "region": "SICILIA",
+      "entities": 5998,
+      "fundedEntities": 4524,
+      "choices": 557130,
+      "totalEurCents": 1516949087
+    },
+    {
+      "region": "FRIULI VENEZIA GIULIA",
+      "entities": 2620,
+      "fundedEntities": 2182,
+      "choices": 252545,
+      "totalEurCents": 1038740643
+    },
+    {
+      "region": "TRENTINO-ALTO ADIGE/SUEDTIROL",
+      "entities": 3557,
+      "fundedEntities": 2950,
+      "choices": 252516,
+      "totalEurCents": 996870948
+    },
+    {
+      "region": "CALABRIA",
+      "entities": 3048,
+      "fundedEntities": 2228,
+      "choices": 204936,
+      "totalEurCents": 577154990
+    },
+    {
+      "region": "SARDEGNA",
+      "entities": 2555,
+      "fundedEntities": 2075,
+      "choices": 159718,
+      "totalEurCents": 485699430
+    },
+    {
+      "region": "ABRUZZO",
+      "entities": 2187,
+      "fundedEntities": 1693,
+      "choices": 153449,
+      "totalEurCents": 466800513
+    },
+    {
+      "region": "UMBRIA",
+      "entities": 1664,
+      "fundedEntities": 1266,
+      "choices": 136570,
+      "totalEurCents": 457506073
+    },
+    {
+      "region": "BASILICATA",
+      "entities": 1062,
+      "fundedEntities": 804,
+      "choices": 65537,
+      "totalEurCents": 187760595
+    },
+    {
+      "region": "MOLISE",
+      "entities": 662,
+      "fundedEntities": 502,
+      "choices": 41497,
+      "totalEurCents": 141375023
+    },
+    {
+      "region": "VALLE D'AOSTA",
+      "entities": 373,
+      "fundedEntities": 324,
+      "choices": 19883,
+      "totalEurCents": 69584555
+    }
+  ],
+  "top20": [
+    {
+      "rank": 1,
+      "cf": "80051890152",
+      "name": "FONDAZIONE AIRC PER LA RICERCA SUL CANCRO ETS",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ets",
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 1802357,
+      "expC": 5832404022,
+      "genC": 2439141872,
+      "u100C": 906314,
+      "totC": 8272452208
+    },
+    {
+      "rank": 2,
+      "cf": "97519070011",
+      "name": "FONDAZIONE PIEMONTESE PER LA RICERCA SUL CANCRO ETS",
+      "reg": "PIEMONTE",
+      "pr": "TO",
+      "muni": "CANDIOLO",
+      "cats": [
+        "ets",
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 286934,
+      "expC": 873869310,
+      "genC": 557451552,
+      "u100C": 95948,
+      "totC": 1431416810
+    },
+    {
+      "rank": 3,
+      "cf": "97147110155",
+      "name": "EMERGENCY - LIFE SUPPORT FOR CIVILIAN WAR VICTIMS - ONG ETS IN BREVE EMERGENCY ONG ETS",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ets"
+      ],
+      "ch": 318543,
+      "expC": 1292921135,
+      "genC": 50097424,
+      "u100C": 1077273,
+      "totC": 1344095832
+    },
+    {
+      "rank": 4,
+      "cf": "80003150424",
+      "name": "FONDAZIONE LEGA DEL FILO D'ORO - E.T.S. - ENTE FILANTROPICO",
+      "reg": "MARCHE",
+      "pr": "AN",
+      "muni": "OSIMO",
+      "cats": [
+        "ets"
+      ],
+      "ch": 308173,
+      "expC": 1080077985,
+      "genC": 48467062,
+      "u100C": 1042230,
+      "totC": 1129587277
+    },
+    {
+      "rank": 5,
+      "cf": "80102390582",
+      "name": "AIL - ASSOCIAZIONE ITALIANA CONTRO LE LEUCEMIE-LINFOMI E MIELOMA ENTE DEL TERZO SETTORE",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "ets",
+        "ricerca_scientifica"
+      ],
+      "ch": 264635,
+      "expC": 892852383,
+      "genC": 127090067,
+      "u100C": 626306,
+      "totC": 1020568756
+    },
+    {
+      "rank": 6,
+      "cf": "08691440153",
+      "name": "ISTITUTO EUROPEO DI ONCOLOGIA S.R.L.",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ricerca_sanitaria"
+      ],
+      "ch": 144582,
+      "expC": 630769612,
+      "genC": 319144563,
+      "u100C": 0,
+      "totC": 949914175
+    },
+    {
+      "rank": 7,
+      "cf": "97096120585",
+      "name": "MEDICI SENZA FRONTIERE ONLUS",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "onlus_unflagged"
+      ],
+      "ch": 210939,
+      "expC": 910309200,
+      "genC": 33174852,
+      "u100C": 713388,
+      "totC": 944197440
+    },
+    {
+      "rank": 8,
+      "cf": "95051730109",
+      "name": "FONDAZIONE ITALIANA SCLEROSI MULTIPLA ENTE DEL TERZO SETTORE/ETS",
+      "reg": "LIGURIA",
+      "pr": "GE",
+      "muni": "GENOVA",
+      "cats": [
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 182438,
+      "expC": 583786026,
+      "genC": 276880541,
+      "u100C": 2708,
+      "totC": 860669275
+    },
+    {
+      "rank": 9,
+      "cf": "97227450158",
+      "name": "SAVE THE CHILDREN ITALIA ETS",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "ets"
+      ],
+      "ch": 181359,
+      "expC": 763440042,
+      "genC": 28522739,
+      "u100C": 613350,
+      "totC": 792576131
+    },
+    {
+      "rank": 10,
+      "cf": "94080470480",
+      "name": "FONDAZIONE DELL'OSPEDALE PEDIATRICO ANNA MEYER ETS",
+      "reg": "TOSCANA",
+      "pr": "FI",
+      "muni": "FIRENZE",
+      "cats": [
+        "ets"
+      ],
+      "ch": 192948,
+      "expC": 568459274,
+      "genC": 30345367,
+      "u100C": 652543,
+      "totC": 599457184
+    },
+    {
+      "rank": 11,
+      "cf": "97298700150",
+      "name": "FONDAZIONE UMBERTO VERONESI - ETS",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ets",
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 110646,
+      "expC": 413460078,
+      "genC": 150685813,
+      "u100C": 67876,
+      "totC": 564213767
+    },
+    {
+      "rank": 12,
+      "cf": "04879781005",
+      "name": "FONDAZIONE TELETHON ETS",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "ets",
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 115083,
+      "expC": 393341293,
+      "genC": 126113620,
+      "u100C": 121620,
+      "totC": 519576533
+    },
+    {
+      "rank": 13,
+      "cf": "01561920586",
+      "name": "COMITATO ITALIANO PER L'UNICEF FONDAZIONE ETS",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "ets"
+      ],
+      "ch": 128000,
+      "expC": 481263499,
+      "genC": 20130849,
+      "u100C": 432891,
+      "totC": 501827239
+    },
+    {
+      "rank": 14,
+      "cf": "00577500101",
+      "name": "ISTITUTO GIANNINA GASLINI",
+      "reg": "LIGURIA",
+      "pr": "GE",
+      "muni": "GENOVA",
+      "cats": [
+        "ricerca_sanitaria"
+      ],
+      "ch": 86285,
+      "expC": 268457152,
+      "genC": 190462081,
+      "u100C": 0,
+      "totC": 458919233
+    },
+    {
+      "rank": 15,
+      "cf": "80018230153",
+      "name": "FONDAZIONE IRCCS ISTITUTO NAZIONALE DEI TUMORI",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 73980,
+      "expC": 310117938,
+      "genC": 146337742,
+      "u100C": 365,
+      "totC": 456456045
+    },
+    {
+      "rank": 16,
+      "cf": "01229650377",
+      "name": "FONDAZIONE ANT FRANCO PANNUTI - ETS",
+      "reg": "EMILIA ROMAGNA",
+      "pr": "BO",
+      "muni": "BOLOGNA",
+      "cats": [
+        "ets",
+        "ricerca_scientifica"
+      ],
+      "ch": 113019,
+      "expC": 379056613,
+      "genC": 22513125,
+      "u100C": 367331,
+      "totC": 401937069
+    },
+    {
+      "rank": 17,
+      "cf": "04074560287",
+      "name": "ISTITUTO ONCOLOGICO VENETO I.R.C.C.S.",
+      "reg": "VENETO",
+      "pr": "PD",
+      "muni": "PADOVA",
+      "cats": [
+        "ricerca_sanitaria"
+      ],
+      "ch": 69639,
+      "expC": 224490051,
+      "genC": 153718362,
+      "u100C": 0,
+      "totC": 378208413
+    },
+    {
+      "rank": 18,
+      "cf": "07636600962",
+      "name": "OSPEDALE S. RAFFAELE S.R.L.",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 54914,
+      "expC": 239506937,
+      "genC": 109730876,
+      "u100C": 247,
+      "totC": 349238060
+    },
+    {
+      "rank": 19,
+      "cf": "00623340932",
+      "name": "CENTRO DI RIFERIMENTO ONCOLOGICO",
+      "reg": "FRIULI VENEZIA GIULIA",
+      "pr": "PN",
+      "muni": "AVIANO",
+      "cats": [
+        "ricerca_sanitaria"
+      ],
+      "ch": 68404,
+      "expC": 196420414,
+      "genC": 150992272,
+      "u100C": 0,
+      "totC": 347412686
+    },
+    {
+      "rank": 20,
+      "cf": "80403930581",
+      "name": "OSPEDALE BAMBIN GES? REGIONALE SPECIALIZZATO PEDIATRIA",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 55422,
+      "expC": 199402352,
+      "genC": 116967523,
+      "u100C": 116,
+      "totC": 316369991
+    }
+  ],
+  "anomalies": {
+    "path": "anomalies.json",
+    "bytes": 4357,
+    "sha256": "6e82c50e1ffd4aa5e8ea6d9b33d6bdefed5c2299d2532e3351661074744cbc90"
+  },
+  "shards": {
+    "names": {
+      "0-9": {
+        "path": "names/0-9.json.gz",
+        "rows": 175,
+        "bytes": 10838,
+        "sha256": "7e49c70fe43515c134327b9f85e4781e9174a265539a5b3b5e86554d5a69d6da",
+        "decodedBytes": 39431,
+        "decodedSha256": "e8166b0e43b1c0b57917ccf2c0a62a8bf2e15e210e09767a07cff18abff916b0"
+      },
+      "a": {
+        "path": "names/a.json.gz",
+        "rows": 36060,
+        "bytes": 2158787,
+        "sha256": "ecac6be19dd548c1dd843730d6b53d9766a090c0541ec0ccb91b083e9938abb6",
+        "decodedBytes": 9040221,
+        "decodedSha256": "469b377c91977a20d2ea4acfe424b6c6ae540a9c9d78096df699eb7d94fc89b4"
+      },
+      "b": {
+        "path": "names/b.json.gz",
+        "rows": 1818,
+        "bytes": 97878,
+        "sha256": "0ab7753f25ac0ca7cc239d3b0db824b943ec049d7fbe8c550b4cc5b490f258f2",
+        "decodedBytes": 406137,
+        "decodedSha256": "b67a887a55f8dde999348c635aff6a26de8f4068fe82a50fd0236c5bc906a702"
+      },
+      "c": {
+        "path": "names/c.json.gz",
+        "rows": 11677,
+        "bytes": 686115,
+        "sha256": "260c1b0405644c9d8aa75b1e5fc7734d0ab91ff8547721a1919a97f82bf74f0b",
+        "decodedBytes": 2865600,
+        "decodedSha256": "5b4b424ed9df07322e7b10513a1d4d5f9bd4d3b085d7790c68f27178199c3b6c"
+      },
+      "d": {
+        "path": "names/d.json.gz",
+        "rows": 1106,
+        "bytes": 64355,
+        "sha256": "4f512faa9d15f496caa42223b23c6815614680d2188291c1080150e8aca00b99",
+        "decodedBytes": 255805,
+        "decodedSha256": "9060ac876a70e1c6ec196b45375e742dbf85291845d8108f7babd08f15820a65"
+      },
+      "e": {
+        "path": "names/e.json.gz",
+        "rows": 1350,
+        "bytes": 79216,
+        "sha256": "8f120d07123d69348e17a54f29ec6aa69f7b92c49887f0b41944115f5698cfcf",
+        "decodedBytes": 317633,
+        "decodedSha256": "7e337e6b83805efd85d613ef0353eebb86a0040ba535e0f7a86e213aea002da0"
+      },
+      "f": {
+        "path": "names/f.json.gz",
+        "rows": 5824,
+        "bytes": 353923,
+        "sha256": "755b40b9ce52c5f6c7f100a0182794849b17fd9ac0005c3f9c5096660022eef1",
+        "decodedBytes": 1442059,
+        "decodedSha256": "82fb317922d70070fb57e4cbcf581996dcf4f07254c352df28b929bde5919c3e"
+      },
+      "g": {
+        "path": "names/g.json.gz",
+        "rows": 3352,
+        "bytes": 197396,
+        "sha256": "bbedf1be2b56b4c295d66fd422e332af2b3145fea408635077847673cebac77b",
+        "decodedBytes": 810628,
+        "decodedSha256": "aaeb2b1d48f77848ab391a880d7b59de47a840ca13c645192301a836ad78b808"
+      },
+      "h": {
+        "path": "names/h.json.gz",
+        "rows": 418,
+        "bytes": 24906,
+        "sha256": "dcecd40cbbddac62c2b41d4ebb79170626caf4b755fa65e75a5938e94949585d",
+        "decodedBytes": 96965,
+        "decodedSha256": "bb99a0978b14c6dcbf366afa4f8b98b72b58420ea60d1cd0d4a14dbe36ea528b"
+      },
+      "i": {
+        "path": "names/i.json.gz",
+        "rows": 3326,
+        "bytes": 190843,
+        "sha256": "8aa308e676c393a92dcde98ef8fb31feaa1df606db6e00ba997e6bcf22b1825b",
+        "decodedBytes": 788189,
+        "decodedSha256": "189e7d2a348b1b0057134a4d9e60c6eebfc50353803bdd76a54af9deb4fb09e3"
+      },
+      "j": {
+        "path": "names/j.json.gz",
+        "rows": 230,
+        "bytes": 14338,
+        "sha256": "2f60eead6875545fa287786cb38fe7b20bc527c3709347a62df7bbb6f1e12701",
+        "decodedBytes": 53722,
+        "decodedSha256": "671c9a016febd86104e3b8409241955c3881df118bc227e648c823f1bd64b3e3"
+      },
+      "k": {
+        "path": "names/k.json.gz",
+        "rows": 408,
+        "bytes": 23779,
+        "sha256": "d05ddc52a844da34d9886b1bf660076fb7ad2a2621e77209c23ca7165e24b76d",
+        "decodedBytes": 94837,
+        "decodedSha256": "6f99cbb2005c4d702f1aae41304a1f0f9f50ca8350b535ec52dae77347767ab2"
+      },
+      "l": {
+        "path": "names/l.json.gz",
+        "rows": 3791,
+        "bytes": 211751,
+        "sha256": "25389136d66e14048df6099b3303e1f80b87fb88b924a7c32e291510d573b98b",
+        "decodedBytes": 886204,
+        "decodedSha256": "6a2aa75306005288fe8d347d53d06cd6a1b7646afcfc0ac26fb11da57a30dc91"
+      },
+      "m": {
+        "path": "names/m.json.gz",
+        "rows": 3066,
+        "bytes": 166386,
+        "sha256": "25d9503dde70070f48575ce9f2df52f49bb37bb489057c55d32ebac24dec2fc7",
+        "decodedBytes": 691976,
+        "decodedSha256": "0d36a85121d11a3802032753f8137fb7e537d11f35ef6e4d1c199105153d1f61"
+      },
+      "n": {
+        "path": "names/n.json.gz",
+        "rows": 1504,
+        "bytes": 85443,
+        "sha256": "16dee474e85e9ee578d2db96f92dd4633654312ec341f7afb3d427387cfc296d",
+        "decodedBytes": 353458,
+        "decodedSha256": "1237db42f5dc0383f1ed3175604d9e25f5a6b91c7541c2a0f4a31409f88ec864"
+      },
+      "o": {
+        "path": "names/o.json.gz",
+        "rows": 2408,
+        "bytes": 144527,
+        "sha256": "ce344b332ea3541280b359b905728d0b4369e9f44059461c7c137f13199fb644",
+        "decodedBytes": 598255,
+        "decodedSha256": "9f0a5be940bae57d7293b1be098ddb7a78bbe55eaeb26385fccdf82ddb7b7039"
+      },
+      "p": {
+        "path": "names/p.json.gz",
+        "rows": 6034,
+        "bytes": 325510,
+        "sha256": "6a9444dd02bf8f8c1f6c51482977cd3d9baa52c2030f728daa694d30551920a8",
+        "decodedBytes": 1398238,
+        "decodedSha256": "9a01bace3cd2e2b5361f8acb7d45e442845c531737ee3874dd4460e62dca5236"
+      },
+      "q": {
+        "path": "names/q.json.gz",
+        "rows": 181,
+        "bytes": 10415,
+        "sha256": "c2cb673aadb40ae793e6383501736e03f6cebd087ea73bff34d5db6e49817bdc",
+        "decodedBytes": 40129,
+        "decodedSha256": "1e73d23685952d4aaaab943a148ba189e9476a29959647daf4add5509a03ef55"
+      },
+      "r": {
+        "path": "names/r.json.gz",
+        "rows": 1522,
+        "bytes": 84801,
+        "sha256": "5c659597f31a66e61e9db9dc803bf1b2076ee7a591a5352dd5a767e35d6ce2e3",
+        "decodedBytes": 341468,
+        "decodedSha256": "b0084816885526a6eda4845970461fd4bde91c62731c544c61b9521607579b6e"
+      },
+      "s": {
+        "path": "names/s.json.gz",
+        "rows": 5821,
+        "bytes": 337812,
+        "sha256": "ab719b799788b8e77108efe53cbc08df8660f548ba2b8783cbc7183fcb6df5ec",
+        "decodedBytes": 1388373,
+        "decodedSha256": "f41648a010f0f5315b2fed122c2a9da8668c06eca776ed0e8d3909063d13fcbb"
+      },
+      "t": {
+        "path": "names/t.json.gz",
+        "rows": 1803,
+        "bytes": 98024,
+        "sha256": "e2ef906352ce9a2fea659f927c5d6fad27ae433701b604ad2a82abecc3eb8761",
+        "decodedBytes": 405361,
+        "decodedSha256": "5941eb5bf9263ee35018fc8e077901331fb48707720f1200f40ae8522469ea9b"
+      },
+      "u": {
+        "path": "names/u.json.gz",
+        "rows": 1832,
+        "bytes": 108193,
+        "sha256": "87d577421a944b20d3c3a24bd796dca300524d561a857d308f4784249bf323fd",
+        "decodedBytes": 462571,
+        "decodedSha256": "6eba40cad0e3d7e96c866e82a72c1f594f92b4f3f433fd6aff6d06e47c261d5e"
+      },
+      "v": {
+        "path": "names/v.json.gz",
+        "rows": 1848,
+        "bytes": 103274,
+        "sha256": "bda4c1eecdb2020dc38a1505b9c7b01801f1af6fae1cfba2c563521ba78bef29",
+        "decodedBytes": 424844,
+        "decodedSha256": "8ef754a92b88bf5b59ebb27c0ae2b6ba576766ba11432bb9db68d885f0fe4439"
+      },
+      "w": {
+        "path": "names/w.json.gz",
+        "rows": 198,
+        "bytes": 12870,
+        "sha256": "b2df143cec79695f000a8d1ee8ecf7b8055bedf6e78099616426f4af7f3f8862",
+        "decodedBytes": 46441,
+        "decodedSha256": "7cb6dae57b33c0cc0c4ab10325eb4202a6e90fc98ea1bbe8e67fe1009727337c"
+      },
+      "x": {
+        "path": "names/x.json.gz",
+        "rows": 26,
+        "bytes": 1866,
+        "sha256": "bcb6749956f070c4e6691cc246cbf6d0ccd837338c7921819139f7699f86f07a",
+        "decodedBytes": 5756,
+        "decodedSha256": "9450559e71aa87eb4544d5a1d39b476f6536fdc587548dff506a8a3e23e0d91b"
+      },
+      "y": {
+        "path": "names/y.json.gz",
+        "rows": 84,
+        "bytes": 5498,
+        "sha256": "b1e85128cf41061a3b995b08bd839606e46bc8e2454ea8f5f2217ddbb6d53b0a",
+        "decodedBytes": 18809,
+        "decodedSha256": "07a9dbbfb3a49d00dcdf67821454e8c22d93050763fc4995dc976b1149df75bb"
+      },
+      "z": {
+        "path": "names/z.json.gz",
+        "rows": 197,
+        "bytes": 11162,
+        "sha256": "37272bf3b6b459c9d8a767cd11ca71d069c8b46482ec7300b70428545f6579de",
+        "decodedBytes": 42152,
+        "decodedSha256": "f378260a82da9d0769a4c491928ebe836ff9c665d756f26a57b8fd2d4d088a0a"
+      }
+    },
+    "ids": {
+      "00": {
+        "path": "ids/00.json.gz",
+        "rows": 5477,
+        "bytes": 272792,
+        "sha256": "c739f7d681688e094635605ee58b204b8f0269718a50d0451acd1a00cd6244c1",
+        "decodedBytes": 1175718,
+        "decodedSha256": "f1b071ef1c8783bb2c2e3bc858db493c5aee474ebec1a676223ca7ee90442496"
+      },
+      "01": {
+        "path": "ids/01.json.gz",
+        "rows": 4783,
+        "bytes": 298059,
+        "sha256": "4f426d62feb7a11f693e7bbe18b2d9b1c44f4d2f953158b6135eda40b857c44c",
+        "decodedBytes": 1206138,
+        "decodedSha256": "7fee404193fd9e25ffa36cc8135c9108d6110db83302dba6311b0161210cca14"
+      },
+      "02": {
+        "path": "ids/02.json.gz",
+        "rows": 4830,
+        "bytes": 299644,
+        "sha256": "e64c6077408e59b625b95fa15b1811a0df95c40fafa7442d7ceba45483ddd064",
+        "decodedBytes": 1214310,
+        "decodedSha256": "0884ae69ed0795a3343b2ff45ca2a88b49e1b92da2dcc9dc013203b9b33db6f9"
+      },
+      "03": {
+        "path": "ids/03.json.gz",
+        "rows": 2984,
+        "bytes": 183300,
+        "sha256": "4aa9e57da08c462794346eda322156092be94237cd4c05b876743ee9dbbd353a",
+        "decodedBytes": 751250,
+        "decodedSha256": "5d14c6970802d8c8c39f90cf013fec02f5f30915000e3f34336c6b084408b9fa"
+      },
+      "04": {
+        "path": "ids/04.json.gz",
+        "rows": 1636,
+        "bytes": 99090,
+        "sha256": "b33e875bc51f12336d28b4cb525fbaf96d69d540cf3a3af6e11b2e9cfca5d423",
+        "decodedBytes": 408533,
+        "decodedSha256": "e86a1a935fd0403187f3aa25bf2bec977fb04d98f4ab9eed7a9045207d9378ea"
+      },
+      "05": {
+        "path": "ids/05.json.gz",
+        "rows": 849,
+        "bytes": 50946,
+        "sha256": "cd8d9c731e7a8f3b988b2620f950d750eb3ed697d2f009450676098f41f0c8d9",
+        "decodedBytes": 211448,
+        "decodedSha256": "f3161e6a429a67aa8e16e65bf8859cfd8062e2814c4936900f606b5488f2667f"
+      },
+      "06": {
+        "path": "ids/06.json.gz",
+        "rows": 576,
+        "bytes": 34992,
+        "sha256": "48b2905ee3ed5ab9588c5f084fd94884a18ca6558bc492a732adfed42ae43808",
+        "decodedBytes": 141934,
+        "decodedSha256": "dd9f476eab935140ff0bea87e0ad3a997243669c9314c4ed2d83cd99aeab9a61"
+      },
+      "07": {
+        "path": "ids/07.json.gz",
+        "rows": 512,
+        "bytes": 31412,
+        "sha256": "e5df056341ec22123e4510bc8380bfaef68af43bf8077f4a38162dfc81c2a1d7",
+        "decodedBytes": 127573,
+        "decodedSha256": "6aedede624d2571f1d6eac8502035d390c7753303d476befd59dc9f5dd05c7d0"
+      },
+      "08": {
+        "path": "ids/08.json.gz",
+        "rows": 420,
+        "bytes": 25939,
+        "sha256": "23359b29e60c99576f3d70310d0fa9cdee9235f1a7bc1b448affa1685d9945bf",
+        "decodedBytes": 106479,
+        "decodedSha256": "2710b4f61559d7945f4a46810e33bd5ea1c88c5959ebf0aac39dc9a63cd9aba6"
+      },
+      "09": {
+        "path": "ids/09.json.gz",
+        "rows": 287,
+        "bytes": 18047,
+        "sha256": "eba908b3f7c0a4f2a4978a32d586f67625604694633f3553045ce3572d1222d9",
+        "decodedBytes": 71376,
+        "decodedSha256": "7889e22c7e9e8c5252458c7db5d40caa3b0fdf05f34fa06510354e75dc9989b9"
+      },
+      "10": {
+        "path": "ids/10.json.gz",
+        "rows": 266,
+        "bytes": 16685,
+        "sha256": "1b4206ccd6061a891c7d874ff285ef017d4dc0dcd9eee5ad33238c54f99428c3",
+        "decodedBytes": 65884,
+        "decodedSha256": "97ce0f5f1c41e0419780547a2b259cb04650ecc2de729c1e1a2afa3143f851f0"
+      },
+      "11": {
+        "path": "ids/11.json.gz",
+        "rows": 300,
+        "bytes": 18851,
+        "sha256": "d76eb58bcb2fd4741ba8a4218813ede6642eab325043be3eeb2e8d778ae4e45a",
+        "decodedBytes": 77570,
+        "decodedSha256": "b90d56c04f37c7f87a1d509291e882dd6af9eba82685dc18fbdb0f9ce37fa167"
+      },
+      "12": {
+        "path": "ids/12.json.gz",
+        "rows": 288,
+        "bytes": 17485,
+        "sha256": "ec1cb1a4c1a057441b3ad911225d150e4c82b670b0a498925e0dd242925f7004",
+        "decodedBytes": 71342,
+        "decodedSha256": "31906f26c5b7002cb49a5938681b39ba4f4210d28d86a0eceef32872038acff6"
+      },
+      "13": {
+        "path": "ids/13.json.gz",
+        "rows": 171,
+        "bytes": 10701,
+        "sha256": "6aa8a5e964d1a99924f04201785b447b1bb878245f473460af09ea9ed4c03a3b",
+        "decodedBytes": 41415,
+        "decodedSha256": "b6d642aa67dcf85dfc821ce5c3b2f558e1ee2b5488e79e630937852b307c3d17"
+      },
+      "14": {
+        "path": "ids/14.json.gz",
+        "rows": 44,
+        "bytes": 3065,
+        "sha256": "fac3c0ad77aa273fe7c3ad085e15543a00c9e6ab928ff571bd70ebd47d013bae",
+        "decodedBytes": 10527,
+        "decodedSha256": "eb38aba549541fabe90722e1e0aa4aa0dab8af2e8bb04e4acd594575c67beeb5"
+      },
+      "15": {
+        "path": "ids/15.json.gz",
+        "rows": 54,
+        "bytes": 3499,
+        "sha256": "669895e07795323a411bbde54408f2c609a94d57ff8b11246fe44f9b379bed9d",
+        "decodedBytes": 12795,
+        "decodedSha256": "8020aff318f2fa8288ee8060d69ebbea05c24a275b7b65dc313d27f249d18e90"
+      },
+      "16": {
+        "path": "ids/16.json.gz",
+        "rows": 71,
+        "bytes": 4473,
+        "sha256": "6e04d8be3086ca367dacfb657e41cd406b866a269840c4aca04a1e3e38b42f51",
+        "decodedBytes": 16680,
+        "decodedSha256": "dabb019ff87e195f90c3d9d134b3bba19bb2e3e57b5a97ad724ce97c43a4a799"
+      },
+      "17": {
+        "path": "ids/17.json.gz",
+        "rows": 58,
+        "bytes": 3669,
+        "sha256": "55e4e2545444b9b7b929cb444225b6b6f42e8de78a74f805d7f7cb3977e8a9ff",
+        "decodedBytes": 13188,
+        "decodedSha256": "a413ea11a9d9a0e97329fb0d1501c6b58629c8a274512abcf2b673cb1973b7d4"
+      },
+      "18": {
+        "path": "ids/18.json.gz",
+        "rows": 2,
+        "bytes": 317,
+        "sha256": "c3db08ecfc886f284d684694ddd757192d0bfc2058770a0519b3823a39a80103",
+        "decodedBytes": 509,
+        "decodedSha256": "584e65cfd87ad3580bfca20df5244c6159c46d4a4eba3587ad7e036ea77a7aab"
+      },
+      "80": {
+        "path": "ids/80.json.gz",
+        "rows": 3846,
+        "bytes": 227043,
+        "sha256": "4284e27151b584fdbca373b523af494672116f405fd1a1fd354960319cfe2f1d",
+        "decodedBytes": 930386,
+        "decodedSha256": "4bd03bf6782ca938fc5cacf73a5a53bff08efecce119881de4f5611717721482"
+      },
+      "81": {
+        "path": "ids/81.json.gz",
+        "rows": 1237,
+        "bytes": 65741,
+        "sha256": "cb4186aca31f81e862eae6c5e947ec746dd00cf3397f11cea3c258cb8e0c02c4",
+        "decodedBytes": 283210,
+        "decodedSha256": "d9f392e04bdc3e7dad445e3f67fbce870a2ef73722bf1bbc57fb2f97d79083d4"
+      },
+      "82": {
+        "path": "ids/82.json.gz",
+        "rows": 1083,
+        "bytes": 57495,
+        "sha256": "295a345f25de7ddd26918309b557801020078f9be6a2c5df31d8ea0d17f6c4e1",
+        "decodedBytes": 244863,
+        "decodedSha256": "5d5a20f529b189b9c82c50ba6ed1e69e99f021c43d090a4ad6dd5d8031e58fc2"
+      },
+      "83": {
+        "path": "ids/83.json.gz",
+        "rows": 685,
+        "bytes": 35755,
+        "sha256": "5afd78b4117c4c5aaa1aa350f92504db517cc852f78f33860673a7ab879e1f81",
+        "decodedBytes": 152419,
+        "decodedSha256": "66fbc48fe1a92f69a9484cde2850c4733011510b2b4255fed1c3898ab419455e"
+      },
+      "84": {
+        "path": "ids/84.json.gz",
+        "rows": 482,
+        "bytes": 24665,
+        "sha256": "01c5b09d303592041ea07d338435a81b837e4894e6ba180ba4d23c72cecf2e53",
+        "decodedBytes": 105499,
+        "decodedSha256": "4da4c6fdf053dc1b7de43d862822735394476e517102025dc371941ca4c9a4e7"
+      },
+      "85": {
+        "path": "ids/85.json.gz",
+        "rows": 279,
+        "bytes": 15134,
+        "sha256": "096e024eca0b9a787e5a629c827eff1ae8e8ae8e92fcfbccce845af928562383",
+        "decodedBytes": 63602,
+        "decodedSha256": "55c9537622228640f887a161da5f4ae6e876075432a7b7ccad2af268440ff607"
+      },
+      "86": {
+        "path": "ids/86.json.gz",
+        "rows": 208,
+        "bytes": 11530,
+        "sha256": "edc43d12732490ae8da27e67a07b3ac634e0b00c8e509ab9f9004adfda224c1e",
+        "decodedBytes": 47028,
+        "decodedSha256": "525dd9479d0a3082d78303f65da9fc99a90c015c3dc2bf32e388c4e507a127e0"
+      },
+      "87": {
+        "path": "ids/87.json.gz",
+        "rows": 74,
+        "bytes": 4393,
+        "sha256": "2ddf2fd747d48dd080a8633b4631ee966fdb0cfc604dbdf31026c9d7c5993f99",
+        "decodedBytes": 16221,
+        "decodedSha256": "e39cf14f29e264e9be481df06c16bd7f5f8085e67ab45c364485c8b22a533aa8"
+      },
+      "88": {
+        "path": "ids/88.json.gz",
+        "rows": 26,
+        "bytes": 1751,
+        "sha256": "670a3bd664fe3440e3e96df9e140d15ceea04568228a62f2b1f61c71477bb813",
+        "decodedBytes": 5831,
+        "decodedSha256": "b6d479a537a320ef0980ebd4473d3f5a7680a7ad8cfeea33b56eea8b76fcf17c"
+      },
+      "90": {
+        "path": "ids/90.json.gz",
+        "rows": 9783,
+        "bytes": 592262,
+        "sha256": "b5880c1892f2c54c374f25524dbf3dde50a6caadbd14637f147510d3c425bb82",
+        "decodedBytes": 2394633,
+        "decodedSha256": "c448c0bdc3ee2968a61adc7db8449276168602dc5dff22c29e63a491ffeb12b8"
+      },
+      "91": {
+        "path": "ids/91.json.gz",
+        "rows": 10720,
+        "bytes": 649926,
+        "sha256": "889debca3bb7a9ba711e1c23c34cfca8a4b8fe4069343448ba548036f9474360",
+        "decodedBytes": 2645485,
+        "decodedSha256": "f154ef828396d12da50c1e2232a65691a97ef81e753a43472b5ea042f672d0c0"
+      },
+      "92": {
+        "path": "ids/92.json.gz",
+        "rows": 10667,
+        "bytes": 645617,
+        "sha256": "c2ed4be08588bc6f2f425dfcf1eaef31e6d48a11c5cc8217712b85f68296862b",
+        "decodedBytes": 2607712,
+        "decodedSha256": "0e28b94fe1ad9802afdeda1dfeb6d557ea3f234bddc9af2ba3346e88b23cd286"
+      },
+      "93": {
+        "path": "ids/93.json.gz",
+        "rows": 8576,
+        "bytes": 514051,
+        "sha256": "24ad59676612c68485448596a47bbfcc01106116982d21c207f44a4d4688d0d1",
+        "decodedBytes": 2088352,
+        "decodedSha256": "12f85bf7ae2b6a47880c0bcb23ba80aae9e8ba031354800f9f1e5bc12c70ff2b"
+      },
+      "94": {
+        "path": "ids/94.json.gz",
+        "rows": 6924,
+        "bytes": 418065,
+        "sha256": "af3ad8f729c3ff01947887ab0d3d4b1d0753dd9ddb4f4852a94597def568f329",
+        "decodedBytes": 1709613,
+        "decodedSha256": "64b5acd49a2c344c35458fa1d21ddabc78253e5ff211202f2baaa36cff6fc4c8"
+      },
+      "95": {
+        "path": "ids/95.json.gz",
+        "rows": 4715,
+        "bytes": 274441,
+        "sha256": "5f1bae4b6d67c3ef68fc95183f28f84306e885cf0cf0d8318fe23ab26f49bed2",
+        "decodedBytes": 1136699,
+        "decodedSha256": "cfc7e179e2fc8dc953e2530c5ed3d8d789f8400e1a1f383b06c0a36f83f39b3b"
+      },
+      "96": {
+        "path": "ids/96.json.gz",
+        "rows": 3661,
+        "bytes": 206772,
+        "sha256": "b8f1937d82140b68c29a1130822d662a36cb9d553a0836402a6026e420ee5be1",
+        "decodedBytes": 881064,
+        "decodedSha256": "7f4bcf1cee70047f2de2e27b54a06b55bd7b89fc72fcb44311fd4741e8caae15"
+      },
+      "97": {
+        "path": "ids/97.json.gz",
+        "rows": 8400,
+        "bytes": 482374,
+        "sha256": "815763be6697b3e61bcbf78471e1fb83ce44731e1c0773de0708267c4bcf5412",
+        "decodedBytes": 2009647,
+        "decodedSha256": "907507cd584a41e023ef919678d201d1da430a0ce6166114a9d18bc7055081ca"
+      },
+      "98": {
+        "path": "ids/98.json.gz",
+        "rows": 1065,
+        "bytes": 61015,
+        "sha256": "4cfb49cfee7c5177aa3988e098380b06619d188ce7d50fba05270efd1ad0b9c9",
+        "decodedBytes": 263217,
+        "decodedSha256": "48a2b54258c6b125b4de1a44d8355eed342a71d7eae91d408f1a3d7cb4dcaf06"
+      },
+      "99": {
+        "path": "ids/99.json.gz",
+        "rows": 20,
+        "bytes": 1845,
+        "sha256": "4441d151afdc43b62b1e5eab13df6d0de837f7d9ed3867d7bf642bbf953d9834",
+        "decodedBytes": 5123,
+        "decodedSha256": "729217eb064ae54b4bfb5fd7bededd5d03946297d8f68c1a2e62633092c2e980"
+      }
+    }
+  }
+}
