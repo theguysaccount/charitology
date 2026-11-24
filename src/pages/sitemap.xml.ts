@@ -2,8 +2,16 @@ import type { APIRoute } from 'astro';
 import { allPages } from '../lib/pages';
 import { absolute } from '../lib/site';
 
+const EXCLUDED_FROM_SITEMAP = new Set(['/search/', '/404/', '/browser-data/']);
+
 export const GET: APIRoute = async ({ site }) => {
-  const paths = [...new Set((await allPages()).map((p) => p.path).filter((p) => !p.includes('#')))];
+  const paths = [
+    ...new Set(
+      (await allPages())
+        .map((p) => p.path)
+        .filter((p) => !p.includes('#') && !EXCLUDED_FROM_SITEMAP.has(p)),
+    ),
+  ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${paths.map((p) => `  <url><loc>${absolute(p, site)}</loc></url>`).join('\n')}

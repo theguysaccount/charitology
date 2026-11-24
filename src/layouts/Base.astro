@@ -8,6 +8,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE, url } from '../lib/site';
 import { pageIdentity, type SymbolName } from '../lib/site-identities';
+import { buildStructuredData, type BreadcrumbInput } from '../lib/structured-data';
 
 interface Props {
   title?: string;
@@ -16,13 +17,24 @@ interface Props {
   /** Exclude this page from site search (search results page, 404). */
   nosearch?: boolean;
   identitySymbol?: SymbolName;
+  crumbs?: BreadcrumbInput[];
 }
 
-const { title, description = SITE.description, noindex = false, nosearch = false, identitySymbol } = Astro.props;
+const { title, description = SITE.description, noindex = false, nosearch = false, identitySymbol, crumbs } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name}: ${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const sitePath = Astro.url.pathname.slice(url('/').length - 1);
 const identity = pageIdentity(sitePath);
+const structuredData = noindex
+  ? []
+  : buildStructuredData({
+      sitePath,
+      canonical: canonical.toString(),
+      site: Astro.site,
+      title,
+      description,
+      crumbs,
+    });
 const ogImage = new URL(url('/og.jpg'), Astro.site);
 const ogImageAlt = 'Charitology: the science of doing the most good. A compass points through an open C, beside a diagram of charity as a system and its five depths: relief, repair, prevention, structure and source.';
 // The brand introduction complements the home page; articles keep their own title and description.
@@ -86,6 +98,11 @@ const ogVideo = Astro.url.pathname === url('/')
       } catch {}
     </script>
     <link rel="stylesheet" href={url('/site-identities.css')} />
+    {
+      structuredData.map((node) => (
+        <script type="application/ld+json" set:html={JSON.stringify(node).replace(/</g, '\\u003c')} />
+      ))
+    }
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

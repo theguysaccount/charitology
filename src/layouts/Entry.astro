@@ -36,7 +36,7 @@ const outline = hasTool ? [...destinations, ...articleSections] : [...articleSec
 if (hasTool && destinations.length === 0) outline.unshift({ slug: 'working-tool', text: 'Open the tool', symbol: 'bolt' });
 ---
 
-<Base title={title} description={description ?? summary} identitySymbol={identitySymbol}>
+<Base title={title} description={description ?? summary} identitySymbol={identitySymbol} crumbs={crumbs}>
   <header class="page-head">
     <div class="wrap">
       {crumbs && <Crumbs items={crumbs} />}

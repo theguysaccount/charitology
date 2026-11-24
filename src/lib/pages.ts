@@ -9,6 +9,11 @@ import newsletter from "../data/newsletter.json";
 import { getCollection, type CollectionKey } from "astro:content";
 import { STATIC_PAGES, hrefFor } from "./content";
 import { loadPublicationEditions } from "./publication-editions";
+import {
+  FUNDING_FLOW_GROUPS,
+  GLOBAL_CHARITY_INDEX_PANELS,
+  US_ADDITIONAL_EDITIONS,
+} from "./global-index-catalog";
 
 export interface PageInfo {
   path: string;
@@ -107,5 +112,86 @@ export async function allPages(): Promise<PageInfo[]> {
       title: `Observation source: ${pin.id}, version ${pin.version}`,
       section: "Observation sources",
     });
+
+  // Global Charity Index coverage, all published jurisdictions, and additional U.S. Form 990 editions
+  pages.push({
+    path: "/record/charity-index/coverage/",
+    title: "Global Charity Index coverage",
+    summary: `Coverage, identifiers, periods and boundaries across all ${GLOBAL_CHARITY_INDEX_PANELS.length} published charity registry jurisdictions.`,
+    section: "Global Charity Index",
+  });
+  for (const panel of GLOBAL_CHARITY_INDEX_PANELS) {
+    pages.push({
+      path: panel.route,
+      title: `${panel.name}: ${panel.source}`,
+      summary: panel.coverage,
+      ...(panel.date && /^\d{4}-\d{2}-\d{2}$/.test(panel.date) ? { date: new Date(panel.date) } : {}),
+      section: "Global Charity Index",
+    });
+  }
+  for (const edition of US_ADDITIONAL_EDITIONS) {
+    pages.push({
+      path: edition.route,
+      title: `United States Form ${edition.form} financial extracts`,
+      section: "Global Charity Index",
+    });
+  }
+
+  // All published Funding Flows lookups and case studies
+  pages.push({
+    path: "/record/funding-flows/",
+    title: "Public funding flows and case studies",
+    summary: "Trace grants, tax-assignment designations, humanitarian plan gaps and local delivery records across published public datasets.",
+    section: "Funding flows",
+  });
+  for (const group of FUNDING_FLOW_GROUPS) {
+    for (const item of group.items) {
+      pages.push({
+        path: `/record/funding-flows/${item.slug}/`,
+        title: `${item.title} (${item.scope})`,
+        summary: item.summary,
+        section: "Funding flows",
+      });
+    }
+  }
+
+  // Additional published static & guide routes across Disasters, For Charities, Learn, Newsletter & Tools
+  const additionalRoutes: [string, string, string][] = [
+    ["/disasters/", "Disaster Desk", "Disasters"],
+    ["/disasters/2024-2026-emergencies/", "2024–2026 OpenFEMA Federal Disaster Captures", "Disasters"],
+    ["/for-charities/start/", "Start here for charities", "For charities"],
+    ["/for-charities/fundraising/", "Fundraising guides for charities", "For charities"],
+    ["/for-charities/fundraising/email-appeals/", "Email appeals for charities", "For charities"],
+    ["/for-charities/fundraising/paid-ads/", "Paid ads for charities", "For charities"],
+    ["/for-charities/fundraising/fundraising-events/", "Fundraising events for charities", "For charities"],
+    ["/for-charities/fundraising/recurring-giving/", "Recurring giving for charities", "For charities"],
+    ["/for-charities/fundraising/peer-to-peer/", "Peer-to-peer fundraising for charities", "For charities"],
+    ["/for-charities/fundraising/major-gifts/", "Major gifts for charities", "For charities"],
+    ["/for-charities/fundraising/grants/", "Grants for charities", "For charities"],
+    ["/for-charities/fundraising/direct-mail/", "Direct mail for charities", "For charities"],
+    ["/for-charities/fundraising/corporate-partnerships/", "Corporate partnerships for charities", "For charities"],
+    ["/for-charities/fundraising/donor-follow-up/", "Donor follow-up for charities", "For charities"],
+    ["/for-charities/networks/", "Charity networks directory", "For charities"],
+    ["/for-charities/networks/founder-networks/", "Founder networks for charities", "For charities"],
+    ["/for-charities/networks/leadership-networks/", "Leadership networks for charities", "For charities"],
+    ["/for-charities/networks/sector-networks/", "Sector networks for charities", "For charities"],
+    ["/for-charities/collaborate/", "Collaborate with Charitology", "For charities"],
+    ["/for-charities/website-pilots/", "Charity website pilots", "For charities"],
+    ["/for-charities/os-plan/", "Charity OS research and architecture plan", "For charities"],
+    ["/learn/", "Teach and learn Charitology", "Learn"],
+    ["/learn/teach/", "Teach a 50-minute session", "Learn"],
+    ["/learn/schools/", "Charitology for schools", "Learn"],
+    ["/learn/universities/", "Charitology for universities", "Learn"],
+    ["/learn/clubs/", "Charitology clubs", "Learn"],
+    ["/newsletter/", "The Charitology Letter", "Newsletter"],
+    ["/newsletter/privacy/", "Newsletter privacy policy", "Newsletter"],
+    ["/tools/browser-extension/compatibility/", "Before You Give: browser compatibility", "Tools"],
+    ["/tools/cost-effectiveness-model-kit/spreadsheet/", "Cost-effectiveness model kit spreadsheet guide", "Tools"],
+    ["/tools/giving-dashboard/estimate/", "Giving Dashboard: conditional gift estimate", "Tools"],
+  ];
+  for (const [path, title, section] of additionalRoutes) {
+    pages.push({ path, title, section });
+  }
+
   return pages;
 }
