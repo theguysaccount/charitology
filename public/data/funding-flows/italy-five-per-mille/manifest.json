@@ -1,0 +1,642 @@
+{
+  "format": "charitology-italy-5xmille-flow-v1",
+  "jurisdiction": "IT",
+  "fiscalYear": 2025,
+  "publisher": "Agenzia delle Entrate (Italian Revenue Agency)",
+  "asOf": "2026-11-05",
+  "capturedOn": "2026-11-23",
+  "catalogue": "https://www.agenziaentrate.gov.it/portale/elenco-complessivo-degli-enti-ammessi-in-una-o-pi%C3%B9-categorie-di-beneficiari1",
+  "counts": {
+    "includedOrganizations": 96059,
+    "nonMunicipalOrganizations": 88310,
+    "municipalOnlyEntities": 7749,
+    "fundedOrganizations": 76713,
+    "zeroPayoutOrganizations": 19346,
+    "subThresholdOrganizations": 8216,
+    "zeroChoiceOrganizations": 11130,
+    "validatedCodiceFiscale": 96059,
+    "invalidCodiceFiscale": 0,
+    "leadingZeroCodiceFiscale": 22354,
+    "multiCategoryOrganizations": 537,
+    "unflaggedCategoryOrganizations": 2023,
+    "regionsCovered": 20,
+    "totalChoices": 15562797,
+    "expressedEurCents": 52050594042,
+    "genericEurCents": 8215196926,
+    "under100RedistEurCents": 44187112,
+    "totalDisbursableEurCents": 60309978080,
+    "avgTotalEurPerChoiceCents": 3875,
+    "avgExpressedEurPerChoiceCents": 3345,
+    "top10SharePct": 28.76,
+    "top50SharePct": 44.2,
+    "top250SharePct": 56.03,
+    "byCategory": {
+      "ets": 70913,
+      "asd": 14914,
+      "comuni": 7904,
+      "onlus_unflagged": 2023,
+      "ricerca_scientifica": 485,
+      "beni_culturali": 237,
+      "ricerca_sanitaria": 107,
+      "aree_protette": 24
+    }
+  },
+  "categories": [
+    {
+      "key": "ets",
+      "sourceLabel": "ETS",
+      "labelEn": "Third Sector Entities (Enti del Terzo Settore / RUNTS)",
+      "entities": 70913,
+      "fundedEntities": 54490,
+      "choices": 12582095,
+      "expressedEurCents": 41188588958,
+      "genericEurCents": 5240996171,
+      "under100EurCents": 34988255,
+      "totalEurCents": 46464573384
+    },
+    {
+      "key": "asd",
+      "sourceLabel": "ASD",
+      "labelEn": "Amateur Sports Associations (Associazioni Sportive Dilettantistiche)",
+      "entities": 14914,
+      "fundedEntities": 12272,
+      "choices": 582374,
+      "expressedEurCents": 1904652866,
+      "genericEurCents": 266323654,
+      "under100EurCents": 7379949,
+      "totalEurCents": 2178356469
+    },
+    {
+      "key": "comuni",
+      "sourceLabel": "Comuni",
+      "labelEn": "Municipal Social Activities (Comuni)",
+      "entities": 7904,
+      "fundedEntities": 7717,
+      "choices": 538251,
+      "expressedEurCents": 1706848314,
+      "genericEurCents": 513097,
+      "under100EurCents": 772,
+      "totalEurCents": 1707362183
+    },
+    {
+      "key": "onlus_unflagged",
+      "sourceLabel": "Senza flag categoria (ONLUS in transizione)",
+      "labelEn": "Admitted without category X flag (primarily transitional ONLUS)",
+      "entities": 2023,
+      "fundedEntities": 1928,
+      "choices": 570298,
+      "expressedEurCents": 2326896125,
+      "genericEurCents": 89669745,
+      "under100EurCents": 1928250,
+      "totalEurCents": 2418494120
+    },
+    {
+      "key": "ricerca_scientifica",
+      "sourceLabel": "Ricerca scientifica",
+      "labelEn": "Scientific Research & Universities",
+      "entities": 485,
+      "fundedEntities": 476,
+      "choices": 3675598,
+      "expressedEurCents": 12530965683,
+      "genericEurCents": 4718605265,
+      "under100EurCents": 2958081,
+      "totalEurCents": 17252529029
+    },
+    {
+      "key": "beni_culturali",
+      "sourceLabel": "Beni culturali e paesaggistici",
+      "labelEn": "Cultural & Landscape Heritage",
+      "entities": 237,
+      "fundedEntities": 208,
+      "choices": 104032,
+      "expressedEurCents": 364371694,
+      "genericEurCents": 141423344,
+      "under100EurCents": 120934,
+      "totalEurCents": 505915972
+    },
+    {
+      "key": "ricerca_sanitaria",
+      "sourceLabel": "Ricerca sanitaria",
+      "labelEn": "Health & Biomedical Research",
+      "entities": 107,
+      "fundedEntities": 107,
+      "choices": 3544054,
+      "expressedEurCents": 11988730889,
+      "genericEurCents": 5707948371,
+      "under100EurCents": 1326954,
+      "totalEurCents": 17698006214
+    },
+    {
+      "key": "aree_protette",
+      "sourceLabel": "Enti Gestori aree protette",
+      "labelEn": "Protected Natural Area Managers",
+      "entities": 24,
+      "fundedEntities": 24,
+      "choices": 4646,
+      "expressedEurCents": 15990224,
+      "genericEurCents": 61749649,
+      "under100EurCents": 7,
+      "totalEurCents": 77739880
+    }
+  ],
+  "regions": [
+    {
+      "region": "LOMBARDIA",
+      "entities": 15902,
+      "fundedEntities": 13592,
+      "choices": 4672530,
+      "totalEurCents": 21564289643
+    },
+    {
+      "region": "LAZIO",
+      "entities": 9027,
+      "fundedEntities": 6772,
+      "choices": 3196263,
+      "totalEurCents": 11398337216
+    },
+    {
+      "region": "EMILIA ROMAGNA",
+      "entities": 8245,
+      "fundedEntities": 6668,
+      "choices": 1074897,
+      "totalEurCents": 3978386905
+    },
+    {
+      "region": "PIEMONTE",
+      "entities": 8435,
+      "fundedEntities": 6886,
+      "choices": 888630,
+      "totalEurCents": 3695715072
+    },
+    {
+      "region": "VENETO",
+      "entities": 8107,
+      "fundedEntities": 6784,
+      "choices": 941229,
+      "totalEurCents": 3585210831
+    },
+    {
+      "region": "TOSCANA",
+      "entities": 6096,
+      "fundedEntities": 4822,
+      "choices": 699423,
+      "totalEurCents": 2482655897
+    },
+    {
+      "region": "LIGURIA",
+      "entities": 2405,
+      "fundedEntities": 1999,
+      "choices": 536010,
+      "totalEurCents": 2353432399
+    },
+    {
+      "region": "CAMPANIA",
+      "entities": 6022,
+      "fundedEntities": 4434,
+      "choices": 591844,
+      "totalEurCents": 1859862319
+    },
+    {
+      "region": "MARCHE",
+      "entities": 2640,
+      "fundedEntities": 2075,
+      "choices": 526450,
+      "totalEurCents": 1801993182
+    },
+    {
+      "region": "PUGLIA",
+      "entities": 5454,
+      "fundedEntities": 4133,
+      "choices": 591740,
+      "totalEurCents": 1651652759
+    },
+    {
+      "region": "SICILIA",
+      "entities": 5998,
+      "fundedEntities": 4524,
+      "choices": 557130,
+      "totalEurCents": 1516949087
+    },
+    {
+      "region": "FRIULI VENEZIA GIULIA",
+      "entities": 2620,
+      "fundedEntities": 2182,
+      "choices": 252545,
+      "totalEurCents": 1038740643
+    },
+    {
+      "region": "TRENTINO-ALTO ADIGE/SUEDTIROL",
+      "entities": 3557,
+      "fundedEntities": 2950,
+      "choices": 252516,
+      "totalEurCents": 996870948
+    },
+    {
+      "region": "CALABRIA",
+      "entities": 3048,
+      "fundedEntities": 2228,
+      "choices": 204936,
+      "totalEurCents": 577154990
+    },
+    {
+      "region": "SARDEGNA",
+      "entities": 2555,
+      "fundedEntities": 2075,
+      "choices": 159718,
+      "totalEurCents": 485699430
+    },
+    {
+      "region": "ABRUZZO",
+      "entities": 2187,
+      "fundedEntities": 1693,
+      "choices": 153449,
+      "totalEurCents": 466800513
+    },
+    {
+      "region": "UMBRIA",
+      "entities": 1664,
+      "fundedEntities": 1266,
+      "choices": 136570,
+      "totalEurCents": 457506073
+    },
+    {
+      "region": "BASILICATA",
+      "entities": 1062,
+      "fundedEntities": 804,
+      "choices": 65537,
+      "totalEurCents": 187760595
+    },
+    {
+      "region": "MOLISE",
+      "entities": 662,
+      "fundedEntities": 502,
+      "choices": 41497,
+      "totalEurCents": 141375023
+    },
+    {
+      "region": "VALLE D'AOSTA",
+      "entities": 373,
+      "fundedEntities": 324,
+      "choices": 19883,
+      "totalEurCents": 69584555
+    }
+  ],
+  "top20": [
+    {
+      "rank": 1,
+      "cf": "80051890152",
+      "name": "FONDAZIONE AIRC PER LA RICERCA SUL CANCRO ETS",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ets",
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 1802357,
+      "expC": 5832404022,
+      "genC": 2439141872,
+      "u100C": 906314,
+      "totC": 8272452208
+    },
+    {
+      "rank": 2,
+      "cf": "97519070011",
+      "name": "FONDAZIONE PIEMONTESE PER LA RICERCA SUL CANCRO ETS",
+      "reg": "PIEMONTE",
+      "pr": "TO",
+      "muni": "CANDIOLO",
+      "cats": [
+        "ets",
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 286934,
+      "expC": 873869310,
+      "genC": 557451552,
+      "u100C": 95948,
+      "totC": 1431416810
+    },
+    {
+      "rank": 3,
+      "cf": "97147110155",
+      "name": "EMERGENCY - LIFE SUPPORT FOR CIVILIAN WAR VICTIMS - ONG ETS IN BREVE EMERGENCY ONG ETS",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ets"
+      ],
+      "ch": 318543,
+      "expC": 1292921135,
+      "genC": 50097424,
+      "u100C": 1077273,
+      "totC": 1344095832
+    },
+    {
+      "rank": 4,
+      "cf": "80003150424",
+      "name": "FONDAZIONE LEGA DEL FILO D'ORO - E.T.S. - ENTE FILANTROPICO",
+      "reg": "MARCHE",
+      "pr": "AN",
+      "muni": "OSIMO",
+      "cats": [
+        "ets"
+      ],
+      "ch": 308173,
+      "expC": 1080077985,
+      "genC": 48467062,
+      "u100C": 1042230,
+      "totC": 1129587277
+    },
+    {
+      "rank": 5,
+      "cf": "80102390582",
+      "name": "AIL - ASSOCIAZIONE ITALIANA CONTRO LE LEUCEMIE-LINFOMI E MIELOMA ENTE DEL TERZO SETTORE",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "ets",
+        "ricerca_scientifica"
+      ],
+      "ch": 264635,
+      "expC": 892852383,
+      "genC": 127090067,
+      "u100C": 626306,
+      "totC": 1020568756
+    },
+    {
+      "rank": 6,
+      "cf": "08691440153",
+      "name": "ISTITUTO EUROPEO DI ONCOLOGIA S.R.L.",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ricerca_sanitaria"
+      ],
+      "ch": 144582,
+      "expC": 630769612,
+      "genC": 319144563,
+      "u100C": 0,
+      "totC": 949914175
+    },
+    {
+      "rank": 7,
+      "cf": "97096120585",
+      "name": "MEDICI SENZA FRONTIERE ONLUS",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "onlus_unflagged"
+      ],
+      "ch": 210939,
+      "expC": 910309200,
+      "genC": 33174852,
+      "u100C": 713388,
+      "totC": 944197440
+    },
+    {
+      "rank": 8,
+      "cf": "95051730109",
+      "name": "FONDAZIONE ITALIANA SCLEROSI MULTIPLA ENTE DEL TERZO SETTORE/ETS",
+      "reg": "LIGURIA",
+      "pr": "GE",
+      "muni": "GENOVA",
+      "cats": [
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 182438,
+      "expC": 583786026,
+      "genC": 276880541,
+      "u100C": 2708,
+      "totC": 860669275
+    },
+    {
+      "rank": 9,
+      "cf": "97227450158",
+      "name": "SAVE THE CHILDREN ITALIA ETS",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "ets"
+      ],
+      "ch": 181359,
+      "expC": 763440042,
+      "genC": 28522739,
+      "u100C": 613350,
+      "totC": 792576131
+    },
+    {
+      "rank": 10,
+      "cf": "94080470480",
+      "name": "FONDAZIONE DELL'OSPEDALE PEDIATRICO ANNA MEYER ETS",
+      "reg": "TOSCANA",
+      "pr": "FI",
+      "muni": "FIRENZE",
+      "cats": [
+        "ets"
+      ],
+      "ch": 192948,
+      "expC": 568459274,
+      "genC": 30345367,
+      "u100C": 652543,
+      "totC": 599457184
+    },
+    {
+      "rank": 11,
+      "cf": "97298700150",
+      "name": "FONDAZIONE UMBERTO VERONESI - ETS",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ets",
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 110646,
+      "expC": 413460078,
+      "genC": 150685813,
+      "u100C": 67876,
+      "totC": 564213767
+    },
+    {
+      "rank": 12,
+      "cf": "04879781005",
+      "name": "FONDAZIONE TELETHON ETS",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "ets",
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 115083,
+      "expC": 393341293,
+      "genC": 126113620,
+      "u100C": 121620,
+      "totC": 519576533
+    },
+    {
+      "rank": 13,
+      "cf": "01561920586",
+      "name": "COMITATO ITALIANO PER L'UNICEF FONDAZIONE ETS",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "ets"
+      ],
+      "ch": 128000,
+      "expC": 481263499,
+      "genC": 20130849,
+      "u100C": 432891,
+      "totC": 501827239
+    },
+    {
+      "rank": 14,
+      "cf": "00577500101",
+      "name": "ISTITUTO GIANNINA GASLINI",
+      "reg": "LIGURIA",
+      "pr": "GE",
+      "muni": "GENOVA",
+      "cats": [
+        "ricerca_sanitaria"
+      ],
+      "ch": 86285,
+      "expC": 268457152,
+      "genC": 190462081,
+      "u100C": 0,
+      "totC": 458919233
+    },
+    {
+      "rank": 15,
+      "cf": "80018230153",
+      "name": "FONDAZIONE IRCCS ISTITUTO NAZIONALE DEI TUMORI",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 73980,
+      "expC": 310117938,
+      "genC": 146337742,
+      "u100C": 365,
+      "totC": 456456045
+    },
+    {
+      "rank": 16,
+      "cf": "01229650377",
+      "name": "FONDAZIONE ANT FRANCO PANNUTI - ETS",
+      "reg": "EMILIA ROMAGNA",
+      "pr": "BO",
+      "muni": "BOLOGNA",
+      "cats": [
+        "ets",
+        "ricerca_scientifica"
+      ],
+      "ch": 113019,
+      "expC": 379056613,
+      "genC": 22513125,
+      "u100C": 367331,
+      "totC": 401937069
+    },
+    {
+      "rank": 17,
+      "cf": "04074560287",
+      "name": "ISTITUTO ONCOLOGICO VENETO I.R.C.C.S.",
+      "reg": "VENETO",
+      "pr": "PD",
+      "muni": "PADOVA",
+      "cats": [
+        "ricerca_sanitaria"
+      ],
+      "ch": 69639,
+      "expC": 224490051,
+      "genC": 153718362,
+      "u100C": 0,
+      "totC": 378208413
+    },
+    {
+      "rank": 18,
+      "cf": "07636600962",
+      "name": "OSPEDALE S. RAFFAELE S.R.L.",
+      "reg": "LOMBARDIA",
+      "pr": "MI",
+      "muni": "MILANO",
+      "cats": [
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 54914,
+      "expC": 239506937,
+      "genC": 109730876,
+      "u100C": 247,
+      "totC": 349238060
+    },
+    {
+      "rank": 19,
+      "cf": "00623340932",
+      "name": "CENTRO DI RIFERIMENTO ONCOLOGICO",
+      "reg": "FRIULI VENEZIA GIULIA",
+      "pr": "PN",
+      "muni": "AVIANO",
+      "cats": [
+        "ricerca_sanitaria"
+      ],
+      "ch": 68404,
+      "expC": 196420414,
+      "genC": 150992272,
+      "u100C": 0,
+      "totC": 347412686
+    },
+    {
+      "rank": 20,
+      "cf": "80403930581",
+      "name": "OSPEDALE BAMBIN GES? REGIONALE SPECIALIZZATO PEDIATRIA",
+      "reg": "LAZIO",
+      "pr": "RM",
+      "muni": "ROMA",
+      "cats": [
+        "ricerca_scientifica",
+        "ricerca_sanitaria"
+      ],
+      "ch": 55422,
+      "expC": 199402352,
+      "genC": 116967523,
+      "u100C": 116,
+      "totC": 316369991
+    }
+  ],
+  "artifacts": {
+    "top250": {
+      "path": "top-250.json.gz",
+      "rows": 250,
+      "bytes": 20260,
+      "sha256": "f21ca5197d0b14d0e435155b6ad725514ed265f77c45d9e9d04edfcc2dcd90d5",
+      "decodedBytes": 68457,
+      "decodedSha256": "babaf21c996980b1597f599e76302fdaf19bcef735ed693afc5b96ac5a4cbc12"
+    },
+    "categoriesCsv": {
+      "path": "categories.csv",
+      "rows": 8,
+      "bytes": 1247,
+      "sha256": "1e5dbc77aea450bebf441ae1e95ee9dae20ba49c49c10d9b0888671bdddb3b4f"
+    },
+    "regionsCsv": {
+      "path": "regions.csv",
+      "rows": 20,
+      "bytes": 864,
+      "sha256": "a2b2e32e38834ba576a9a6ca2fb9d0e8ab67b146a73c91696d4fd7ac7faf17c4"
+    }
+  }
+}

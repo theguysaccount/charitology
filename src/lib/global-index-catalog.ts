@@ -1,4 +1,4 @@
-// Single source of truth for the Global Charity Index (25 jurisdictions) and
+// Single source of truth for the Global Charity Index (26 jurisdictions) and
 // published Funding Flows lookups and case studies. Powers /record/charity-index/coverage/,
 // /record/funding-flows/, /tools/charity-lookup/, /record/open-datasets/, and
 // /api/v1/charity-index.json + /api/v1/funding-flows.json.
@@ -20,6 +20,7 @@ import hongKong from '../../public/data/charity-registry/hong-kong/manifest.json
 import hkPermits from '../../public/data/funding-flows/hong-kong-fundraising-permits/manifest.json';
 import hungary from '../../public/data/charity-registry/hungary/manifest.json';
 import israel from '../../public/data/charity-registry/israel/manifest.json';
+import italy from '../../public/data/charity-registry/italy/manifest.json';
 import latvia from '../../public/data/charity-registry/latvia/manifest.json';
 import newZealand from '../../public/data/charity-registry/new-zealand/manifest.json';
 import netherlands from '../../public/data/charity-registry/netherlands/manifest.json';
@@ -243,6 +244,22 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     manifest: '/data/charity-registry/israel/manifest.json',
     fundingFlowRoute: '/record/funding-flows/israel-foreign-state-donations/',
     fundingFlowLabel: 'Foreign-state donations (2012–2026)',
+  },
+  {
+    id: 'italy',
+    name: 'Italy',
+    source: 'Agenzia delle Entrate 5 per mille Admitted Beneficiaries (AF 2025)',
+    route: '/record/charity-index/italy/',
+    label: 'Search Italian 5 per mille charities and beneficiaries',
+    date: italy.capturedOn,
+    recordCount: italy.counts.includedOrganizations,
+    recordUnit: '5 per mille beneficiaries',
+    coverage: `${number(italy.counts.includedOrganizations)} Italian charities, Third Sector entities (ETS: ${number(italy.counts.byCategory.ets)}), amateur sports clubs (ASD: ${number(italy.counts.byCategory.asd)}), research and heritage bodies, transitional ONLUS (${number(italy.counts.byCategory.onlus_unflagged)}), and municipal social-activity funds (${number(italy.counts.byCategory.comuni)}) admitted for AF 2025 across all 20 Italian regions, with 100% Luhn-validated 11-digit Codice Fiscale identifiers (${number(italy.counts.leadingZeroCodiceFiscale)} leading-zero codes preserved).`,
+    history: `A paired funding-flows edition tracks EUR 603.10 million across ${number(italy.counts.totalChoices)} expressed taxpayer choices (updated ${italy.asOf}), reconciling expressed choices (EUR 520.51M), generic-box pools (EUR 82.15M), and sub-EUR-100 redistributions (EUR 441.9K) to the exact euro cent.`,
+    boundary: 'Covers organizations admitted to Italy’s AF 2025 5 per mille allocation rather than all RUNTS entities. Includes 8,216 organizations with positive taxpayer choices that fell below Italy’s statutory EUR 100 payout floor and 2,023 admitted transitional ONLUS without an AF 2025 category X flag (logged verbatim in anomalies.json).',
+    manifest: '/data/charity-registry/italy/manifest.json',
+    fundingFlowRoute: '/record/funding-flows/italy-five-per-mille/',
+    fundingFlowLabel: '5 per mille IRPEF allocations (AF 2025)',
   },
   {
     id: 'japan',
@@ -500,6 +517,7 @@ export const COVERAGE_SOURCES = [
   { title: 'SZJA 1+1% recipient disbursement announcements (2024–2026 civil & 2026 technical-number workbooks)', publisher: hungary.publisher, url: hungary.catalogues.navSzjaPortal },
   { title: 'Registry of Associations and Public Benefit Companies (moj-amutot)', publisher: israel.publisher, url: israel.catalogue },
   { title: 'Foreign State Entity Donations CKAN API (35cb40b5)', publisher: israel.publisher, url: 'https://data.gov.il/dataset/moj-amutot' },
+  { title: '5 per mille AF 2025 — Elenco complessivo degli enti destinatari ammessi al contributo (7 official CSV parts)', publisher: italy.publisher, url: italy.catalogues.admittedList2025 },
   { title: 'Uzņēmumu reģistrs & VID Sabiedriskā labuma organizācijas (SLO)', publisher: latvia.publisher, url: latvia.catalogues.vidSlo },
   { title: 'CFLA EU Funds 2014–2027 & Recovery Facility Projects', publisher: 'Centrālā finanšu un līgumu aģentūra (data.gov.lv)', url: 'https://data.gov.lv/dati/lv/dataset/eiropas-savienibas-fondu-21-27-perioda-lidzfinansetie-projekti' },
   { title: 'Open data — Algemeen Nut Beogende Instellingen (ANBI)', publisher: netherlands.publisher, url: netherlands.catalogue },
@@ -556,6 +574,7 @@ export const FUNDING_FLOW_GROUPS: readonly FundingFlowCatalogGroup[] = [
       { slug: 'hungary-szja-1-percent', title: '1%+1% personal income tax (SZJA) designations (2024–2026)', scope: 'Hungary', summary: 'Compare HUF 58.97B across 34,109 civil 1% recipients (with exact taxpayer counts for every charity) alongside all 186 second-1% church and national-budget technical-number recipients (HUF 23.95B in 2026).', manifest: '/data/funding-flows/hungary-szja-1-percent/manifest.json' },
       { slug: 'ile-de-france-paid-grants', title: 'Regional grant payments', scope: 'Île-de-France, France', summary: 'Find reported payments by association name or official organization identifier.', manifest: '/data/funding-flows/ile-de-france/manifest.json' },
       { slug: 'israel-foreign-state-donations', title: 'Foreign state entity donations (2012–2026)', scope: 'Israel', summary: 'Search 516 Israeli nonprofits across 13,436 quarterly cross-border disclosures (ILS 7.53B net), joined by exact ID with source anomalies kept visible.', manifest: '/data/funding-flows/israel-foreign-state-donations/manifest.json' },
+      { slug: 'italy-five-per-mille', title: '5 per mille IRPEF taxpayer allocations (AF 2025)', scope: 'Italy', summary: 'Explore EUR 603.10M across 96,059 admitted Italian entities and 15.56M taxpayer choices, inspecting statutory category pools, all 20 regions, and Europe’s four tax-assignment systems.', manifest: '/data/funding-flows/italy-five-per-mille/manifest.json' },
       { slug: 'latvia-eu-funds', title: 'EU Cohesion & Recovery Fund projects (2014–2027)', scope: 'Latvia', summary: 'Search 292 nonprofit-led EU projects (EUR 233.47M total) and 260 separate partner roles with implementation regions and Active SLO vs. industry-cluster splits.', manifest: '/data/funding-flows/latvia-eu-funds/manifest.json' },
       { slug: 'netherlands-rijksfinancien', title: 'Central-government nonprofit subsidies (2020–2024)', scope: 'Netherlands', summary: 'Search 17,868 Dutch foundations, associations and religious bodies across 16 budget chapters (EUR 15.54B net) and inspect the KvK-to-RSIN identifier gap.', manifest: '/data/funding-flows/netherlands-rijksfinancien/manifest.json' },
       { slug: 'norway-momskompensasjon', title: 'VAT compensation grants (2023–2025)', scope: 'Norway', summary: 'Search 28,011 Norwegian voluntary organizations across three grant years, 264 central umbrella intermediaries and two-tranche 2025 payouts.', manifest: '/data/funding-flows/norway-momskompensasjon/manifest.json' },

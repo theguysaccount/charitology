@@ -170,6 +170,8 @@ export const symbols = {
   bauhinia: 'M12 12c0-4 2.5-7 0-9-2.5 2 0 5 0 9Zm0 0c4 0 7-2.5 9 0-2 2.5-5 0-9 0Zm0 0c2.5 3.2 5.5 5 3.5 7.5-2.5.5-3-3.5-3.5-7.5Zm0 0c-2.5 3.2-5.5 5-3.5 7.5 2.5.5 3-3.5 3.5-7.5Zm0 0c-4 0-7-2.5-9 0 2 2.5 5 0 9 0Z',
   adriaticCheck: 'M4 4h16v9c0 4.5-3.5 7.2-8 8.5-4.5-1.3-8-4-8-8.5V4Zm0 5h16M4 14h16M12 4v17',
   permitStamp: 'M4 15h16v5H4v-5Zm3 0v-2a5 5 0 0 1 10 0v2M9 6a3 3 0 1 1 6 0c0 1.4-.9 2.4-1.5 3.5h-3C9.9 8.4 9 7.4 9 6ZM3 20h18',
+  romanArch: 'M3 20h18M5 20V8a7 7 0 0 1 14 0v12M9 20v-7a3 3 0 0 1 6 0v7M3 8h18M7 4h10',
+  fivePerMille: 'M4 5h16v14H4V5Zm3.5 10.5 7-7M7.5 8.5h.01M14.5 13h.01M16.5 15.5h.01',
 } as const;
 
 export type SymbolName = keyof typeof symbols;
