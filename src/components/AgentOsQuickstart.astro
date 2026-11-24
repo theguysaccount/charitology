@@ -1,0 +1,312 @@
+---
+import SiteSymbol from './SiteSymbol.astro';
+import {
+  GLOBAL_CHARITY_INDEX_PANELS,
+  GLOBAL_CHARITY_INDEX_TOTAL_RECORDS,
+  FUNDING_FLOW_GROUPS,
+} from '../lib/global-index-catalog';
+import { url } from '../lib/site';
+
+const countryCount = GLOBAL_CHARITY_INDEX_PANELS.length;
+const recordCount = GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US');
+const flowCount = FUNDING_FLOW_GROUPS[0].items.length + FUNDING_FLOW_GROUPS[1].items.length;
+
+const mcpEndpoint = 'https://os.charitology.org/mcp';
+
+const starterPrompts = [
+  {
+    id: 'vet-charity',
+    label: 'Vet a charity across 27 countries',
+    description: 'Have your AI agent check official registry records, funding flows, and the Giver’s Checklist without inventing missing financials.',
+    prompt: `Use Charitology’s public MCP server (${mcpEndpoint}) or https://charitology.com/llms.txt and https://charitology.com/api/v1/charity-index.json to inspect [ORGANIZATION NAME] in [COUNTRY]. Keep native currency, exact source dates, and null vs. 0 intact, check matching public funding flows, and walk me through the Giver’s Checklist (https://charitology.com/api/v1/checklist.json) without fabricating a rating or overhead score.`,
+  },
+  {
+    id: 'charity-ops',
+    label: 'Set up a small charity stack & free perks',
+    description: 'Match a small nonprofit to 65 verified free software grants, cloud credits, AI discounts, and Charity OS workflows.',
+    prompt: `Read https://charitology.com/data/free-charity-resources.json (65 verified nonprofit programs) and compare them with Charity OS (https://os.charitology.org/) for a [TEAM SIZE]-person nonprofit in [COUNTRY]. Give me a step-by-step free-first setup checklist, noting real eligibility gates (TechSoup, Goodstack, or direct) and where Charity OS replaces disconnected spreadsheets.`,
+  },
+  {
+    id: 'funding-gaps',
+    label: 'Find neglected humanitarian & cause gaps',
+    description: 'Pull OCHA FTS crisis shortfalls and evidence-backed interventions before allocating a gift or grant.',
+    prompt: `Read https://charitology.com/api/v1/funding-flows.json (especially ocha-fts-global-clusters) and https://charitology.com/api/v1/interventions.json. Summarize the sharpest documented funding gaps and evidence-backed interventions for a [AMOUNT] allocation in [CAUSE AREA], keeping evidence grades and unknowns explicit.`,
+  },
+];
+---
+
+<section class="tools-quickstart" aria-labelledby="quickstart-heading" data-agent-quickstart>
+  <div class="qs-head">
+    <h2 id="quickstart-heading">Pick the fastest way in</h2>
+    <p class="note">
+      Most people don’t need to click through twenty browser forms. If you run a charity, start in <strong>Charity OS</strong>.
+      If you already use Claude, ChatGPT, Codex, or Cursor, hand Charitology’s live <strong>MCP server</strong> and <strong>JSON API</strong> directly to your agent.
+    </p>
+  </div>
+
+  <div class="qs-grid">
+    <article class="qs-card qs-card--os">
+      <div class="qs-card-kicker">
+        <SiteSymbol name="teamBoard" />
+        <span>For charity teams</span>
+      </div>
+      <h3>Run your charity in Charity OS</h3>
+      <p>
+        Free, open-source shared workspace for programs, grants, volunteers, approvals, and frozen board reports — with full JSON export so your team can always leave.
+      </p>
+      <div class="qs-actions">
+        <a class="btn qs-btn-full" href="https://os.charitology.org/" target="_blank" rel="noopener">
+          Open Charity OS ↗
+        </a>
+        <a class="btn btn-ghost qs-btn-full" href={url('/for-charities/free/')}>
+          65 free things, credits &amp; grants for charities
+        </a>
+      </div>
+    </article>
+
+    <article class="qs-card qs-card--agent">
+      <div class="qs-card-kicker">
+        <SiteSymbol name="code" />
+        <span>For Claude · ChatGPT · Codex · Cursor</span>
+      </div>
+      <h3>Let your AI agent query Charitology</h3>
+      <p>
+        Connect your agent to our read-only MCP endpoint and 42 public JSON APIs spanning <strong>{countryCount} countries</strong> ({recordCount} dated records) and <strong>{flowCount} funding flows</strong>.
+      </p>
+      <div class="qs-endpoint" aria-label="Public MCP endpoint">
+        <code>{mcpEndpoint}</code>
+        <button type="button" class="btn btn-ghost btn-small" data-copy-text={mcpEndpoint} data-copy-label="Copy MCP URL">
+          Copy MCP URL
+        </button>
+      </div>
+      <div class="qs-actions">
+        <a class="btn qs-btn-full" href="https://os.charitology.org/mcp.html" target="_blank" rel="noopener">
+          Connect MCP in 30 seconds ↗
+        </a>
+        <div class="qs-inline-links">
+          <a class="btn btn-ghost btn-small" href={url('/llms.txt')}>Read /llms.txt</a>
+          <a class="btn btn-ghost btn-small" href={url('/api/v1/index.json')}>Public API JSON</a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <details class="qs-prompts">
+    <summary>
+      <span>Copy-paste prompts for your AI agent (3 ready-to-run workflows)</span>
+    </summary>
+    <div class="qs-prompt-list">
+      {
+        starterPrompts.map((item) => (
+          <div class="qs-prompt-item">
+            <div class="qs-prompt-meta">
+              <strong>{item.label}</strong>
+              <p class="note">{item.description}</p>
+            </div>
+            <pre class="qs-prompt-code"><code>{item.prompt}</code></pre>
+            <button
+              type="button"
+              class="btn btn-ghost btn-small"
+              data-copy-text={item.prompt}
+              data-copy-label="Copy prompt"
+            >
+              Copy prompt
+            </button>
+          </div>
+        ))
+      }
+    </div>
+  </details>
+  <p class="sr-only" role="status" aria-live="polite" data-copy-status></p>
+</section>
+
+<style>
+  .tools-quickstart {
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .qs-head h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.35rem;
+  }
+  .qs-head p {
+    margin: 0;
+    max-width: 68ch;
+  }
+  .qs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: 1rem;
+  }
+  .qs-card {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+  .qs-card--os {
+    border-inline-start: 3px solid var(--tone-green, var(--accent));
+  }
+  .qs-card--agent {
+    border-inline-start: 3px solid var(--tone-blue, var(--accent));
+  }
+  .qs-card-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+  .qs-card h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.25;
+  }
+  .qs-card p {
+    margin: 0;
+    font-size: 0.96rem;
+  }
+  .qs-endpoint {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.65rem;
+    min-width: 0;
+  }
+  .qs-endpoint code {
+    font-size: 0.84rem;
+    overflow-wrap: anywhere;
+  }
+  .qs-endpoint .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qs-actions {
+    margin-top: auto;
+    display: grid;
+    gap: 0.55rem;
+    padding-top: 0.25rem;
+  }
+  .qs-btn-full {
+    width: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .qs-inline-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 0.5rem;
+  }
+  .qs-inline-links .btn {
+    width: 100%;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qs-prompts {
+    border: 1px solid var(--rule);
+    border-radius: 0.75rem;
+    background: var(--paper-2);
+    padding: 0;
+    overflow: hidden;
+  }
+  .qs-prompts > summary {
+    padding: 0.9rem 1.15rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+  }
+  .qs-prompts > summary::-webkit-details-marker {
+    display: none;
+  }
+  .qs-prompts > summary::before {
+    content: '▸';
+    margin-inline-end: 0.6rem;
+    transition: transform 0.15s ease;
+  }
+  .qs-prompts[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  .qs-prompts[open] > summary {
+    border-bottom: 1px solid var(--rule);
+  }
+  .qs-prompt-list {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem 1.15rem 1.15rem;
+  }
+  .qs-prompt-item {
+    display: grid;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--rule);
+    min-width: 0;
+  }
+  .qs-prompt-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .qs-prompt-meta p {
+    margin: 0.2rem 0 0;
+  }
+  .qs-prompt-code {
+    margin: 0;
+    padding: 0.75rem;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 0.5rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+  .qs-prompt-item .btn {
+    justify-self: start;
+    min-height: 40px;
+  }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-agent-quickstart]')) {
+    const status = root.querySelector<HTMLElement>('[data-copy-status]');
+    for (const btn of root.querySelectorAll<HTMLButtonElement>('[data-copy-text]')) {
+      btn.addEventListener('click', async () => {
+        const text = btn.dataset.copyText ?? '';
+        const baseLabel = btn.dataset.copyLabel ?? btn.textContent ?? 'Copy';
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = 'Copied ✓';
+          if (status) status.textContent = `${baseLabel}: copied to clipboard.`;
+          window.setTimeout(() => {
+            btn.textContent = baseLabel;
+          }, 1800);
+        } catch {
+          btn.textContent = 'Copy manually';
+          if (status) status.textContent = 'Clipboard unavailable; select and copy the text directly.';
+        }
+      });
+    }
+  }
+</script>

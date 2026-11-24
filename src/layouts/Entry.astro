@@ -50,6 +50,7 @@ if (hasTool && destinations.length === 0) outline.unshift({ slug: 'working-tool'
     hasTool && (
       <div class="wrap entry-top">
         <PageSections sections={outline} />
+        <slot name="before-top" />
         <div id="working-tool" tabindex="-1" role="region" aria-label="Working tool"><slot name="top" /></div>
       </div>
     )

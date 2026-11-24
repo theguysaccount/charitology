@@ -92,6 +92,7 @@ for (const rel of [
   'src/pages/record/charity-index/croatia.astro',
   'src/pages/record/charity-index/italy.astro',
   'src/pages/record/charity-index/austria.astro',
+  'src/pages/for-charities/free.astro',
   'src/pages/record/funding-flows/hong-kong-fundraising-permits/index.astro',
   'src/pages/record/funding-flows/italy-five-per-mille/index.astro',
   'src/pages/disasters/2024-2026-emergencies.astro',

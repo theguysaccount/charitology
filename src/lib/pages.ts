@@ -160,6 +160,7 @@ export async function allPages(): Promise<PageInfo[]> {
     ["/disasters/", "Disaster Desk", "Disasters"],
     ["/disasters/2024-2026-emergencies/", "2024–2026 OpenFEMA Federal Disaster Captures", "Disasters"],
     ["/for-charities/start/", "Start here for charities", "For charities"],
+    ["/for-charities/free/", "Free things, credits and grants for charities (65 verified programs)", "For charities"],
     ["/for-charities/fundraising/", "Fundraising guides for charities", "For charities"],
     ["/for-charities/fundraising/email-appeals/", "Email appeals for charities", "For charities"],
     ["/for-charities/fundraising/paid-ads/", "Paid ads for charities", "For charities"],

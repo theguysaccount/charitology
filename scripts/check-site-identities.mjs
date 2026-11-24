@@ -208,7 +208,7 @@ assert.ok(fundingIndex.includes('aria-label="Browse funding flows"'));
 
 const charityHub = readFileSync('dist/for-charities/index.html', 'utf8');
 const charityCards = [...charityHub.matchAll(/<a class="card" href="([^"]+)"[^>]*>\s*<span[^>]*data-site-symbol="([^"]+)"/g)];
-assert.equal(charityCards.length, 14);
+assert.equal(charityCards.length, 15);
 assert.equal(new Set(charityCards.map(([, , mark]) => mark)).size, charityCards.length);
 for (const [, href, mark] of charityCards) {
   assert.equal(mark, href === 'https://os.charitology.org' ? 'teamBoard' : pageIdentity(href.slice(base.length)).symbol, href);

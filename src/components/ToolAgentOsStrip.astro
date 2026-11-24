@@ -1,0 +1,117 @@
+---
+import { absolute } from '../lib/site';
+
+interface Props {
+  slug: string;
+  title: string;
+  group: string;
+}
+
+const { slug, title, group } = Astro.props;
+const pageUrl = absolute(`/tools/${slug}/`, Astro.site);
+
+const isOrgTool = group === 'For nonprofits and funders' || slug === 'charity-os';
+const agentPrompt = `Help me complete the "${title}" workflow from Charitology (${pageUrl}) using Charitology’s public MCP server (https://os.charitology.org/mcp) and open JSON datasets (https://charitology.com/llms.txt and https://charitology.com/api/v1/index.json). Keep source dates, native currencies, and explicit unknowns (null vs. 0) intact, and ask me the minimum clarifying questions needed to produce a clear, reusable output.`;
+---
+
+<aside class="agent-os-strip" aria-label="Use with Charity OS or an AI agent" data-agent-strip>
+  <div class="aos-copy">
+    <strong>Prefer Charity OS or your own AI agent?</strong>
+    <span>
+      {
+        isOrgTool
+          ? 'Manage programs, grants, volunteers, and frozen reports in Charity OS — or hand this workflow directly to Claude, ChatGPT, Codex, or Cursor via MCP.'
+          : 'Skip filling out manual forms — copy a ready prompt for Claude, ChatGPT, Codex, or Cursor backed by Charitology’s MCP server and JSON API.'
+      }
+    </span>
+  </div>
+  <div class="aos-actions">
+    <button
+      type="button"
+      class="btn btn-small"
+      data-copy-prompt={agentPrompt}
+      data-copy-label="Copy AI prompt"
+    >
+      Copy AI prompt
+    </button>
+    <a class="btn btn-ghost btn-small" href="https://os.charitology.org/mcp.html" target="_blank" rel="noopener">
+      MCP setup ↗
+    </a>
+    <a class="btn btn-ghost btn-small" href="https://os.charitology.org/" target="_blank" rel="noopener">
+      Open Charity OS ↗
+    </a>
+  </div>
+  <span class="sr-only" role="status" aria-live="polite" data-strip-status></span>
+</aside>
+
+<style>
+  .agent-os-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem 1.25rem;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 1.5rem;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-inline-start: 3px solid var(--tone-blue, var(--accent));
+    border-radius: 0.65rem;
+  }
+  .aos-copy {
+    display: grid;
+    gap: 0.2rem;
+    flex: 1 1 20rem;
+    min-width: 0;
+    font-size: 0.92rem;
+  }
+  .aos-copy span {
+    color: var(--ink-muted);
+  }
+  .aos-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .aos-actions .btn {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  @media (max-width: 34rem) {
+    .aos-actions {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    .aos-actions .btn {
+      width: 100%;
+      min-height: 44px;
+    }
+  }
+</style>
+
+<script>
+  for (const strip of document.querySelectorAll<HTMLElement>('[data-agent-strip]')) {
+    const status = strip.querySelector<HTMLElement>('[data-strip-status]');
+    const btn = strip.querySelector<HTMLButtonElement>('[data-copy-prompt]');
+    if (!btn) continue;
+    btn.addEventListener('click', async () => {
+      const prompt = btn.dataset.copyPrompt ?? '';
+      const baseLabel = btn.dataset.copyLabel ?? 'Copy AI prompt';
+      try {
+        await navigator.clipboard.writeText(prompt);
+        btn.textContent = 'Prompt copied ✓';
+        if (status) status.textContent = 'AI prompt copied to clipboard.';
+        window.setTimeout(() => {
+          btn.textContent = baseLabel;
+        }, 1800);
+      } catch {
+        btn.textContent = 'Copy unavailable';
+        if (status) status.textContent = 'Clipboard unavailable in this browser context.';
+      }
+    });
+  }
+</script>

@@ -1,0 +1,555 @@
+---
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import SiteSymbol from '../../components/SiteSymbol.astro';
+import data from '../../data/free-charity-resources.json';
+import { url } from '../../lib/site';
+
+const items = data.items;
+const totalCount = items.length;
+const freeCount = items.filter((i) => i.tier === 'free').length;
+const grantCount = items.filter((i) => i.tier === 'grant').length;
+const discountCount = items.filter((i) => i.tier === 'discount').length;
+
+const categoryCounts = new Map<string, number>();
+for (const item of items) {
+  categoryCounts.set(item.category, (categoryCounts.get(item.category) ?? 0) + 1);
+}
+const categories = [...categoryCounts.entries()];
+
+const title = 'Free things, credits & grants for charities';
+const description = `Complete verified directory of ${totalCount} free software donations, cloud & ad grants, AI discounts, zero-fee fundraising platforms, and pro bono legal/consulting networks for nonprofits.`;
+
+const matcherPrompt = `Read https://charitology.com/data/free-charity-resources.json (${totalCount} verified nonprofit programs) and Charity OS (https://os.charitology.org/). Ask me 3 short questions about my charity (country, staff/volunteer size, and top 3 operational pain points), then build a prioritized 100%-free-first stack with exact verification steps (TechSoup, Goodstack, or direct) and warn me about real eligibility limits.`;
+---
+
+<Base
+  title={title}
+  description={description}
+  crumbs={[
+    { label: 'For charities', href: '/for-charities/' },
+    { label: 'Free things & credits' },
+  ]}
+>
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: 'For charities', href: '/for-charities/' }, { label: 'Free things & credits' }]} />
+      <span class="eyebrow">For charities · {totalCount} verified programs · Checked {data.checkedOn}</span>
+      <h1>{title}</h1>
+      <p class="lede">
+        Every major verified free software donation, cloud credit, ad grant, zero-fee fundraising tool, AI discount, and pro bono legal or consulting network we can confirm against official provider terms — with every catch and eligibility limit stated up front.
+      </p>
+
+      <div class="free-stats" role="list" aria-label="Program breakdown">
+        <div class="free-stat" role="listitem">
+          <strong>{freeCount}</strong>
+          <span>100% Free / Donated</span>
+        </div>
+        <div class="free-stat" role="listitem">
+          <strong>{grantCount}</strong>
+          <span>Credits, Grants &amp; Goods</span>
+        </div>
+        <div class="free-stat" role="listitem">
+          <strong>{discountCount}</strong>
+          <span>Verified Discounts</span>
+        </div>
+        <div class="free-stat" role="listitem">
+          <strong>{categories.length}</strong>
+          <span>Categories</span>
+        </div>
+      </div>
+
+      <div class="free-callouts">
+        <div class="free-callout">
+          <div class="callout-title"><SiteSymbol name="checks" /><strong>Fastest first step: verify once</strong></div>
+          <p>
+            Register once with <a href="https://www.techsoup.org/" target="_blank" rel="noopener">TechSoup</a> and <a href="https://goodstack.org/" target="_blank" rel="noopener">Goodstack</a> (via Google for Nonprofits, Canva, or OpenAI). Those two free verifications unlock 80%+ of the offers below.
+          </p>
+        </div>
+        <div class="free-callout" data-free-matcher>
+          <div class="callout-title"><SiteSymbol name="code" /><strong>Let your AI agent pick your stack</strong></div>
+          <p>
+            Hand our open JSON list (<code>/data/free-charity-resources.json</code>) to Claude, ChatGPT, Codex, or Cursor to match your charity in 30 seconds.
+          </p>
+          <div class="callout-actions">
+            <button type="button" class="btn btn-small" data-copy-matcher={matcherPrompt}>Copy AI stack prompt</button>
+            <a class="btn btn-ghost btn-small" href="https://os.charitology.org/" target="_blank" rel="noopener">Open free Charity OS ↗</a>
+          </div>
+          <span class="sr-only" role="status" aria-live="polite" data-matcher-status></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section
+    class="wrap section-tight"
+    aria-labelledby="free-filter-heading"
+    data-free-directory
+    data-items={JSON.stringify(items)}
+    data-checked-on={data.checkedOn}
+  >
+    <h2 id="free-filter-heading" class="sr-only">Filter all {totalCount} verified charity programs</h2>
+
+    <form class="free-filters" aria-label="Filter free charity resources">
+      <div class="free-filter-row">
+        <div class="free-field free-field--grow">
+          <label for="free-query">Search programs, tools or keywords</label>
+          <input
+            type="search"
+            id="free-query"
+            placeholder="e.g., AI, cloud, email, legal, Google, Slack, Stripe, Zeffy…"
+            maxlength="120"
+            autocomplete="off"
+          />
+        </div>
+        <div class="free-field">
+          <label for="free-tier">Cost type</label>
+          <select id="free-tier">
+            <option value="">All ({totalCount})</option>
+            <option value="free">100% Free / Donated ({freeCount})</option>
+            <option value="grant">Credits, Grants &amp; Goods ({grantCount})</option>
+            <option value="discount">Nonprofit Discounts ({discountCount})</option>
+          </select>
+        </div>
+        <div class="free-field">
+          <label for="free-cat">Category</label>
+          <select id="free-cat">
+            <option value="">All {categories.length} categories</option>
+            {categories.map(([cat, n]) => <option value={cat}>{cat} ({n})</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div class="free-toolbar">
+        <p class="note free-status" role="status" data-status>
+          Showing all {totalCount} verified programs.
+        </p>
+        <div class="free-toolbar-actions">
+          <button type="button" class="btn btn-ghost btn-small" data-clear>Reset filters</button>
+          <button type="button" class="btn btn-ghost btn-small" data-export-json>Export JSON</button>
+          <button type="button" class="btn btn-ghost btn-small" data-export-csv>Export CSV</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="free-grid" data-cards>
+      {
+        items.map((item) => (
+          <article
+            class="free-card"
+            id={item.id}
+            data-free-card={item.id}
+            data-tier={item.tier}
+            data-category={item.category}
+            data-search={`${item.name} ${item.category} ${item.tierLabel} ${item.offer} ${item.eligibility} ${item.verification}`.toLowerCase()}
+          >
+            <div class="free-card-top">
+              <span class="free-cat-label">{item.category}</span>
+              <span class={`free-badge free-badge--${item.tier}`}>{item.tierLabel}</span>
+            </div>
+            <h3>
+              <a href={item.url} target="_blank" rel="noopener">{item.name}</a>
+            </h3>
+            <p class="free-offer">{item.offer}</p>
+            <dl class="free-meta">
+              <div>
+                <dt>Eligibility &amp; watch-outs</dt>
+                <dd>{item.eligibility}</dd>
+              </div>
+              <div>
+                <dt>Verification route</dt>
+                <dd>{item.verification}</dd>
+              </div>
+            </dl>
+            <div class="free-card-actions">
+              <a class="btn free-cta" href={item.url} target="_blank" rel="noopener">
+                Apply / official terms ↗
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <aside class="free-footnote prose">
+      <h2>Verification note &amp; corrections</h2>
+      <p>
+        {data.note} Looking for the SHA-256 frozen review bundle linked directly to Charity OS? Visit the{' '}
+        <a href={url('/for-charities/benefits/')}>frozen benefits directory</a> or{' '}
+        <a href={url('/for-charities/tools/')}>frozen nonprofit tools directory</a>.
+      </p>
+      <p>
+        Know a verified free nonprofit program we missed, or did a provider change its terms?{' '}
+        <a href="https://github.com/theguysaccount/charitology/issues/new?labels=correction&amp;title=Free%20things%20for%20charities%20update">
+          Submit a public correction or addition on GitHub
+        </a>{' '}
+        with the official provider link, or download the raw{' '}
+        <a href={url('/data/free-charity-resources.json')} download>JSON dataset ({totalCount} programs)</a>.
+      </p>
+    </aside>
+  </section>
+</Base>
+
+<style>
+  .free-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 0.75rem;
+    margin-top: 1.35rem;
+  }
+  .free-stat {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 0.65rem;
+    padding: 0.8rem 1rem;
+    display: grid;
+    gap: 0.15rem;
+  }
+  .free-stat strong {
+    font-family: var(--font-display, var(--font-serif));
+    font-size: 1.65rem;
+    line-height: 1.1;
+  }
+  .free-stat span {
+    font-size: 0.84rem;
+    color: var(--ink-muted);
+  }
+  .free-callouts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: 1rem;
+    margin-top: 1.15rem;
+  }
+  .free-callout {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 0.75rem;
+    padding: 1rem 1.15rem;
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    min-width: 0;
+  }
+  .callout-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.98rem;
+  }
+  .free-callout p {
+    margin: 0;
+    font-size: 0.92rem;
+    overflow-wrap: anywhere;
+  }
+  .callout-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  .callout-actions .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .free-filters {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 0.75rem;
+    padding: 1rem 1.15rem;
+    display: grid;
+    gap: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .free-filter-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 0.75rem;
+  }
+  .free-field {
+    display: grid;
+    gap: 0.3rem;
+    min-width: 0;
+  }
+  .free-field label {
+    font-size: 0.84rem;
+    font-weight: 600;
+  }
+  .free-field input,
+  .free-field select {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--rule);
+    border-radius: 0.45rem;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+  }
+  .free-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding-top: 0.55rem;
+    border-top: 1px solid var(--rule);
+  }
+  .free-status {
+    margin: 0;
+  }
+  .free-toolbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .free-toolbar-actions .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .free-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+    gap: 1rem;
+  }
+  .free-card {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 0.75rem;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    min-width: 0;
+  }
+  .free-card[hidden] {
+    display: none;
+  }
+  .free-card-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+  }
+  .free-cat-label {
+    font-size: 0.76rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+  .free-badge {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  .free-badge--free {
+    border-color: var(--tone-green, var(--accent));
+  }
+  .free-badge--grant {
+    border-color: var(--tone-amber, var(--accent));
+  }
+  .free-badge--discount {
+    border-color: var(--tone-blue, var(--accent));
+  }
+  .free-card h3 {
+    margin: 0;
+    font-size: 1.22rem;
+    line-height: 1.25;
+  }
+  .free-card h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .free-card h3 a:hover,
+  .free-card h3 a:focus-visible {
+    text-decoration: underline;
+  }
+  .free-offer {
+    margin: 0;
+    padding: 0.75rem 0.9rem;
+    border-inline-start: 3px solid var(--accent);
+    background: var(--paper);
+    border-radius: 0.35rem;
+    font-size: 0.94rem;
+    line-height: 1.48;
+  }
+  .free-meta {
+    margin: 0;
+    display: grid;
+    gap: 0.55rem;
+    font-size: 0.88rem;
+  }
+  .free-meta dt {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    font-weight: 600;
+    margin-bottom: 0.12rem;
+  }
+  .free-meta dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .free-card-actions {
+    margin-top: auto;
+    padding-top: 0.45rem;
+  }
+  .free-cta {
+    width: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .free-footnote {
+    margin-top: 2.5rem;
+    max-width: 52rem;
+  }
+  @media (max-width: 34rem) {
+    .callout-actions,
+    .free-toolbar-actions {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    .callout-actions .btn,
+    .free-toolbar-actions .btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import { download, toCsv } from '../../lib/client/files';
+  import { financialCsvName } from '../../lib/client/financial-directory';
+
+  type FreeItem = {
+    id: string;
+    name: string;
+    category: string;
+    tier: string;
+    tierLabel: string;
+    offer: string;
+    eligibility: string;
+    verification: string;
+    url: string;
+  };
+
+  for (const box of document.querySelectorAll<HTMLElement>('[data-free-matcher]')) {
+    const btn = box.querySelector<HTMLButtonElement>('[data-copy-matcher]');
+    const status = box.querySelector<HTMLElement>('[data-matcher-status]');
+    if (!btn) continue;
+    btn.addEventListener('click', async () => {
+      const prompt = btn.dataset.copyMatcher ?? '';
+      try {
+        await navigator.clipboard.writeText(prompt);
+        btn.textContent = 'Prompt copied ✓';
+        if (status) status.textContent = 'AI stack matcher prompt copied to clipboard.';
+        window.setTimeout(() => {
+          btn.textContent = 'Copy AI stack prompt';
+        }, 1800);
+      } catch {
+        btn.textContent = 'Copy unavailable';
+      }
+    });
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-free-directory]')) {
+    const items: FreeItem[] = JSON.parse(root.dataset.items ?? '[]');
+    const checkedOn = root.dataset.checkedOn ?? '';
+    const byId = new Map(items.map((it) => [it.id, it]));
+
+    const queryEl = root.querySelector<HTMLInputElement>('#free-query')!;
+    const tierEl = root.querySelector<HTMLSelectElement>('#free-tier')!;
+    const catEl = root.querySelector<HTMLSelectElement>('#free-cat')!;
+    const statusEl = root.querySelector<HTMLElement>('[data-status]')!;
+    const clearBtn = root.querySelector<HTMLButtonElement>('[data-clear]')!;
+    const jsonBtn = root.querySelector<HTMLButtonElement>('[data-export-json]')!;
+    const csvBtn = root.querySelector<HTMLButtonElement>('[data-export-csv]')!;
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-free-card]')];
+
+    let visibleItems: FreeItem[] = [...items];
+
+    const applyFilters = () => {
+      const q = queryEl.value.trim().toLowerCase();
+      const tier = tierEl.value;
+      const cat = catEl.value;
+      const next: FreeItem[] = [];
+
+      for (const card of cards) {
+        const matchTier = !tier || card.dataset.tier === tier;
+        const matchCat = !cat || card.dataset.category === cat;
+        const matchQuery = !q || (card.dataset.search ?? '').includes(q);
+        const show = matchTier && matchCat && matchQuery;
+        card.hidden = !show;
+        if (show) {
+          const item = byId.get(card.dataset.freeCard ?? '');
+          if (item) next.push(item);
+        }
+      }
+
+      visibleItems = next;
+      jsonBtn.disabled = next.length === 0;
+      csvBtn.disabled = next.length === 0;
+      statusEl.textContent =
+        next.length === items.length
+          ? `Showing all ${items.length} verified programs.`
+          : next.length === 0
+            ? 'No programs matched the current filters.'
+            : `Showing ${next.length} of ${items.length} verified programs.`;
+    };
+
+    queryEl.addEventListener('input', applyFilters);
+    tierEl.addEventListener('change', applyFilters);
+    catEl.addEventListener('change', applyFilters);
+    root.querySelector('form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      applyFilters();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      tierEl.value = '';
+      catEl.value = '';
+      applyFilters();
+      queryEl.focus();
+    });
+
+    jsonBtn.addEventListener('click', () => {
+      if (!visibleItems.length) return;
+      download(
+        'charitology-free-charity-resources.json',
+        JSON.stringify({ checkedOn, count: visibleItems.length, items: visibleItems }, null, 2),
+        'application/json;charset=utf-8',
+      );
+    });
+
+    csvBtn.addEventListener('click', () => {
+      if (!visibleItems.length) return;
+      const csvText = toCsv(
+        visibleItems.map((it) => ({
+          id: it.id,
+          name: financialCsvName(it.name),
+          category: it.category,
+          cost_type: it.tierLabel,
+          offer: financialCsvName(it.offer),
+          eligibility: financialCsvName(it.eligibility),
+          verification: it.verification,
+          url: it.url,
+        })),
+      );
+      download('charitology-free-charity-resources.csv', '\uFEFF' + csvText, 'text/csv;charset=utf-8');
+    });
+  }
+</script>
