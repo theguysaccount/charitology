@@ -1,0 +1,292 @@
+{
+  "format": "charitology-austria-registry-v1",
+  "jurisdiction": "Austria",
+  "publisher": "Bundesministerium für Finanzen (Austrian Federal Ministry of Finance — BMF)",
+  "editionTitle": "Liste begünstigter Einrichtungen (Spenden, Kirchenbeiträge u.a.) — Stand 01.10.2026",
+  "asOf": "2026-10-01",
+  "standLine": "Stand: 01.10.2026 09:14:28",
+  "capturedOn": "2026-11-24",
+  "catalogues": {
+    "bmfSearchPortal": "https://service.bmf.gv.at/service/allg/spenden/_start.asp",
+    "bmfQuarterlyPdf": "https://service.bmf.gv.at/service/allg/spenden/ListebeguenstigterEinrichtungen.pdf",
+    "bmfReformGuide": "https://www.bmf.gv.at/themen/steuern/spenden-gemeinnuetzigkeit/spendenbeguenstigung-neu.html",
+    "zvrPortal": "https://citizen.bmi.gv.at/at.gv.bmi.fnsweb-p/zvr/public/Registerauszug"
+  },
+  "sourceCapture": {
+    "filename": "ListebeguenstigterEinrichtungen.pdf",
+    "bytes": 3236626,
+    "sha256": "6d41a25e5e9b2ac8f75c9692dda78333980f20fae38c134ef8c0e27fefd227da",
+    "pages": 185,
+    "lastModified": "2026-10-01T07:24:55Z",
+    "url": "https://service.bmf.gv.at/service/allg/spenden/ListebeguenstigterEinrichtungen.pdf"
+  },
+  "counts": {
+    "includedOrganizations": 8577,
+    "uniqueBmfCodes": 8577,
+    "distinctExactNames": 8089,
+    "activeOpenEnded": 7648,
+    "expiredWithValidTo": 929,
+    "withValidFrom": 2980,
+    "withoutValidFrom": 5597,
+    "validToWithoutValidFrom": 31,
+    "reformCohort2024To2026Dated": 964,
+    "populatedCategories": 22,
+    "earliestValidFrom": "1992-10-22",
+    "latestValidFrom": "2026-09-28",
+    "earliestValidTo": "2006-02-06",
+    "latestValidTo": "2026-08-21",
+    "recentValidFromByYear": {
+      "2019": 97,
+      "2020": 51,
+      "2021": 63,
+      "2022": 52,
+      "2023": 53,
+      "2024": 412,
+      "2025": 408,
+      "2026": 144
+    }
+  },
+  "categories": [
+    {
+      "prefix": "FF",
+      "labelDe": "Freiwillige Feuerwehren und Landesfeuerwehrverbände",
+      "labelEn": "Volunteer fire brigades and regional fire associations",
+      "statute": "§ 4a Abs. 6 Z 12 EStG 1988",
+      "total": 4520,
+      "active": 4518,
+      "expired": 2,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "SO",
+      "labelDe": "Karitative Einrichtungen",
+      "labelEn": "Charitable, humanitarian and social-welfare organizations",
+      "statute": "§ 4a Abs. 2 Z 3 EStG 1988",
+      "total": 1750,
+      "active": 1365,
+      "expired": 385,
+      "withValidFrom": 1750
+    },
+    {
+      "prefix": "FW",
+      "labelDe": "Wissenschaftseinrichtungen",
+      "labelEn": "Research and scientific institutions",
+      "statute": "§ 4a Abs. 2 Z 1 EStG 1988",
+      "total": 632,
+      "active": 175,
+      "expired": 457,
+      "withValidFrom": 632
+    },
+    {
+      "prefix": "KK",
+      "labelDe": "Einrichtungen Kunst und Kultur; Bundesdenkmalamt, Denkmalfonds und Filminstitut",
+      "labelEn": "Arts, culture, heritage and film institutions",
+      "statute": "§ 4a Abs. 2 Z 5 / Abs. 6 Z 5 & Z 7 EStG 1988",
+      "total": 418,
+      "active": 399,
+      "expired": 19,
+      "withValidFrom": 418
+    },
+    {
+      "prefix": "SP",
+      "labelDe": "Sporteinrichtungen",
+      "labelEn": "Nonprofit sports clubs and federations",
+      "statute": "§ 4a Abs. 2 Z 6 EStG 1988 (2024 reform)",
+      "total": 251,
+      "active": 247,
+      "expired": 4,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "GM",
+      "labelDe": "Andere gemeinnützige Einrichtungen",
+      "labelEn": "Other public-benefit organizations",
+      "statute": "§ 4a Abs. 2 Z 7 EStG 1988 (2024 reform)",
+      "total": 207,
+      "active": 202,
+      "expired": 5,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "BI",
+      "labelDe": "Sonstige Bildungseinrichtungen",
+      "labelEn": "Other nonprofit educational institutions",
+      "statute": "§ 4a Abs. 2 Z 2 EStG 1988 (2024 reform)",
+      "total": 201,
+      "active": 198,
+      "expired": 3,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "NT",
+      "labelDe": "Naturschutzeinrichtungen und Tierheime",
+      "labelEn": "Nature conservation bodies and animal shelters",
+      "statute": "§ 4a Abs. 2 Z 3 lit. d–e EStG 1988",
+      "total": 153,
+      "active": 143,
+      "expired": 10,
+      "withValidFrom": 153
+    },
+    {
+      "prefix": "MP",
+      "labelDe": "Privatmuseen mit überregionaler Bedeutung",
+      "labelEn": "Private museums of supraregional significance",
+      "statute": "§ 4a Abs. 6 Z 6 lit. b EStG 1988",
+      "total": 80,
+      "active": 79,
+      "expired": 1,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "PA",
+      "labelDe": "Pensionsversicherungsanstalten und Versorgungseinrichtungen",
+      "labelEn": "Pension insurance and provident institutions",
+      "statute": "§ 18 Abs. 1 Z 1a EStG 1988",
+      "total": 62,
+      "active": 53,
+      "expired": 9,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "UN",
+      "labelDe": "Universitäten, Fachhochschulen, Privathochschulen, Pädagogische Hochschulen, ISTA, IDSA, ÖAW",
+      "labelEn": "Universities, applied sciences universities and academies",
+      "statute": "§ 4a Abs. 6 Z 1 EStG 1988",
+      "total": 54,
+      "active": 54,
+      "expired": 0,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "ÖK",
+      "labelDe": "Öffentliche Kindergärten",
+      "labelEn": "Public kindergartens",
+      "statute": "§ 4a Abs. 6 Z 2 lit. a EStG 1988",
+      "total": 51,
+      "active": 51,
+      "expired": 0,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "ÖS",
+      "labelDe": "Öffentliche Schulen",
+      "labelEn": "Public schools",
+      "statute": "§ 4a Abs. 6 Z 2 lit. a EStG 1988",
+      "total": 46,
+      "active": 46,
+      "expired": 0,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "KR",
+      "labelDe": "Kirchen und Religionsgesellschaften mit verpflichtenden Beiträgen",
+      "labelEn": "Churches and recognized religious communities (mandatory contributions)",
+      "statute": "§ 18 Abs. 1 Z 5 EStG 1988",
+      "total": 39,
+      "active": 38,
+      "expired": 1,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "PK",
+      "labelDe": "Privatkindergärten von Körperschaften öffentlichen Rechts",
+      "labelEn": "Private kindergartens operated by public-law bodies",
+      "statute": "§ 4a Abs. 6 Z 2 lit. b EStG 1988",
+      "total": 27,
+      "active": 26,
+      "expired": 1,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "MÖ",
+      "labelDe": "Museen von Körperschaften öffentlichen Rechts",
+      "labelEn": "Museums of public-law bodies",
+      "statute": "§ 4a Abs. 6 Z 6 lit. a EStG 1988",
+      "total": 26,
+      "active": 25,
+      "expired": 1,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "SV",
+      "labelDe": "Spendensammeleinrichtungen karitativ",
+      "labelEn": "Charitable umbrella collection bodies (historic statutory track)",
+      "statute": "§ 4a Abs. 2 Z 3 lit. a–c EStG 1988",
+      "total": 26,
+      "active": 0,
+      "expired": 26,
+      "withValidFrom": 26
+    },
+    {
+      "prefix": "ZG",
+      "labelDe": "Gemeinnützige Stiftungen (Vermögensausstattung und ggf. Spenden)",
+      "labelEn": "Public-benefit foundations (endowment & gift deductions)",
+      "statute": "§ 4b EStG 1988",
+      "total": 17,
+      "active": 13,
+      "expired": 4,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "PS",
+      "labelDe": "Privatschulen von Körperschaften öffentlichen Rechts",
+      "labelEn": "Private schools operated by public-law bodies",
+      "statute": "§ 4a Abs. 6 Z 2 lit. b EStG 1988",
+      "total": 7,
+      "active": 7,
+      "expired": 0,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "ZI",
+      "labelDe": "Innovationsstiftung für Bildung und Substiftungen",
+      "labelEn": "Innovation Foundation for Education and sub-foundations",
+      "statute": "§ 4c EStG 1988",
+      "total": 5,
+      "active": 5,
+      "expired": 0,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "SE",
+      "labelDe": "Internationale Anti-Korruptions-Akademie; Diplomatische Akademie; UNHCR; Anerkennungsfonds",
+      "labelEn": "Statutory international & diplomatic institutions (IACA, Diplomatic Academy, UNHCR)",
+      "statute": "§ 4a Abs. 6 EStG 1988",
+      "total": 4,
+      "active": 4,
+      "expired": 0,
+      "withValidFrom": 0
+    },
+    {
+      "prefix": "SN",
+      "labelDe": "Sammeleinrichtungen Naturschutz",
+      "labelEn": "Nature-conservation collection bodies (historic statutory track)",
+      "statute": "§ 4a Abs. 2 Z 3 lit. d–e EStG 1988",
+      "total": 1,
+      "active": 0,
+      "expired": 1,
+      "withValidFrom": 1
+    }
+  ],
+  "artifacts": {
+    "organizations": {
+      "path": "organizations.json.gz",
+      "bytes": 233277,
+      "sha256": "25c0d80c57ea4015710c8ae1acce450afa4496723613398738a4782876eca0c4",
+      "decodedBytes": 1593159,
+      "decodedSha256": "cd714853d697abde5a0913beee5a9acbfd27fe547557b7ac8cfe604cd840d0b9",
+      "rows": 8577
+    },
+    "csv": {
+      "path": "austria-bmf-charities.csv",
+      "bytes": 1032569,
+      "sha256": "de31db32aa655971a00df3f0fc80ddf2f8218ccd75bdcc7c32452c4dd7948f38",
+      "rows": 8577
+    },
+    "anomalies": {
+      "path": "anomalies.json",
+      "bytes": 14966,
+      "sha256": "273ee8dcd0f3a1e078815b579390fa06f3c8645572c89144a9e303d60e71df04"
+    }
+  }
+}

@@ -4,28 +4,38 @@
 
 Giving USA estimates that [U.S. charitable giving reached $617.2 billion in 2025](https://givingusa.org/giving-usa-charitable-giving-rose-to-617-20-billion-in-2025-surpassing-the-600-billion-mark-for-the-first-time/). Charitology proposes a shared craft for studying the signals, channels, incentives and feedback that aim generosity. It connects existing work in philanthropy, ethics and evaluation across causes and moral frameworks. Its own causal claims remain hypotheses to test.
 
+## Visual tour
+
+| Global Charity Index (27 jurisdictions · 3.20M records) | Charity OS (`os.charitology.org`) |
+| --- | --- |
+| [![Global Charity Index coverage across 27 jurisdictions](docs/screenshots/global-charity-index.png)](https://charitology.com/record/charity-index/coverage/) | [![Charity OS shared workspace at os.charitology.org](docs/screenshots/charity-os-workspace.png)](https://os.charitology.org/) |
+| **Austria BMF tax-deductible charities (`§ 4a EStG`, 8,577 records)** | **Italy 5 per mille IRPEF allocations (EUR 603.10M · 96,059 entities)** |
+| [![Austria BMF tax-deductible charity register](docs/screenshots/austria-charity-index.png)](https://charitology.com/record/charity-index/austria/) | [![Italy AF 2025 5 per mille funding flow explorer](docs/screenshots/italy-five-per-mille.png)](https://charitology.com/record/funding-flows/italy-five-per-mille/) |
+
 ## What’s here
 
 |                                                |                                                                                                                                                                                                   |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[Global Charity Index](https://charitology.com/record/charity-index/coverage/)** | **27 jurisdictions** (`3,205,061` dated official registry records across five continents) preserving original legal forms, native currencies, explicit `null` vs. `0`, and SHA-256 provenance manifests — no charity ratings or overhead scores. |
+| **[Funding Flows](https://charitology.com/record/funding-flows/)** | **45 public funding-flow lookups and case studies**, including Italy `5‰` / Poland `1.5%` / Slovakia `2%/3%` / Hungary `1%+1%` European tax-assignment datasets, UN OCHA FTS Global Humanitarian Funding Gaps (`2019–2026`), and OpenFEMA `2024–2026` disaster captures. |
 | **[The Diagnosis](src/content/conditions/)**   | Fifteen conditions of the charity system, each labeled established, documented, debated or hypothesis. No judgment of the good being done; the system is the subject.                             |
 | **[The Method](src/pages/method.astro)**       | Nine instruments a charitologist uses, from the five-level depth scale (relief → repair → prevention → structure → source) to the Giver’s Checklist.                                              |
 | **[The Open Problems](src/content/problems/)** | Twenty-three unanswered questions, Hilbert-style, each with a test for what counts as progress.                                                                                                   |
 | **[Programs](src/content/programs/)**          | 26 programs have usable browser functions. Institutional operations still need people, resources and governance. Each page states its exact scope.                                                |
-| **[Tools](src/content/tools/)**                | 20 catalog tools, including the shared and local Charity OS: Values Compass, Portfolio Builder, Impact Calculator, Cost-Effectiveness Model Kit, Giving Dashboard, Forecasting Platform and more. |
-| **[The Record](src/content/record/)**          | 21 information bases: Encyclopedia, Intervention Database, Cause Atlas, Gap Map, Failure Archive, Disagreement Register, Principles textbook, Lexicon and more.                                   |
-| **[Public API](src/lib/api.ts)**               | 36 static JSON datasets at `/api/v1/*.json`, with exact factual source/edition pins and source-specific reuse terms. |
-| **[Browser extension](extension/)**            | The Giver’s Checklist on supported donation pages, without analytics or background data transmission.                                                                                             |
+| **[Tools](src/content/tools/)**                | 20 catalog tools, including [Charity OS](https://os.charitology.org/), Charity Lookup, Due Diligence Checklist, Values Compass, Portfolio Builder, Compare Tool, Grant Evaluator, Impact Calculator, Cost-Effectiveness Model Kit, Giving Dashboard, and Forecasting Platform. |
+| **[The Record](src/content/record/)**          | 21 information bases: Encyclopedia, Intervention Database, Cause Atlas, Gap Map, Failure Archive, Disagreement Register, Principles textbook (with all 10 computer-narrated podcast chapters), Lexicon and more. |
+| **[Public API](src/lib/api.ts)**               | 42 static JSON datasets at `/api/v1/*.json` (including `/api/v1/charity-index.json` and `/api/v1/funding-flows.json`), with exact factual source/edition pins and source-specific reuse terms. |
+| **[Browser extension](extension/)**            | *Before You Give* (`v0.2.0`): the Giver’s Checklist on supported donation pages, without analytics or background data transmission.                                                              |
 
 Every page follows [the Charitology Standard](STYLE.md): a source for every factual claim, honest evidence labels, unknowns left unknown, and no ratings of named charities until a rating method has survived public red-team review.
 
-**[All 31 formerly seeded/designed items now have implemented software or published editions](docs/IMPLEMENTATION_NOTES.md)**, including the self-paced course, research desks, 217 country/economy data profiles, reference workbenches and six actual narrated podcast episodes. The [full roadmap](https://charitology.com/roadmap/) preserves every original idea and its current boundaries.
+**[All 31 formerly seeded/designed items now have implemented software or published editions](docs/IMPLEMENTATION_NOTES.md)**, including the self-paced course, research desks, 217 country/economy data profiles, reference workbenches and all 10 computer-narrated podcast chapters. The [full roadmap](https://charitology.com/roadmap/) preserves every original idea and its current boundaries.
 
-**Edition 0 was drafted with AI assistance and is being reviewed in public.** Review labels require recorded independent human declarations bound to the exact source version; manuscript peer review has a separate gate. The [public research ledger](https://charitology.com/research-ledger/) preserves exact sources, revisions and qualification limits.
+**Public review and provenance:** All sources, datasets, and claims are open to public verification, corrections, and independent human review ([how review works](https://charitology.com/contribute/review/), [Issue #1](https://github.com/theguysaccount/charitology/issues/1)). The [public research ledger](https://charitology.com/research-ledger/) preserves exact sources, revisions and qualification limits.
 
 ## Run it
 
-Node 22.23.4 or newer; `.nvmrc` selects Node 24. This migration candidate pins Astro 7.4.7. Its [acceptance record](docs/ASTRO_7_MIGRATION_ACCEPTANCE.md) separates completed static checks and one native read-only model reproduction from remaining browser and release gates. The candidate has not been merged or deployed.
+Node 22.23.4 or newer; `.nvmrc` selects Node 24. The live site runs on Astro 7.4.7 (see the [Astro 7 migration record](docs/ASTRO_7_MIGRATION_ACCEPTANCE.md)).
 
 ```sh
 npm ci

@@ -1,8 +1,9 @@
-// Single source of truth for the Global Charity Index (26 jurisdictions) and
+// Single source of truth for the Global Charity Index (27 jurisdictions) and
 // published Funding Flows lookups and case studies. Powers /record/charity-index/coverage/,
 // /record/funding-flows/, /tools/charity-lookup/, /record/open-datasets/, and
 // /api/v1/charity-index.json + /api/v1/funding-flows.json.
 import australia from '../../public/data/charity-financials/manifest.json';
+import austria from '../../public/data/charity-registry/austria/manifest.json';
 import canada from '../../public/data/charity-financials/ca/manifest.json';
 import englandWales from '../../public/data/charity-financials/ew/manifest.json';
 import scotland from '../../public/data/charity-financials/scotland/manifest.json';
@@ -73,6 +74,20 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     history: `${number(australia.organizationsWithBothYears)} ABNs have dated reporting in both source years, 2023 and 2024.`,
     boundary: 'The 2024 extract sets the identity scope. Earlier unmatched and undated records are left out. The grant fields distinguish money for use inside and outside Australia.',
     manifest: '/data/charity-financials/manifest.json',
+  },
+  {
+    id: 'austria',
+    name: 'Austria',
+    source: 'Bundesministerium für Finanzen (BMF) Liste begünstigter Einrichtungen (§ 4a EStG)',
+    route: '/record/charity-index/austria/',
+    label: 'Search Austrian tax-deductible charities',
+    date: austria.capturedOn,
+    recordCount: austria.counts.includedOrganizations,
+    recordUnit: 'tax-deductible registrations',
+    coverage: `${number(austria.counts.includedOrganizations)} Austrian BMF registrations with 100% unique official codes across ${austria.counts.populatedCategories} statutory categories (${number(austria.counts.activeOpenEnded)} active open-ended and ${number(austria.counts.expiredWithValidTo)} historical/ended as of ${austria.asOf}).`,
+    history: `Dated new registrations jumped nearly eightfold under Austria’s 2024 Nonprofit Reform Act (from ${number(austria.counts.recentValidFromByYear['2023'])} in 2023 to ${number(austria.counts.recentValidFromByYear['2024'])} in 2024 and ${number(austria.counts.recentValidFromByYear['2025'])} in 2025; ${number(austria.counts.reformCohort2024To2026Dated)} dated entries across 2024–2026).`,
+    boundary: 'Covers tax-deductible recipient status under § 4a/§ 4b/§ 4c/§ 18 EStG rather than Austria’s full ~130,000-association ZVR register; financial figures are unpublished (null). Omitted Gültig-Ab dates (5,597 ex-lege/undated rows), 31 ended entries without start dates, and 419 repeated organization names across multiple codes stay verbatim in anomalies.json.',
+    manifest: '/data/charity-registry/austria/manifest.json',
   },
   {
     id: 'brazil',
@@ -501,6 +516,7 @@ export const US_IRS_REGISTRY_SUMMARY = {
 
 export const COVERAGE_SOURCES = [
   { title: 'Download charity register data', publisher: 'Australian Charities and Not-for-profits Commission', url: 'https://www.acnc.gov.au/charity/about-charity-register/download-charity-register-data' },
+  { title: 'Liste begünstigter Einrichtungen (Spenden, Kirchenbeiträge u.a.) — Stand 01.10.2026 (PDF)', publisher: austria.publisher, url: austria.catalogues.bmfQuarterlyPdf },
   { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
   { title: 'Registar udruga Republike Hrvatske & Registar zaklada Republike Hrvatske (Otvorena dozvola RH)', publisher: croatia.publisher, url: croatia.catalogues.associations },
   { title: 'Public Registers Open Data (Veřejný rejstřík — 42 court dumps, 2026 actual)', publisher: 'Ministry of Justice of the Czech Republic (Ministerstvo spravedlnosti ČR)', url: czechia.catalogues.justiceVr },

@@ -1,0 +1,455 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/austria/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Austria tax-deductible charities (BMF § 4a EStG Liste begünstigter Einrichtungen)';
+const dataPath = '/data/charity-registry/austria/';
+const count = (value: number) => value.toLocaleString('en-US');
+
+const sources = [
+  {
+    title: 'Liste begünstigter Einrichtungen (Spenden, Kirchenbeiträge u.a.) — Stand 01.10.2026 (PDF)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.bmfQuarterlyPdf,
+  },
+  {
+    title: 'BMF Online Search — Liste begünstigter Einrichtungen',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.bmfSearchPortal,
+  },
+  {
+    title: 'Spendenbegünstigung neu (ab 2024 — Gemeinnützigkeitsreformgesetz)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.bmfReformGuide,
+  },
+  {
+    title: 'Zentrales Vereinsregister (ZVR — Austrian Central Register of Associations)',
+    publisher: 'Bundesministerium für Inneres (BMI)',
+    url: manifest.catalogues.zvrPortal,
+  },
+];
+
+const reformYears = Object.entries(manifest.counts.recentValidFromByYear).map(([year, n]) => ({
+  year,
+  count: n as number,
+}));
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Global Charity Index · Austria"
+  summary="Search all 8,577 Austrian tax-deductible charities, fire brigades, cultural bodies, sports clubs, schools, universities and foundations in the Federal Ministry of Finance (BMF) quarterly register (Stand 01.10.2026), with 100% unique BMF registration codes across 22 statutory categories."
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Global Charity Index', href: '/record/charity-index/' },
+    { label: 'Austria' },
+  ]}
+  filePath="src/pages/record/charity-index/austria.astro"
+  sources={sources}
+>
+  <p>
+    This edition indexes the complete official quarterly PDF of the Austrian Federal Ministry of Finance
+    (<em>Bundesministerium für Finanzen — BMF</em>) <em>Liste begünstigter Einrichtungen</em> (<code>{manifest.standLine}</code>,
+    captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>, <code>{manifest.sourceCapture.pages}</code> pages).
+    Every one of the <strong>{count(manifest.counts.includedOrganizations)} registrations</strong> carries a unique official
+    BMF code (<em>Registrierungsnummer</em>) spanning <strong>{manifest.counts.populatedCategories} statutory categories</strong> under
+    <code>§ 4a</code>, <code>§ 4b</code>, <code>§ 4c</code> and <code>§ 18 EStG 1988</code>:
+    <strong>{count(manifest.counts.activeOpenEnded)}</strong> currently open-ended active registrations and
+    <strong>{count(manifest.counts.expiredWithValidTo)}</strong> historical/ended registrations with an explicit <em>Gültig-Bis</em> date.
+  </p>
+  <p>
+    Because Austria’s landmark <strong>2024 Nonprofit Reform Act</strong> (<em>Gemeinnützigkeitsreformgesetz</em>, effective January 1, 2024)
+    expanded tax deductibility beyond charitable and research bodies to nonprofit education (<code>BI</code>), sports (<code>SP</code>),
+    arts and culture (<code>KK</code>), public/private schools and kindergartens (<code>ÖS</code>/<code>ÖK</code>/<code>PK</code>/<code>PS</code>),
+    and general public-benefit associations (<code>GM</code>), dated new registrations jumped nearly eightfold from
+    <strong>{count(manifest.counts.recentValidFromByYear['2023'])}</strong> in 2023 to
+    <strong>{count(manifest.counts.recentValidFromByYear['2024'])}</strong> in 2024 and
+    <strong>{count(manifest.counts.recentValidFromByYear['2025'])}</strong> in 2025 (<strong>{count(manifest.counts.reformCohort2024To2026Dated)}</strong> dated
+    entries across 2024–2026).
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-austria-registry
+    data-base={url(dataPath)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="at-search-heading"
+  >
+    <h2 id="at-search-heading">Search Austrian tax-deductible charities</h2>
+    <p id="at-search-hint">
+      Enter part of an organization’s name (German umlauts <code>ä/ö/ü/ß</code> optional, e.g., <code>rotes kreuz</code>,
+      <code>caritas</code>, <code>arzte ohne grenzen</code>, <code>alpenverein</code>, <code>albertina</code> or <code>save tibet</code>)
+      or a BMF code (e.g., <code>SO-1131</code>, <code>SP-22309</code>, <code>BI-23269</code> or <code>MÖ-11641</code>).
+      Search runs locally in your browser.
+    </p>
+    <form aria-describedby="at-search-hint">
+      <label for="at-query">Organization name or BMF registration code</label>
+      <div class="finance-actions">
+        <input type="search" id="at-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="at-prefix">Statutory category</label>
+          <select id="at-prefix" disabled>
+            <option value="">All 22 categories ({count(manifest.counts.includedOrganizations)})</option>
+            {
+              manifest.categories.map((cat) => (
+                <option value={cat.prefix}>
+                  {cat.prefix} — {cat.labelEn} ({count(cat.total)})
+                </option>
+              ))
+            }
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="at-status">Status / cohort</label>
+          <select id="at-status" disabled>
+            <option value="">All registrations ({count(manifest.counts.includedOrganizations)})</option>
+            <option value="active">Active (open-ended, no Gültig-Bis) ({count(manifest.counts.activeOpenEnded)})</option>
+            <option value="expired">Historical / ended (Gültig-Bis set) ({count(manifest.counts.expiredWithValidTo)})</option>
+            <option value="reform2024">Dated 2024–2026 reform cohort ({count(manifest.counts.reformCohort2024To2026Dated)})</option>
+            <option value="undated">Ex-lege / undated Gültig-Ab ({count(manifest.counts.withoutValidFrom)})</option>
+          </select>
+        </span>
+        <button type="submit" class="btn" disabled>Search organizations</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>
+      Search when you are ready to load Austria’s BMF register ({(manifest.artifacts.organizations.bytes / 1024).toFixed(1)} KB compressed).
+    </p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="edelweiss" aria-label="Austria BMF tax-deductible charity results" data-results></ol>
+    <noscript>
+      <p>
+        Without JavaScript, download the
+        <a href={url(dataPath + manifest.artifacts.csv.path)} download>
+          Austria BMF tax-deductible charities CSV ({count(manifest.counts.includedOrganizations)} rows)
+        </a>
+        or consult <a href={manifest.catalogues.bmfSearchPortal}>BMF’s daily online search</a> directly.
+      </p>
+    </noscript>
+  </section>
+
+  <h2 id="categories">All 22 populated statutory categories (§ 4a / § 4b / § 4c / § 18 EStG)</h2>
+  <p>
+    Austria’s BMF code prefix encodes the exact statutory basis for donor tax deductibility. Voluntary fire brigades (<code>FF</code>,
+    <strong>{count(manifest.categories[0].total)}</strong>) and charitable/humanitarian bodies (<code>SO</code>,
+    <strong>{count(manifest.categories[1].total)}</strong>) represent 73.1% of all rows, while historic umbrella collection tracks
+    (<code>SV</code> and <code>SN</code>) now carry zero open-ended entries. Two official BMF dropdown tracks
+    (<code>AS</code> Austrian schools abroad and <code>SG</code> donations-only foundations) contain zero rows in the 2026-10-01 snapshot.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Austria BMF statutory categories" tabindex="0">
+    <table class="data at-table">
+      <caption>Registrations by statutory BMF prefix in Liste begünstigter Einrichtungen (Stand 01.10.2026)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Prefix</th>
+          <th scope="col">Category (English &amp; official BMF German label)</th>
+          <th scope="col">Statute</th>
+          <th scope="col">Total</th>
+          <th scope="col">Active</th>
+          <th scope="col">Ended</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.categories.map((cat) => (
+            <tr>
+              <th scope="row"><code>{cat.prefix}</code></th>
+              <td>
+                <strong>{cat.labelEn}</strong><br />
+                <span class="note" lang="de">{cat.labelDe}</span>
+              </td>
+              <td><code>{cat.statute}</code></td>
+              <td>{count(cat.total)}</td>
+              <td>{count(cat.active)}</td>
+              <td>{count(cat.expired)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="reform-wave">2024–2026 Nonprofit Reform Act registration surge</h2>
+  <p>
+    Among the <strong>{count(manifest.counts.withValidFrom)}</strong> registrations carrying an explicit <em>Gültig-Ab</em>
+    start date (spanning <time datetime={manifest.counts.earliestValidFrom}>{manifest.counts.earliestValidFrom}</time> through
+    <time datetime={manifest.counts.latestValidFrom}>{manifest.counts.latestValidFrom}</time>), annual approvals surged sharply
+    when Austria’s 2024 <em>Gemeinnützigkeitsreformgesetz</em> opened donation deductibility to education, sports, culture and
+    broader public-benefit associations:
+  </p>
+  <div class="table-wrap" role="region" aria-label="Annual dated BMF registrations 2019–2026" tabindex="0">
+    <table class="data at-wave-table">
+      <caption>Dated BMF registrations by Gültig-Ab calendar year (2019–2026; 5,597 ex-lege/undated entries excluded from year totals)</caption>
+      <thead>
+        <tr>
+          {reformYears.map((y) => <th scope="col">{y.year}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {reformYears.map((y) => <td>{count(y.count)}</td>)}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="coverage">Scope, missingness, anomalies and ZVR boundaries</h2>
+  <p>
+    <strong>What is included vs. excluded:</strong> This register covers strictly entities granted tax-deductible recipient status
+    by Austria’s Federal Ministry of Finance (BMF) under <code>§ 4a</code>, <code>§ 4b</code>, <code>§ 4c</code> or
+    <code>§ 18 EStG 1988</code> as of <time datetime={manifest.asOf}>{manifest.asOf}</time>. It is <strong>not</strong> a census of
+    Austria’s ~130,000 registered associations in the Interior Ministry’s <em>Zentrales Vereinsregister</em> (ZVR), nor does BMF publish
+    annual financial statements, donation receipts or street addresses in this quarterly PDF (financial figures remain <code>null</code>,
+    never <code>0</code>). Because BMF updates the live register daily, check <a href={manifest.catalogues.bmfSearchPortal}>BMF’s online search</a>
+    for legally binding current-day tax-deduction verification.
+  </p>
+  <p>
+    <strong>Preserved missingness and source anomalies:</strong> Exactly <strong>{count(manifest.counts.withoutValidFrom)}</strong> entries
+    (65.3%) omit <em>Gültig-Ab</em> in the official PDF (kept explicitly <code>null</code>), including <strong>{count(manifest.counts.validToWithoutValidFrom)}</strong>
+    rows that carry a <em>Gültig-Bis</em> expiry date with no start date. Exactly <strong>419</strong> exact organization names appear under
+    more than one BMF registration code (907 rows), combining homonymous municipal volunteer fire brigades and charities whose historic code
+    expired before a renewed registration was issued (e.g., <em>Aidshilfe Salzburg</em>: ended <code>SO-2482</code> and active <code>SO-3499</code>).
+    All source quirks are documented verbatim in{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'anomalies.json')} download>anomalies.json</a> ·{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(dataPath + manifest.artifacts.csv.path)} download>Download full CSV ({count(manifest.counts.includedOrganizations)} rows)</a> ·{' '}
+    <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.
+  </p>
+</Entry>
+
+<style>
+  .at-table {
+    min-inline-size: 42rem;
+  }
+  .at-wave-table {
+    min-inline-size: 28rem;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName } from '../../../lib/client/financial-directory';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../../../lib/client/verified-json';
+
+  type AtRow = {
+    code: string;
+    prefix: string;
+    name: string;
+    norm: string;
+    validFrom: string | null;
+    validTo: string | null;
+    active: boolean;
+  };
+  type AtCategory = {
+    prefix: string;
+    labelDe: string;
+    labelEn: string;
+    statute: string;
+    total: number;
+    active: number;
+    expired: number;
+  };
+  type AtManifest = {
+    format: string;
+    asOf: string;
+    standLine: string;
+    capturedOn: string;
+    publisher: string;
+    categories: AtCategory[];
+    artifacts: {
+      organizations: VerifiedJsonAsset & { path: string; rows: number };
+    };
+  };
+
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/ß/g, 'ss')
+      .replace(/ae/g, 'a')
+      .replace(/oe/g, 'o')
+      .replace(/ue/g, 'u')
+      .normalize('NFKD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  const normalizeDirect = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/ß/g, 'ss')
+      .normalize('NFKD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  const limit = 40;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-austria-registry]')) {
+    const manifest: AtManifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#at-query', root) as HTMLInputElement;
+    const prefixEl = $('#at-prefix', root) as HTMLSelectElement;
+    const statusElSelect = $('#at-status', root) as HTMLSelectElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    const categoryMap = new Map(manifest.categories.map((c) => [c.prefix, c]));
+
+    for (const el of [queryEl, prefixEl, statusElSelect, submitBtn, clearBtn]) el.disabled = false;
+
+    let cache: Promise<AtRow[]> | null = null;
+    let shown: AtRow[] = [];
+
+    const loadAll = () => {
+      if (!cache) {
+        const asset = manifest.artifacts.organizations;
+        cache = loadVerifiedJson(base + asset.path, asset).then((data) => {
+          if (!Array.isArray(data) || data.length !== asset.rows) {
+            throw new Error('Unexpected Austria BMF organization count.');
+          }
+          return data as AtRow[];
+        });
+      }
+      return cache;
+    };
+
+    const matchesStatus = (r: AtRow, st: string) => {
+      if (!st) return true;
+      if (st === 'active') return r.active;
+      if (st === 'expired') return !r.active;
+      if (st === 'reform2024') return r.validFrom !== null && r.validFrom >= '2024-01-01';
+      if (st === 'undated') return r.validFrom === null;
+      return true;
+    };
+
+    const describeRow = (r: AtRow) => {
+      const cat = categoryMap.get(r.prefix);
+      const parts: string[] = [cat ? `${r.prefix}: ${cat.labelEn}` : r.prefix];
+      parts.push(r.active ? 'Active (open-ended)' : `Ended ${r.validTo}`);
+      parts.push(r.validFrom ? `Valid from ${r.validFrom}` : 'Valid from: ex-lege / undated');
+      return parts.join(' · ');
+    };
+
+    const render = (rows: AtRow[], total: number, q: string) => {
+      shown = rows;
+      listEl.replaceChildren();
+      jsonBtn.disabled = rows.length === 0;
+      csvBtn.disabled = rows.length === 0;
+      if (!rows.length) {
+        statusEl.textContent = q
+          ? `No Austrian BMF registrations matched “${q}” under the selected filters.`
+          : 'No registrations matched the selected filters.';
+        return;
+      }
+      statusEl.textContent =
+        total > rows.length
+          ? `Showing the first ${rows.length} of ${total.toLocaleString('en-US')} matching registrations.`
+          : `Showing ${total.toLocaleString('en-US')} matching registration${total === 1 ? '' : 's'}.`;
+
+      for (const r of rows) {
+        listEl.append(
+          h(
+            'li',
+            {},
+            h('strong', { lang: 'de' }, r.name),
+            ' ',
+            h('code', {}, r.code),
+            h('div', { class: 'note' }, describeRow(r)),
+          ),
+        );
+      }
+    };
+
+    const runSearch = async () => {
+      const rawQ = queryEl.value.trim();
+      const upperQ = rawQ.toUpperCase();
+      const normQ = normalizeDirect(rawQ);
+      const foldedQ = normalize(rawQ);
+      const pref = prefixEl.value;
+      const st = statusElSelect.value;
+      statusEl.textContent = 'Loading Austria BMF register snapshot…';
+      try {
+        const all = await loadAll();
+        const filtered = all.filter((r) => {
+          if (pref && r.prefix !== pref) return false;
+          if (!matchesStatus(r, st)) return false;
+          if (!rawQ) return true;
+          if (r.code.toUpperCase().includes(upperQ)) return true;
+          if (r.name.toLowerCase().includes(rawQ.toLowerCase())) return true;
+          if (normQ && r.norm.includes(normQ)) return true;
+          if (foldedQ && foldedQ !== normQ && r.norm.includes(foldedQ)) return true;
+          return false;
+        });
+        render(filtered.slice(0, limit), filtered.length, rawQ);
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load Austria BMF snapshot.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void runSearch();
+    });
+    prefixEl.addEventListener('change', () => {
+      void runSearch();
+    });
+    statusElSelect.addEventListener('change', () => {
+      void runSearch();
+    });
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      prefixEl.value = '';
+      statusElSelect.value = '';
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Search cleared.';
+      queryEl.focus();
+    });
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-austria-bmf-charities.json',
+        JSON.stringify(
+          {
+            source: manifest.publisher,
+            asOf: manifest.asOf,
+            standLine: manifest.standLine,
+            rows: shown,
+          },
+          null,
+          2,
+        ),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      const csvText = toCsv(
+        shown.map((r) => ({
+          bmf_code: r.code,
+          prefix: r.prefix,
+          category_en: categoryMap.get(r.prefix)?.labelEn ?? r.prefix,
+          name: financialCsvName(r.name),
+          valid_from: r.validFrom ?? '',
+          valid_to: r.validTo ?? '',
+          status: r.active ? 'active' : 'expired',
+        })),
+      );
+      download('charitology-austria-bmf-charities.csv', '\uFEFF' + csvText, 'text/csv;charset=utf-8');
+    });
+  }
+</script>
