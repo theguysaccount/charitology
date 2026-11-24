@@ -32,15 +32,9 @@ const Tool = tools[`../../components/tools/${entry.id}.astro`]?.default;
   sources={entry.data.sources}
 >
   <Fragment slot="badges"><Badges status={entry.data.status} />{entry.id === 'cost-effectiveness-model-kit' && <a class="btn btn-ghost btn-small" href={url('/tools/cost-effectiveness-model-kit/spreadsheet/')}>Output-cost spreadsheet</a>}</Fragment>
-  {Tool ? (
-    <Fragment slot="top">
-      <ToolAgentOsStrip slug={entry.id} title={entry.data.title} group={entry.data.group} />
-      <Tool />
-      {entry.id === 'cost-effectiveness-model-kit' && <ModelBundles />}
-    </Fragment>
-  ) : (
-    <ToolAgentOsStrip slug={entry.id} title={entry.data.title} group={entry.data.group} />
-  )}
+  {Tool && <ToolAgentOsStrip slot="before-top" slug={entry.id} title={entry.data.title} group={entry.data.group} />}
+  {Tool && (entry.id === 'cost-effectiveness-model-kit' ? <Fragment slot="top"><Tool /><ModelBundles /></Fragment> : <Tool slot="top" />)}
+  {!Tool && <ToolAgentOsStrip slug={entry.id} title={entry.data.title} group={entry.data.group} />}
   <Content />
   <CatalogAside slot="aside" entry={entry} />
 </Entry>
