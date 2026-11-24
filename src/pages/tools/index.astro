@@ -1,10 +1,155 @@
 ---
-import CatalogIndex from '../../components/CatalogIndex.astro';
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import CatalogCard from '../../components/CatalogCard.astro';
+import SiteSymbol from '../../components/SiteSymbol.astro';
+import AgentOsQuickstart from '../../components/AgentOsQuickstart.astro';
+import type { SymbolName } from '../../lib/site-identities';
+import { catalogGroups, statusCounts, type CatalogEntry } from '../../lib/content';
+
+const title = 'Tools';
+const eyebrow = 'Charity OS · AI Agents · Quick Lookups';
+const lede =
+  'Start with Charity OS if you run a nonprofit, connect your AI agent (Claude, ChatGPT, Codex, Cursor) via MCP and JSON API, or open one of the quick browser lookups below.';
+
+const groups = await catalogGroups('tools');
+const counts = await statusCounts('tools');
+const total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+const FEATURED_IDS = ['charity-lookup', 'due-diligence-checklist', 'compare-tool', 'giving-dashboard'] as const;
+const featuredSet = new Set<string>(FEATURED_IDS);
+
+const allEntries = groups.flatMap((g) => g.entries);
+const entryById = new Map<string, CatalogEntry>(allEntries.map((e) => [e.id, e]));
+const featuredEntries = FEATURED_IDS.map((id) => entryById.get(id)).filter((e): e is CatalogEntry => Boolean(e));
+
+const remainingGroups = groups
+  .map((g) => ({
+    group: g.group,
+    entries: g.entries.filter((e) => !featuredSet.has(e.id)),
+  }))
+  .filter((g) => g.entries.length > 0);
+const remainingCount = remainingGroups.reduce((sum, g) => sum + g.entries.length, 0);
+
+const groupSymbols: Record<string, SymbolName> = {
+  'For donors': 'gift',
+  'For nonprofits and funders': 'hands',
+  'For everyone': 'people',
+};
+const groupId = (group: string) => `g-${group.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 ---
 
-<CatalogIndex
-  collection="tools"
-  title="Tools"
-  eyebrow="Instruments anyone can use"
-  lede="Free tools that put the method in your hands. Most keep your work in this browser. The shared Charity OS uses accounts and private server storage; each tool explains its data flow. No ads or tracking."
-/>
+<Base title={title} description={lede}>
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: title }]} />
+      <span class="eyebrow">{eyebrow}</span>
+      <h1>{title}</h1>
+      <p class="lede">{lede}</p>
+      <AgentOsQuickstart />
+    </div>
+  </header>
+
+  <section class="wrap section-tight" aria-labelledby="everyday-tools">
+    <h2 id="everyday-tools" class="group-title">
+      <SiteSymbol name="bolt" />Start here: {featuredEntries.length} everyday browser tools
+    </h2>
+    <p class="note tools-subnote">
+      Need a fast answer in your browser without connecting an agent or signing in? These four cover 90% of donor lookups and checks.
+    </p>
+    <div class="grid">
+      {featuredEntries.map((entry) => <CatalogCard entry={entry} base="/tools/" />)}
+    </div>
+  </section>
+
+  <section class="wrap section-tight" aria-labelledby="more-tools-heading">
+    <h2 id="more-tools-heading" class="sr-only">Specialized calculators and research workbenches</h2>
+    <details class="more-tools-drawer">
+      <summary>
+        <span class="drawer-title">
+          <SiteSymbol name="tools" />
+          Browse all {remainingCount} specialized calculators, planners &amp; research workbenches ({total} tools total)
+        </span>
+      </summary>
+      <div class="drawer-body">
+        {
+          remainingGroups.map((g) => (
+            <div class="drawer-group" aria-labelledby={groupId(g.group)}>
+              <h3 id={groupId(g.group)} class="group-title group-title--sub">
+                <SiteSymbol name={groupSymbols[g.group] ?? 'folder'} />
+                {g.group}
+              </h3>
+              <div class="grid">
+                {g.entries.map((entry) => (
+                  <CatalogCard entry={entry} base="/tools/" />
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </details>
+  </section>
+</Base>
+
+<style>
+  .tools-subnote {
+    margin: -0.35rem 0 1.1rem;
+    max-width: 65ch;
+  }
+  .group-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.35rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .group-title--sub {
+    font-size: 1.15rem;
+    margin-top: 0;
+  }
+  .more-tools-drawer {
+    border: 1px solid var(--rule);
+    border-radius: 0.75rem;
+    background: var(--paper-2);
+    padding: 0;
+    overflow: hidden;
+  }
+  .more-tools-drawer > summary {
+    padding: 1rem 1.25rem;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+  }
+  .more-tools-drawer > summary::-webkit-details-marker {
+    display: none;
+  }
+  .more-tools-drawer > summary::before {
+    content: '▸';
+    margin-inline-end: 0.65rem;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+  .more-tools-drawer[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  .more-tools-drawer[open] > summary {
+    border-bottom: 1px solid var(--rule);
+  }
+  .drawer-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .drawer-body {
+    padding: 1.25rem;
+    display: grid;
+    gap: 1.75rem;
+    background: var(--paper);
+  }
+</style>

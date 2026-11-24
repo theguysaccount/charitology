@@ -109,7 +109,7 @@ export const sections: Section[] = [
   } },
   { path: '/for-charities/', symbol: 'hands', tone: 'green', entries: {
     'start': 'steps', 'fundraising': 'megaphone', 'networks': 'network', 'collaborate': 'dialogue',
-    'website-pilots': 'window', 'os-plan': 'ruler', 'tools': 'tools', 'benefits': 'gift',
+    'website-pilots': 'window', 'os-plan': 'ruler', 'tools': 'tools', 'benefits': 'gift', 'free': 'perksStar',
     'fundraising/email-appeals': 'mailSend', 'fundraising/paid-ads': 'target',
     'fundraising/fundraising-events': 'calendar', 'fundraising/recurring-giving': 'loop',
     'fundraising/peer-to-peer': 'network', 'fundraising/major-gifts': 'gift',
