@@ -172,6 +172,7 @@ export const symbols = {
   permitStamp: 'M4 15h16v5H4v-5Zm3 0v-2a5 5 0 0 1 10 0v2M9 6a3 3 0 1 1 6 0c0 1.4-.9 2.4-1.5 3.5h-3C9.9 8.4 9 7.4 9 6ZM3 20h18',
   romanArch: 'M3 20h18M5 20V8a7 7 0 0 1 14 0v12M9 20v-7a3 3 0 0 1 6 0v7M3 8h18M7 4h10',
   fivePerMille: 'M4 5h16v14H4V5Zm3.5 10.5 7-7M7.5 8.5h.01M14.5 13h.01M16.5 15.5h.01',
+  edelweiss: 'M12 2.5 13.8 8.2 19.5 6.5 15.6 11.4 21 14.5 14.8 14.8 15.5 20.8 12 16.2 8.5 20.8 9.2 14.8 3 14.5 8.4 11.4 4.5 6.5 10.2 8.2 12 2.5ZM12 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z',
 } as const;
 
 export type SymbolName = keyof typeof symbols;

@@ -1,0 +1,571 @@
+{
+  "format": "charitology-austria-bmf-anomalies-v1",
+  "asOf": "2026-10-01",
+  "standLine": "Stand: 01.10.2026 09:14:28",
+  "summary": {
+    "validToWithoutValidFromCount": 31,
+    "undatedValidFromCount": 5597,
+    "phasedOutCollectionCategories": {
+      "SV": {
+        "total": 26,
+        "active": 0,
+        "expired": 26
+      },
+      "SN": {
+        "total": 1,
+        "active": 0,
+        "expired": 1
+      }
+    },
+    "repeatedExactNamesCount": 419,
+    "repeatedExactNameRows": 907,
+    "namesWithExpiredAndActiveCodes": 200,
+    "unusedOfficialDropdownPrefixes": [
+      "AS",
+      "SG"
+    ]
+  },
+  "notes": [
+    "BMF omits Gültig-Ab (validFrom) on 5,597 of 8,577 registrations (65.3%), predominantly ex-lege statutory entities (volunteer fire brigades FF, universities UN, public schools/kindergartens ÖS/ÖK, churches KR) and select post-2024 reform entries. These remain explicit null rather than estimated dates.",
+    "31 registrations carry a Gültig-Bis expiry date with Gültig-Ab omitted (validFrom = null). All 31 are preserved verbatim.",
+    "All 26 SV (charitable umbrella collection bodies) and 1 SN (nature collection body) registrations carry historical Gültig-Bis expiry dates (0 currently open-ended).",
+    "419 exact organization names appear under multiple distinct BMF registration codes (907 rows total), combining distinct municipal volunteer fire brigades sharing a village name (e.g. 5 distinct Freiwillige Feuerwehr Aigen) and organizations whose historical code expired before a renewed active registration was issued.",
+    "Two official BMF web-search dropdown categories (AS Auslandsschulen and SG gemeinnützige Stiftungen Spenden) have zero rows in the 2026-10-01 quarterly PDF snapshot."
+  ],
+  "validToWithoutValidFrom": [
+    {
+      "code": "SP-22371",
+      "name": "American Football Bund Österreich (AFBÖ)",
+      "validFrom": null,
+      "validTo": "2026-08-05"
+    },
+    {
+      "code": "PA-13222",
+      "name": "AMT D NOE LANDESREGIERUNG-LEHRER",
+      "validFrom": null,
+      "validTo": "2019-03-05"
+    },
+    {
+      "code": "ZG-15963",
+      "name": "Aus Liebe zum Menschen Stiftung",
+      "validFrom": null,
+      "validTo": "2023-12-31"
+    },
+    {
+      "code": "SP-23589",
+      "name": "FC Gleisdorf 09 (Fußballclub Gleisdorf 09)",
+      "validFrom": null,
+      "validTo": "2026-07-13"
+    },
+    {
+      "code": "SP-26213",
+      "name": "Football School",
+      "validFrom": null,
+      "validTo": "2026-07-24"
+    },
+    {
+      "code": "SP-22653",
+      "name": "Förderverein Ausbildungszentrum Fußball Wirtschaft (AFW)",
+      "validFrom": null,
+      "validTo": "2026-07-22"
+    },
+    {
+      "code": "FF-8207",
+      "name": "Freiwillige Feuerwehr Amesschlag",
+      "validFrom": null,
+      "validTo": "2020-03-30"
+    },
+    {
+      "code": "FF-9200",
+      "name": "Freiwillige Feuerwehr Krieglach",
+      "validFrom": null,
+      "validTo": "2017-09-18"
+    },
+    {
+      "code": "GM-32318",
+      "name": "Gemeinnützige Privatstiftung Frieden",
+      "validFrom": null,
+      "validTo": "2025-09-26"
+    },
+    {
+      "code": "ZG-18023",
+      "name": "Gemeinnützige Stiftung CHARIS",
+      "validFrom": null,
+      "validTo": "2023-12-31"
+    },
+    {
+      "code": "PK-25662",
+      "name": "Hort Traun",
+      "validFrom": null,
+      "validTo": "2025-12-03"
+    },
+    {
+      "code": "BI-28870",
+      "name": "Institut zur Förderung digitaler Mediennutzung, Institute for New Media",
+      "validFrom": null,
+      "validTo": "2026-07-10"
+    },
+    {
+      "code": "GM-21829",
+      "name": "Internationales Zentrum zur Durchsetzung der Menschenrechte (IZDMR), englisch: Centre for the Enforcement of Human Rights International (CEHRI)",
+      "validFrom": null,
+      "validTo": "2026-08-10"
+    },
+    {
+      "code": "ZG-17063",
+      "name": "Kärntner Kulturstiftung KKS",
+      "validFrom": null,
+      "validTo": "2023-12-31"
+    },
+    {
+      "code": "GM-26769",
+      "name": "KIWANIS-CLUB Wien Belvedere (KC Wien Belvedere)",
+      "validFrom": null,
+      "validTo": "2026-01-28"
+    },
+    {
+      "code": "KR-22089",
+      "name": "MENNONITISCHE FREIKIRCHE STEYR",
+      "validFrom": null,
+      "validTo": "2024-12-09"
+    },
+    {
+      "code": "GM-28369",
+      "name": "MIT EUCH - FÜR EUCH",
+      "validFrom": null,
+      "validTo": "2026-08-07"
+    },
+    {
+      "code": "MP-12682",
+      "name": "Museum KUNST der VERLORENEN GENERATION",
+      "validFrom": null,
+      "validTo": "2020-12-21"
+    },
+    {
+      "code": "GM-33404",
+      "name": "NPH Österreich - Hilfe für Waisenkinder - Unsere kleinen Brüder und Schwestern",
+      "validFrom": null,
+      "validTo": "2025-12-31"
+    },
+    {
+      "code": "MÖ-10860",
+      "name": "Oberösterreichisches Landesmuseum",
+      "validFrom": null,
+      "validTo": "2022-11-28"
+    },
+    {
+      "code": "PA-14222",
+      "name": "Österreichische Gesundheitskasse als RNF der BGLD GEBIETSKRANKENKASSE",
+      "validFrom": null,
+      "validTo": "2020-09-24"
+    },
+    {
+      "code": "PA-15063",
+      "name": "Österreichische Gesundheitskasse als RNF der Kärntner Gebietskrankenkasse",
+      "validFrom": null,
+      "validTo": "2020-09-24"
+    },
+    {
+      "code": "PA-15082",
+      "name": "Österreichische Gesundheitskasse als RNF der Niederösterreichische Gebietskrankenkasse",
+      "validFrom": null,
+      "validTo": "2020-09-24"
+    },
+    {
+      "code": "PA-14442",
+      "name": "Österreichische Gesundheitskasse als RNF der Salzburger Gebietskrankenkasse",
+      "validFrom": null,
+      "validTo": "2020-09-24"
+    },
+    {
+      "code": "PA-14262",
+      "name": "Österreichische Gesundheitskasse als RNF der Steiermärkischen Gebietskrankenkasse",
+      "validFrom": null,
+      "validTo": "2020-09-24"
+    },
+    {
+      "code": "PA-14402",
+      "name": "Österreichische Gesundheitskasse als RNF der Tiroler Gebietskrankenkasse",
+      "validFrom": null,
+      "validTo": "2020-09-24"
+    },
+    {
+      "code": "PA-14762",
+      "name": "Österreichische Gesundheitskasse als RNF der Vorarlberger Gebietskrankenkasse",
+      "validFrom": null,
+      "validTo": "2020-09-24"
+    },
+    {
+      "code": "PA-4594",
+      "name": "Österreichischer Rechtsanwaltskammertag",
+      "validFrom": null,
+      "validTo": "2018-01-09"
+    },
+    {
+      "code": "BI-21590",
+      "name": "Samenkorn - Lebensprozesse ermöglichen bei Kindern und anderen Menschen",
+      "validFrom": null,
+      "validTo": "2026-08-06"
+    },
+    {
+      "code": "ZG-19508",
+      "name": "Stiftung Naturparke",
+      "validFrom": null,
+      "validTo": "2023-12-31"
+    },
+    {
+      "code": "BI-27129",
+      "name": "Vulkanschule",
+      "validFrom": null,
+      "validTo": "2026-08-07"
+    }
+  ],
+  "sampleNamesWithExpiredAndActiveCodes": [
+    {
+      "name": "AFS-Flüchtlingshilfe-Stiftung",
+      "codes": [
+        {
+          "code": "GM-35849",
+          "validFrom": null,
+          "validTo": null,
+          "active": true
+        },
+        {
+          "code": "SO-1589",
+          "validFrom": "2010-09-23",
+          "validTo": "2023-12-31",
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "AKTIVER TIERSCHUTZ AUSTRIA",
+      "codes": [
+        {
+          "code": "NT-9142",
+          "validFrom": "2017-05-23",
+          "validTo": "2017-11-13",
+          "active": false
+        },
+        {
+          "code": "NT-17163",
+          "validFrom": "2020-11-23",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "ALBANIA - AUSTRIA Partnerschaft Bildungswesen, Hilfe für Selbsthilfe",
+      "codes": [
+        {
+          "code": "SO-1479",
+          "validFrom": "2009-12-21",
+          "validTo": "2010-10-06",
+          "active": false
+        },
+        {
+          "code": "SO-1615",
+          "validFrom": "2010-11-18",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "ALLIANZ FÜR KINDER IN KRIEGS- UND KRISENGEBIETEN",
+      "codes": [
+        {
+          "code": "GM-35990",
+          "validFrom": null,
+          "validTo": null,
+          "active": true
+        },
+        {
+          "code": "SO-1482",
+          "validFrom": "2009-12-23",
+          "validTo": "2023-12-31",
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "AMREF Austria (AA) - Gesellschaft für Medizin und Forschung in Afrika",
+      "codes": [
+        {
+          "code": "SV-1269",
+          "validFrom": "2009-01-01",
+          "validTo": "2023-12-31",
+          "active": false
+        },
+        {
+          "code": "SO-34443",
+          "validFrom": "2024-01-01",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "AUXILIUM INFANTILIS Verein zur Unterstützung mental und/oder physisch beeinträchtigter Kinder und deren Familien in Österreich",
+      "codes": [
+        {
+          "code": "SO-2519",
+          "validFrom": "2015-04-30",
+          "validTo": "2016-11-04",
+          "active": false
+        },
+        {
+          "code": "SO-3619",
+          "validFrom": "2016-12-07",
+          "validTo": "2017-11-15",
+          "active": false
+        },
+        {
+          "code": "SO-18343",
+          "validFrom": "2021-10-07",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Africa Amini Alama Unterstützungsverein",
+      "codes": [
+        {
+          "code": "SO-2336",
+          "validFrom": "2012-11-29",
+          "validTo": "2017-11-13",
+          "active": false
+        },
+        {
+          "code": "SO-10960",
+          "validFrom": "2017-11-21",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Aidshilfe Salzburg",
+      "codes": [
+        {
+          "code": "SO-2482",
+          "validFrom": "2014-10-17",
+          "validTo": "2016-11-04",
+          "active": false
+        },
+        {
+          "code": "SO-3499",
+          "validFrom": "2016-11-09",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Amnesty International Österreich",
+      "codes": [
+        {
+          "code": "GM-35972",
+          "validFrom": null,
+          "validTo": null,
+          "active": true
+        },
+        {
+          "code": "SO-1392",
+          "validFrom": "2009-01-01",
+          "validTo": "2023-12-31",
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "Angelika Prokopp Sommerakademie",
+      "codes": [
+        {
+          "code": "FW-1732",
+          "validFrom": "1994-01-01",
+          "validTo": "2012-03-09",
+          "active": false
+        },
+        {
+          "code": "KK-25149",
+          "validFrom": "2024-01-01",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Antlas Ges.m.b.H.",
+      "codes": [
+        {
+          "code": "SO-2878",
+          "validFrom": "2016-07-04",
+          "validTo": "2018-11-19",
+          "active": false
+        },
+        {
+          "code": "SO-13523",
+          "validFrom": "2018-12-04",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Arbeiter-Samariter-Bund Österreichs, Gruppe Alkoven, kurz: ASBÖ Gruppe Alkoven, kurz: Samariterbund Gruppe Alkoven",
+      "codes": [
+        {
+          "code": "GM-33603",
+          "validFrom": null,
+          "validTo": null,
+          "active": true
+        },
+        {
+          "code": "SO-2171",
+          "validFrom": "2011-07-25",
+          "validTo": "2023-12-31",
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "Arbeitsvereinigung der Sozialhilfe Kärntens (AVS)",
+      "codes": [
+        {
+          "code": "GM-35850",
+          "validFrom": null,
+          "validTo": null,
+          "active": true
+        },
+        {
+          "code": "SO-1408",
+          "validFrom": "2009-10-08",
+          "validTo": "2023-12-31",
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "Asyl in Not - Unterstützungskomitee für politisch verfolgte Ausländerinnen und Ausländer - kurz: Asyl in Not",
+      "codes": [
+        {
+          "code": "GM-35471",
+          "validFrom": null,
+          "validTo": null,
+          "active": true
+        },
+        {
+          "code": "SO-2557",
+          "validFrom": "2015-10-23",
+          "validTo": "2023-12-31",
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "Aus Liebe zum Menschen Stiftung",
+      "codes": [
+        {
+          "code": "ZG-15963",
+          "validFrom": null,
+          "validTo": "2023-12-31",
+          "active": false
+        },
+        {
+          "code": "SO-33823",
+          "validFrom": "2024-01-01",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Autismus Burgenland",
+      "codes": [
+        {
+          "code": "GM-35672",
+          "validFrom": null,
+          "validTo": null,
+          "active": true
+        },
+        {
+          "code": "SO-19307",
+          "validFrom": "2022-06-28",
+          "validTo": "2023-12-31",
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "Blinden- und Sehbehindertenverband Vorarlberg, Selbsthilfeorganisation blinder und sehbehinderter Menschen (BSVV)",
+      "codes": [
+        {
+          "code": "SO-1406",
+          "validFrom": "2009-10-06",
+          "validTo": "2018-11-14",
+          "active": false
+        },
+        {
+          "code": "SO-13344",
+          "validFrom": "2018-11-20",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Bregenzer Festspiele GmbH",
+      "codes": [
+        {
+          "code": "KK-3118",
+          "validFrom": "2016-01-01",
+          "validTo": "2018-11-06",
+          "active": false
+        },
+        {
+          "code": "KK-13342",
+          "validFrom": "2018-11-20",
+          "validTo": null,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Bruder und Schwester in Not - Verein zur Förderung der Entwicklungszusammenarbeit der Katholischen Kirche Kärnten Bruder und Schwester in Not (BSIN)",
+      "codes": [
+        {
+          "code": "GM-35410",
+          "validFrom": null,
+          "validTo": null,
+          "active": true
+        },
+        {
+          "code": "SO-1433",
+          "validFrom": "2009-11-04",
+          "validTo": "2023-12-31",
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "Bundesverband des Österreichischen Bergrettungsdienstes (ÖBRD)",
+      "codes": [
+        {
+          "code": "GM-32275",
+          "validFrom": null,
+          "validTo": null,
+          "active": true
+        },
+        {
+          "code": "SO-17883",
+          "validFrom": "2021-06-18",
+          "validTo": "2023-12-31",
+          "active": false
+        }
+      ]
+    }
+  ]
+}

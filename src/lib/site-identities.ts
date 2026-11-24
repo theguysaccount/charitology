@@ -43,7 +43,7 @@ export const sections: Section[] = [
   } },
   { path: '/record/', symbol: 'archive', tone: 'blue', entries: {
     'case-studies': 'folder', 'cause-atlas': 'atlas', 'charitology-100': 'badge', 'charity-index': 'fileSearch',
-    'charity-index/coverage': 'checks', 'charity-index/brazil': 'bridge', 'charity-index/japan': 'flag', 'charity-index/new-zealand': 'fern',
+    'charity-index/coverage': 'checks', 'charity-index/austria': 'edelweiss', 'charity-index/brazil': 'bridge', 'charity-index/japan': 'flag', 'charity-index/new-zealand': 'fern',
     'charity-index/israel': 'oliveBranch',
     'charity-index/italy': 'romanArch',
     'charity-index/croatia': 'adriaticCheck',

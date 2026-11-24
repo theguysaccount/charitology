@@ -202,6 +202,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['funding', 'Where money goes', 'route'],
     ['contribute', 'Help close a gap', 'hands'],
   ],
+  '/record/charity-index/austria/': [
+    ['at-search-heading', 'Search Austrian tax-deductible charities', 'lens'],
+    ['categories', 'All 22 populated statutory categories', 'layers'],
+    ['reform-wave', '2024–2026 Nonprofit Reform Act surge', 'chart'],
+    ['coverage', 'Scope, missingness, anomalies and ZVR boundaries', 'archive'],
+  ],
   '/record/charity-index/brazil/': [
     ['registry-search-title', 'Find a registration', 'lens'],
     ['coverage', 'Registry coverage', 'permit'],
