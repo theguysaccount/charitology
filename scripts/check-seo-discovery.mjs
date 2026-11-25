@@ -66,9 +66,11 @@ assert.ok(homeLd.some((n) => n['@type'] === 'WebSite' && n.potentialAction?.['@t
 for (const rel of [
   'record/charity-index/austria/index.html',
   'record/charity-index/northern-ireland/index.html',
+  'record/charity-index/slovenia/index.html',
   'record/charity-index/italy/index.html',
   'record/charity-index/croatia/index.html',
   'record/funding-flows/italy-five-per-mille/index.html',
+  'record/funding-flows/slovenia-dohodnina-1-percent/index.html',
   'record/funding-flows/ocha-fts-global-clusters/index.html',
 ]) {
   const ld = extractJsonLd(readDist(rel), rel);

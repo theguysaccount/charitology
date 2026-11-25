@@ -1,0 +1,152 @@
+{
+  "format": "charitology-slovenia-dohodnina-flow-v1",
+  "jurisdiction": "Slovenia",
+  "capturedOn": "2026-11-25",
+  "years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "currency": "EUR",
+  "publisher": "Financial Administration of the Republic of Slovenia (FURS)",
+  "sevenYearTotals": {
+    "disclosedTaxpayerChoices": 4185737,
+    "disclosedTotalEur": 93470320.6,
+    "disclosedTotalCents": 9347032060,
+    "rateDoublingJumpPct2019To2020": 96.48
+  },
+  "annualSeries": [
+    {
+      "year": 2019,
+      "statutoryCap": "0.5%",
+      "includesTaxNumbers": false,
+      "totalRows": 5555,
+      "uniqueTaxNumbers": null,
+      "disclosedRows": 4839,
+      "privacyRedactedRows": 716,
+      "disclosedTaxpayerChoices": 494770,
+      "disclosedTotalEur": 5433844.97,
+      "disclosedTotalCents": 543384497,
+      "avgEurPerChoice": 10.98,
+      "top1SharePct": 4.35,
+      "top10SharePct": 16.74,
+      "top50SharePct": 28.79
+    },
+    {
+      "year": 2020,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": false,
+      "totalRows": 5554,
+      "uniqueTaxNumbers": null,
+      "disclosedRows": 4840,
+      "privacyRedactedRows": 714,
+      "disclosedTaxpayerChoices": 509314,
+      "disclosedTotalEur": 10676302.51,
+      "disclosedTotalCents": 1067630251,
+      "avgEurPerChoice": 20.96,
+      "top1SharePct": 4.13,
+      "top10SharePct": 16.14,
+      "top50SharePct": 28.46
+    },
+    {
+      "year": 2021,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": false,
+      "totalRows": 5844,
+      "uniqueTaxNumbers": null,
+      "disclosedRows": 4947,
+      "privacyRedactedRows": 897,
+      "disclosedTaxpayerChoices": 526180,
+      "disclosedTotalEur": 12357973.79,
+      "disclosedTotalCents": 1235797379,
+      "avgEurPerChoice": 23.49,
+      "top1SharePct": 3.96,
+      "top10SharePct": 15.95,
+      "top50SharePct": 28.78
+    },
+    {
+      "year": 2022,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": false,
+      "totalRows": 6713,
+      "uniqueTaxNumbers": null,
+      "disclosedRows": 5604,
+      "privacyRedactedRows": 1109,
+      "disclosedTaxpayerChoices": 590185,
+      "disclosedTotalEur": 13267227.4,
+      "disclosedTotalCents": 1326722740,
+      "avgEurPerChoice": 22.48,
+      "top1SharePct": 6.55,
+      "top10SharePct": 19.67,
+      "top50SharePct": 32.15
+    },
+    {
+      "year": 2023,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": true,
+      "totalRows": 6960,
+      "uniqueTaxNumbers": 6959,
+      "disclosedRows": 5842,
+      "privacyRedactedRows": 1118,
+      "disclosedTaxpayerChoices": 638879,
+      "disclosedTotalEur": 15184578.1,
+      "disclosedTotalCents": 1518457810,
+      "avgEurPerChoice": 23.77,
+      "top1SharePct": 11.54,
+      "top10SharePct": 24.23,
+      "top50SharePct": 35.59
+    },
+    {
+      "year": 2024,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": true,
+      "totalRows": 7237,
+      "uniqueTaxNumbers": 7236,
+      "disclosedRows": 6126,
+      "privacyRedactedRows": 1111,
+      "disclosedTaxpayerChoices": 688590,
+      "disclosedTotalEur": 17308276.74,
+      "disclosedTotalCents": 1730827674,
+      "avgEurPerChoice": 25.14,
+      "top1SharePct": 14.01,
+      "top10SharePct": 26.57,
+      "top50SharePct": 37.22
+    },
+    {
+      "year": 2025,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": true,
+      "totalRows": 7435,
+      "uniqueTaxNumbers": 7434,
+      "disclosedRows": 6326,
+      "privacyRedactedRows": 1109,
+      "disclosedTaxpayerChoices": 737819,
+      "disclosedTotalEur": 19242117.09,
+      "disclosedTotalCents": 1924211709,
+      "avgEurPerChoice": 26.08,
+      "top1SharePct": 16.82,
+      "top10SharePct": 29.13,
+      "top50SharePct": 39.35
+    }
+  ],
+  "artifacts": {
+    "annualCsv": {
+      "path": "annual-totals.csv",
+      "bytes": 757,
+      "sha256": "489fa0d3c378063a718b55dab26f9abf4e337e4b10ccc948af1ded91a2bf0590",
+      "rows": 7
+    },
+    "top250": {
+      "path": "top-250.json.gz",
+      "bytes": 20634,
+      "sha256": "82465de0b3e8e821f77082dada5aa982c59fa25b2b98885c64c2bddeedcc9e69",
+      "decodedBytes": 93026,
+      "decodedSha256": "e7e34fe5dc0779827e2dad8e8e5480c19fe2a257eb504fe9e913bde5c4e29490",
+      "rows": 250
+    }
+  }
+}

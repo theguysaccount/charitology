@@ -1,0 +1,437 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/slovenia/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Slovenia 1% income-tax charities (FURS namenitev dela dohodnine)';
+const dataPath = '/data/charity-registry/slovenia/';
+const count = (value: number) => value.toLocaleString('en-US');
+const eur = (value: number | null) =>
+  value === null
+    ? 'Redacted (< 5)'
+    : `EUR ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const sources = [
+  {
+    title: 'FURS — Seznam prejemnikov za leto 2025 (preliminarni podatki, XLSX)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.furs2025Xlsx,
+  },
+  {
+    title: 'FURS — Seznam prejemnikov za leto 2024 (preliminarni podatki, XLSX)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.furs2024Xlsx,
+  },
+  {
+    title: 'OPSI — Prejemniki namenitve dela dohodnine za donacije (2019–2023 XLSX archive)',
+    publisher: 'Open Data of Slovenia (OPSI / FURS)',
+    url: manifest.catalogues.opsiDataset,
+  },
+  {
+    title: 'GOV.SI — Namenitev dela dohodnine za donacije (statutory rules)',
+    publisher: 'Republic of Slovenia',
+    url: manifest.catalogues.fursDohodninaPortal,
+  },
+  {
+    title: 'AJPES — Evidenca nevladnih organizacij v javnem interesu',
+    publisher: 'AJPES',
+    url: manifest.catalogues.ajpesPublicInterestPortal,
+  },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Global Charity Index · Slovenia"
+  summary="Search all 7,567 distinct Slovenian public-interest charities, volunteer fire brigades, schools, trade unions and cultural bodies receiving 1% personal income-tax designations (2023–2025) from FURS, with 100% modulo-11 validated 8-digit tax numbers and EUR 19.24M in 2025 payouts."
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Global Charity Index', href: '/record/charity-index/' },
+    { label: 'Slovenia' },
+  ]}
+  filePath="src/pages/record/charity-index/slovenia.astro"
+  sources={sources}
+>
+  <p>
+    This edition indexes all <strong>{count(manifest.counts.includedOrganizations)} distinct recipients</strong> carrying an official
+    8-digit Slovenian tax number (<em>davčna številka — DS_UPR</em>, <strong>100% modulo-11 checksum validated</strong>) across the
+    <strong>{manifest.publisher}</strong> preliminary payout releases for tax years <strong>2023, 2024, and 2025</strong> (captured{' '}
+    <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>). In <strong>2025</strong>,{' '}
+    <strong>{count(manifest.counts.recipientsIn2025)}</strong> unique TINs received taxpayer designations —{' '}
+    <strong>{count(manifest.counts.disclosedIn2025)}</strong> disclosed recipients totaling{' '}
+    <strong>EUR {(manifest.annualSeries[6].disclosedTotalEur / 1e6).toFixed(2)} million</strong> across{' '}
+    <strong>{count(manifest.annualSeries[6].disclosedTaxpayerChoices)}</strong> taxpayer choices, plus{' '}
+    <strong>{count(manifest.counts.privacyRedactedIn2025)}</strong> small recipients whose donor counts and euro amounts FURS withholds
+    under taxpayer-confidentiality rules (<code>manj kot 5</code> = fewer than 5 donors).
+  </p>
+  <p>
+    Pair this entity search with the 7-year{' '}
+    <a href={url('/record/funding-flows/slovenia-dohodnina-1-percent/')}>
+      Slovenia 1% income-tax assignment funding flow (2019–2025, EUR 93.47M across 4.19M choices)
+    </a>
+    , which tracks Slovenia’s <strong>+96.5% single-year payout jump</strong> after doubling its statutory cap from 0.5% to 1.0% in 2020
+    and compares all five European statutory tax-assignment systems (Italy, Poland, Slovakia, Hungary, and Slovenia).
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-si-registry
+    data-base={url(dataPath)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="si-search-heading"
+  >
+    <h2 id="si-search-heading">Search Slovenian 1% income-tax recipients</h2>
+    <p id="si-search-hint">
+      Enter part of an organization’s name (Slovenian diacritics <code>č/š/ž</code> optional, e.g., <code>karitas</code>,
+      <code>rdeci noski</code>, <code>aed</code>, <code>gasilsko drustvo</code>, <code>viljem julijan</code>, <code>zpm</code>)
+      or an 8-digit Slovenian tax number (e.g., <code>53655869</code> or <code>20210795</code>). Search runs locally in your browser.
+    </p>
+    <form aria-describedby="si-search-hint">
+      <label for="si-query">Organization name or 8-digit Slovenian tax number (DS_UPR)</label>
+      <div class="finance-actions">
+        <input type="search" id="si-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="si-cohort">Status / cohort</label>
+          <select id="si-cohort" disabled>
+            <option value="">All 2023–2025 TINs ({count(manifest.counts.includedOrganizations)})</option>
+            <option value="disclosed2025">2025 disclosed payouts ({count(manifest.counts.disclosedIn2025)})</option>
+            <option value="redacted2025">2025 privacy-redacted (&lt; 5 donors) ({count(manifest.counts.privacyRedactedIn2025)})</option>
+            <option value="all3">Present in all 3 TIN years (2023–2025) ({count(manifest.counts.presentInAllThreeTinYears)})</option>
+            <option value="new2025">First appeared in 2025 ({count(manifest.counts.newIn2025Only)})</option>
+            <option value="exited">2023–2024 only (absent in 2025) ({count(manifest.counts.present2023Or2024Only)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="si-sort">Sort by</label>
+          <select id="si-sort" disabled>
+            <option value="eur2025">2025 EUR allocation (highest)</option>
+            <option value="donors2025">2025 taxpayer choices (highest)</option>
+            <option value="total3yr">3-year EUR total (2023–2025)</option>
+            <option value="name">Name (A–Z)</option>
+          </select>
+        </span>
+        <button type="submit" class="btn" disabled>Search recipients</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>
+      Search when you are ready to load Slovenia’s FURS 1% register ({(manifest.artifacts.organizations.bytes / 1024).toFixed(1)} KB compressed).
+    </p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="triglavPeak" aria-label="Slovenia FURS 1% recipient results" data-results></ol>
+    <noscript>
+      <p>
+        Without JavaScript, download the
+        <a href={url(dataPath + manifest.artifacts.csv.path)} download>
+          Slovenia FURS 1% charities CSV ({count(manifest.counts.includedOrganizations)} rows)
+        </a>
+        or consult <a href={manifest.catalogues.opsiDataset}>OPSI’s FURS open data catalog</a> directly.
+      </p>
+    </noscript>
+  </section>
+
+  <h2 id="top-2025">Top 20 Slovenian 1% income-tax recipients in 2025</h2>
+  <p>
+    Patient-advocacy, pediatric medical, social-welfare, and animal-rescue associations lead Slovenia’s 2025 allocations.
+    <em>Društvo za srčno žilne bolezni AED</em> alone attracted <strong>141,039 taxpayer designations</strong>
+    (<strong>EUR 3.24M</strong> — 16.82% of Slovenia’s entire disclosed 2025 pool), up from EUR 2.43M in 2024.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Top 20 Slovenian 1% recipients in 2025" tabindex="0">
+    <table class="data si-table">
+      <caption>Largest Slovenian 1% income-tax assignment recipients in 2025 with 2023–2024 comparison (FURS preliminary data)</caption>
+      <thead>
+        <tr>
+          <th scope="col">TIN (DS_UPR)</th>
+          <th scope="col">Recipient</th>
+          <th scope="col">2025 donors</th>
+          <th scope="col">2025 EUR</th>
+          <th scope="col">2024 EUR</th>
+          <th scope="col">2023 EUR</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.top20In2025.map((row) => (
+            <tr>
+              <th scope="row"><code>{row.tin}</code></th>
+              <td lang="sl">{row.name}</td>
+              <td>{row.donors2025 === null ? '—' : count(row.donors2025)}</td>
+              <td>{eur(row.eur2025)}</td>
+              <td>{eur(row.eur2024)}</td>
+              <td>{eur(row.eur2023)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="funding">Follow Slovenia’s 7-year EUR 93.47M 1% funding flow</h2>
+  <p>
+    Explore the full 2019–2025 longitudinal series — including the exact <strong>+96.48% jump</strong> when Slovenia raised its statutory cap
+    from 0.5% to 1.0% in 2020, rising single-organization concentration, and side-by-side comparisons against Italy, Poland, Slovakia, and
+    Hungary — on{' '}
+    <a class="identity-link" href={url('/record/funding-flows/slovenia-dohodnina-1-percent/')}>
+      Slovenia 1% personal income-tax assignments (2019–2025)
+    </a>.
+  </p>
+
+  <h2 id="coverage">Scope, modulo-11 TIN validation, privacy redaction and anomalies</h2>
+  <p>
+    <strong>What is included vs. excluded:</strong> Slovenia’s 1% <em>dohodnina</em> list covers public-interest NGOs (<em>nevladne organizacije
+    v javnem interesu</em>), humanitarian and disability bodies, volunteer fire brigades (<em>PGD</em>), school funds (<em>šolski skladi</em>),
+    registered religious communities, representative trade unions, and political parties that actually received at least one taxpayer assignment in
+    2023–2025. It is not a full census of Slovenia’s ~27,000 registered associations in AJPES, and FURS allocations reflect statutory income-tax
+    designations rather than complete organizational budgets.
+  </p>
+  <p>
+    <strong>Privacy redaction &amp; verbatim anomalies:</strong> Every 8-digit TIN across 2023–2025 passes Slovenia’s official modulo-11 checksum
+    (<code>7,567 / 7,567</code>). When fewer than 5 taxpayers select a recipient in a given year, FURS publishes <code>manj kot 5</code> with a
+    blank EUR cell; those withheld figures remain explicitly <code>null</code> (never <code>0</code>). One TIN (<code>42192790</code>) appears twice
+    in 2023, 2024, and 2025 because <em>Škofijska gimnazija Vipava</em> (<code>ŠGV</code>) and its statutory school fund
+    (<code>SKLAD - ŠKOFIJSKA GIMNAZIJA VIPAVA</code>) share one tax number; both sub-entity lines are preserved verbatim in{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'anomalies.json')} download>anomalies.json</a>.{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(dataPath + manifest.artifacts.csv.path)} download>Download full CSV ({count(manifest.counts.includedOrganizations)} rows)</a> ·{' '}
+    <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.
+  </p>
+</Entry>
+
+<style>
+  .si-table {
+    min-inline-size: 46rem;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName } from '../../../lib/client/financial-directory';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../../../lib/client/verified-json';
+
+  type SiRow = {
+    tin: string;
+    name: string;
+    altNames: string[];
+    norm: string;
+    in2025: boolean;
+    redacted2025: boolean;
+    donors2025: number | null;
+    eur2025: number | null;
+    donors2024: number | null;
+    eur2024: number | null;
+    donors2023: number | null;
+    eur2023: number | null;
+    yearsPresent: number[];
+    total3yrEur: number | null;
+    total3yrDonors: number | null;
+    sharedTin: boolean;
+  };
+  type SiManifest = {
+    format: string;
+    asOf: string;
+    capturedOn: string;
+    publisher: string;
+    artifacts: {
+      organizations: VerifiedJsonAsset & { path: string; rows: number };
+    };
+  };
+
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/đ/g, 'dj')
+      .normalize('NFKD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  const fmtEur = (val: number | null, redacted?: boolean) => {
+    if (val === null) return redacted ? 'Redacted (< 5 donors)' : '—';
+    return `EUR ${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  const limit = 40;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-si-registry]')) {
+    const manifest: SiManifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#si-query', root) as HTMLInputElement;
+    const cohortSelect = $('#si-cohort', root) as HTMLSelectElement;
+    const sortSelect = $('#si-sort', root) as HTMLSelectElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    for (const el of [queryEl, cohortSelect, sortSelect, submitBtn, clearBtn]) el.disabled = false;
+
+    let cache: Promise<SiRow[]> | null = null;
+    let shown: SiRow[] = [];
+
+    const loadAll = () => {
+      if (!cache) {
+        const asset = manifest.artifacts.organizations;
+        cache = loadVerifiedJson(base + asset.path, asset).then((data) => {
+          if (!Array.isArray(data) || data.length !== asset.rows) {
+            throw new Error('Unexpected Slovenia FURS recipient count.');
+          }
+          return data as SiRow[];
+        });
+      }
+      return cache;
+    };
+
+    const matchesCohort = (r: SiRow, cohort: string) => {
+      if (!cohort) return true;
+      if (cohort === 'disclosed2025') return r.in2025 && !r.redacted2025;
+      if (cohort === 'redacted2025') return r.redacted2025;
+      if (cohort === 'all3') return r.yearsPresent.length === 3;
+      if (cohort === 'new2025') return r.yearsPresent.length === 1 && r.yearsPresent[0] === 2025;
+      if (cohort === 'exited') return !r.in2025;
+      return true;
+    };
+
+    const sortRows = (rows: SiRow[], mode: string) => {
+      const copy = [...rows];
+      if (mode === 'name') {
+        copy.sort((a, b) => a.name.localeCompare(b.name, 'sl'));
+      } else if (mode === 'donors2025') {
+        copy.sort((a, b) => (b.donors2025 ?? -1) - (a.donors2025 ?? -1) || a.tin.localeCompare(b.tin));
+      } else if (mode === 'total3yr') {
+        copy.sort((a, b) => (b.total3yrEur ?? -1) - (a.total3yrEur ?? -1) || a.tin.localeCompare(b.tin));
+      } else {
+        copy.sort((a, b) => (b.eur2025 ?? -1) - (a.eur2025 ?? -1) || (b.total3yrEur ?? -1) - (a.total3yrEur ?? -1) || a.tin.localeCompare(b.tin));
+      }
+      return copy;
+    };
+
+    const render = (rows: SiRow[], total: number, q: string) => {
+      shown = rows;
+      listEl.replaceChildren();
+      jsonBtn.disabled = rows.length === 0;
+      csvBtn.disabled = rows.length === 0;
+      if (!rows.length) {
+        statusEl.textContent = q
+          ? `No Slovenian 1% recipients matched “${q}” under the selected filters.`
+          : 'No recipients matched the selected filters.';
+        return;
+      }
+      statusEl.textContent =
+        total > rows.length
+          ? `Showing the first ${rows.length} of ${total.toLocaleString('en-US')} matching recipients.`
+          : `Showing ${total.toLocaleString('en-US')} matching recipient${total === 1 ? '' : 's'}.`;
+
+      for (const r of rows) {
+        const metaParts = [
+          `2025: ${fmtEur(r.eur2025, r.redacted2025)}${r.donors2025 !== null ? ` (${r.donors2025.toLocaleString('en-US')} donors)` : ''}`,
+          `2024: ${fmtEur(r.eur2024)}`,
+          `2023: ${fmtEur(r.eur2023)}`,
+          `Years: ${r.yearsPresent.join(', ')}`,
+        ];
+        if (r.sharedTin) metaParts.push('Shared TIN (school + school fund combined; see anomalies.json)');
+
+        const children: (Node | string)[] = [
+          h('strong', { lang: 'sl' }, r.name),
+          ' ',
+          h('code', {}, `SI ${r.tin}`),
+        ];
+        if (r.altNames.length) {
+          children.push(h('div', { class: 'note', lang: 'sl' }, `Prior / sub-entity name: ${r.altNames.join(' · ')}`));
+        }
+        children.push(h('div', { class: 'note' }, metaParts.join(' · ')));
+        listEl.append(h('li', {}, ...children));
+      }
+    };
+
+    const runSearch = async () => {
+      const rawQ = queryEl.value.trim();
+      const normQ = normalize(rawQ);
+      const digitsQ = rawQ.replace(/\D+/g, '');
+      const cohort = cohortSelect.value;
+      const sortMode = sortSelect.value;
+
+      statusEl.textContent = 'Loading Slovenia FURS 1% register snapshot…';
+      try {
+        const all = await loadAll();
+        const filtered = all.filter((r) => {
+          if (!matchesCohort(r, cohort)) return false;
+          if (!rawQ) return true;
+          if (digitsQ && r.tin.includes(digitsQ)) return true;
+          if (r.name.toLowerCase().includes(rawQ.toLowerCase())) return true;
+          if (normQ && r.norm.includes(normQ)) return true;
+          return false;
+        });
+        const ordered = sortRows(filtered, sortMode);
+        render(ordered.slice(0, limit), ordered.length, rawQ);
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load Slovenia FURS snapshot.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void runSearch();
+    });
+    for (const sel of [cohortSelect, sortSelect]) {
+      sel.addEventListener('change', () => {
+        void runSearch();
+      });
+    }
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      cohortSelect.value = '';
+      sortSelect.value = 'eur2025';
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Search cleared.';
+      queryEl.focus();
+    });
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-slovenia-furs-charities.json',
+        JSON.stringify(
+          {
+            source: manifest.publisher,
+            asOf: manifest.asOf,
+            capturedOn: manifest.capturedOn,
+            rows: shown,
+          },
+          null,
+          2,
+        ),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      const csvText = toCsv(
+        shown.map((r) => ({
+          tin_ds_upr: r.tin,
+          recipient_name: financialCsvName(r.name),
+          prior_or_sub_names: financialCsvName(r.altNames.join('; ')),
+          years_present: r.yearsPresent.join(','),
+          privacy_redacted_2025: r.redacted2025 ? 'true' : 'false',
+          donors_2025: r.donors2025 ?? '',
+          eur_2025: r.eur2025 === null ? '' : r.eur2025.toFixed(2),
+          donors_2024: r.donors2024 ?? '',
+          eur_2024: r.eur2024 === null ? '' : r.eur2024.toFixed(2),
+          donors_2023: r.donors2023 ?? '',
+          eur_2023: r.eur2023 === null ? '' : r.eur2023.toFixed(2),
+          total_3yr_eur: r.total3yrEur === null ? '' : r.total3yrEur.toFixed(2),
+        })),
+      );
+      download('charitology-slovenia-furs-charities.csv', '\uFEFF' + csvText, 'text/csv;charset=utf-8');
+    });
+  }
+</script>
