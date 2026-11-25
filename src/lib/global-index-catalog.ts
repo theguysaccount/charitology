@@ -1,4 +1,4 @@
-// Single source of truth for the Global Charity Index (29 jurisdictions) and
+// Single source of truth for the Global Charity Index (30 jurisdictions) and
 // published Funding Flows lookups and case studies. Powers /record/charity-index/coverage/,
 // /record/funding-flows/, /tools/charity-lookup/, /record/open-datasets/, and
 // /api/v1/charity-index.json + /api/v1/funding-flows.json.
@@ -13,6 +13,7 @@ import usaShort from '../../public/data/charity-financials/us-990-ez/manifest.js
 import usaFoundation from '../../public/data/charity-financials/us-990-pf/manifest.json';
 import registry from '../../public/data/irs-registry/manifest.json';
 import japan from '../../public/data/charity-registry/japan-npo/manifest.json';
+import colombia from '../../public/data/charity-registry/colombia/manifest.json';
 import croatia from '../../public/data/charity-registry/croatia/manifest.json';
 import czechia from '../../public/data/charity-registry/czechia/manifest.json';
 import denmark from '../../public/data/charity-registry/denmark/manifest.json';
@@ -121,6 +122,20 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     manifest: '/data/charity-financials/ca/manifest.json',
     fundingFlowRoute: '/record/funding-flows/canada-qualified-donees/',
     fundingFlowLabel: 'Qualified donee gifts (CRA)',
+  },
+  {
+    id: 'colombia',
+    name: 'Colombia',
+    source: 'DIAN Entidades sin Ánimo de Lucro del Régimen Tributario Especial (8tdc-u2ga, 2018–2022)',
+    route: '/record/charity-index/colombia/',
+    label: 'Search Colombian DIAN RTE tax-exempt nonprofits',
+    date: colombia.capturedOn,
+    recordCount: colombia.counts.includedOrganizations,
+    recordUnit: 'NIT organizations',
+    coverage: `${number(colombia.counts.includedOrganizations)} distinct 9-digit Colombian NIT organizations across five years (2018–2022, ${number(colombia.sourceCapture.rawRows)} raw rows) of DIAN’s Special Tax Regime (${number(colombia.counts.activeIn2022)} active in 2022; ${number(colombia.counts.continuousAllFiveYears)} continuous across all 5 years).`,
+    history: `Tracks the Ley 1819 de 2016 re-qualification cliff: qualified entities fell from ${number(colombia.annualSeries[0].uniqueNits)} in 2018 to ${number(colombia.annualSeries[2].uniqueNits)} in 2020 and ${number(colombia.counts.activeIn2022)} in 2022, with ${number(colombia.counts.droppedBefore2020)} legacy 2018–2019 entities not renewing.`,
+    boundary: 'DIAN dataset 8tdc-u2ga publishes 9-digit NIT, legal name (razón social), and fiscal year through 2022 only; financial statements and street addresses remain unpublished (null). 400 same-year duplicate NIT rows and legacy 2018 commercial/cooperative entries stay documented verbatim in anomalies.json.',
+    manifest: '/data/charity-registry/colombia/manifest.json',
   },
   {
     id: 'croatia',
@@ -550,6 +565,7 @@ export const COVERAGE_SOURCES = [
   { title: 'Download charity register data', publisher: 'Australian Charities and Not-for-profits Commission', url: 'https://www.acnc.gov.au/charity/about-charity-register/download-charity-register-data' },
   { title: 'Liste begünstigter Einrichtungen (Spenden, Kirchenbeiträge u.a.) — Stand 01.10.2026 (PDF)', publisher: austria.publisher, url: austria.catalogues.bmfQuarterlyPdf },
   { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
+  { title: 'Entidades sin ánimo de Lucro del Régimen Tributario Especial (8tdc-u2ga, 2018–2022)', publisher: colombia.publisher, url: colombia.catalogues.datosGovCoDataset },
   { title: 'Registar udruga Republike Hrvatske & Registar zaklada Republike Hrvatske (Otvorena dozvola RH)', publisher: croatia.publisher, url: croatia.catalogues.associations },
   { title: 'Public Registers Open Data (Veřejný rejstřík — 42 court dumps, 2026 actual)', publisher: 'Ministry of Justice of the Czech Republic (Ministerstvo spravedlnosti ČR)', url: czechia.catalogues.justiceVr },
   { title: 'Seznam operací (List of Operations) 2021–2027', publisher: 'Ministry for Regional Development of the Czech Republic (DotaceEU)', url: czechia.catalogues.dotaceEu },
