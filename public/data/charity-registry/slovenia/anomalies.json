@@ -1,0 +1,256 @@
+{
+  "format": "charitology-slovenia-anomalies-v1",
+  "capturedOn": "2026-11-25",
+  "summary": {
+    "distinctTins2023To2025": 7567,
+    "modulo11ValidTinRate": "100%",
+    "privacyRedacted2025Rows": 1109,
+    "sharedTinInstances2023To2025": 3,
+    "nameVariantsAcross2023To2025": 992,
+    "historicalYearsWithoutTinColumn": [
+      2019,
+      2020,
+      2021,
+      2022
+    ]
+  },
+  "notes": [
+    "FURS suppresses exact donor counts and EUR amounts ('manj kot 5' / blank EUR) for recipients chosen by fewer than 5 taxpayers in a given year to protect taxpayer confidentiality. Those values remain null (never 0).",
+    "In 2023, 2024, and 2025, Slovenian TIN 42192790 appears twice each year because Škofijska gimnazija Vipava (ŠGV) and its statutory school fund (SKLAD - ŠKOFIJSKA GIMNAZIJA VIPAVA) share one tax number. Their totals are combined on TIN 42192790 with both sub-entities preserved verbatim below.",
+    "FURS workbooks for 2019–2022 omit the DS_UPR tax-number column and therefore feed the 7-year funding-flow aggregate series rather than entity-level TIN joins.",
+    "Preliminary FURS payout tables reflect September annual-assessment settlements; late assessments or appeals are not retroactively folded into preliminary releases."
+  ],
+  "sharedTinRows": [
+    {
+      "year": 2023,
+      "tin": "42192790",
+      "entries": [
+        {
+          "name": "ŠKOFIJSKA GIMNAZIJA VIPAVA",
+          "donors": 197,
+          "amountEur": 5142.09,
+          "privacyRedacted": false
+        },
+        {
+          "name": "SKLAD - ŠKOFIJSKA GIMNAZIJA VIPAVA",
+          "donors": 5,
+          "amountEur": 40.51,
+          "privacyRedacted": false
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "tin": "42192790",
+      "entries": [
+        {
+          "name": "ŠGV",
+          "donors": 236,
+          "amountEur": 6899.91,
+          "privacyRedacted": false
+        },
+        {
+          "name": "SKLAD - ŠKOFIJSKA GIMNAZIJA VIPAVA",
+          "donors": 16,
+          "amountEur": 222.78,
+          "privacyRedacted": false
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "tin": "42192790",
+      "entries": [
+        {
+          "name": "ŠGV",
+          "donors": 238,
+          "amountEur": 6943.12,
+          "privacyRedacted": false
+        },
+        {
+          "name": "SKLAD - ŠKOFIJSKA GIMNAZIJA VIPAVA",
+          "donors": 26,
+          "amountEur": 356.49,
+          "privacyRedacted": false
+        }
+      ]
+    }
+  ],
+  "nameChangesSample": [
+    {
+      "tin": "10053182",
+      "latestName": "ATLETSKO DRUŠTVO PIRAN - SOCIETA` DI ATLETICA LEGGERA PIRANO",
+      "priorNames": [
+        "ATLETSKO DRUŠTVO PIRAN - SOCIETA' DI ATLETICA LEGGERA PIRANO"
+      ]
+    },
+    {
+      "tin": "10125957",
+      "latestName": "ZAVOD CPOS ŽALEC",
+      "priorNames": [
+        "ZAVOD - CENTER ZA POMOČ OTROKOM IN STARŠEM, ŽALEC"
+      ]
+    },
+    {
+      "tin": "10404775",
+      "latestName": "ŽK DOL PRI LJUBLJANI",
+      "priorNames": [
+        "ŽUPNIJSKA KARITAS DOL PRI LJUBLJANI"
+      ]
+    },
+    {
+      "tin": "10475150",
+      "latestName": "ŽK SOSTRO",
+      "priorNames": [
+        "ŽUPNIJSKA KARITAS SOSTRO"
+      ]
+    },
+    {
+      "tin": "10486615",
+      "latestName": "MCDD SLOVENSKE KONJICE, SO.P.",
+      "priorNames": [
+        "MLADINSKI CENTER DRAVINJSKE DOLINE, ZAVOD ZA RAZVOJ KREATIVNOSTI, INOVATIVNOSTI IN SOCIALNEGA PODJET"
+      ]
+    },
+    {
+      "tin": "10539689",
+      "latestName": "INŠTITUT ČKZ",
+      "priorNames": [
+        "INŠTITUT ČASOPIS ZA KRITIKO ZNANOSTI"
+      ]
+    },
+    {
+      "tin": "10592431",
+      "latestName": "GLASBENA ŠOLA EMIL ADAMIČ",
+      "priorNames": [
+        "GLASBENA ŠOLA EMIL ADAMIČ, ZASEBNI ZAVOD ZA GLASBENO VZGOJO IN IZOBRAŽEVANJE, DOBROVA"
+      ]
+    },
+    {
+      "tin": "10740309",
+      "latestName": "ZAVOD DOBRA POT",
+      "priorNames": [
+        "ZAVOD DOBRA POT, ZAVOD ZA KULTURO IN SONARAVNO DELOVANJE"
+      ]
+    },
+    {
+      "tin": "10891463",
+      "latestName": "ZAVOD KITCH",
+      "priorNames": [
+        "KITCH, ZAVOD ZA UMETNIŠKO PRODUKCIJO IN RAZISKOVANJE"
+      ]
+    },
+    {
+      "tin": "11011858",
+      "latestName": "DRUŠTVO BOBER",
+      "priorNames": [
+        "DRUŠTVO BOBER - OKOLJSKO GIBANJE DOLENJSKA"
+      ]
+    },
+    {
+      "tin": "11013451",
+      "latestName": "AKTIVNA MLADINA SLOVENIJE - GAMSI",
+      "priorNames": [
+        "GIBANJE AKTIVNA MLADINA SLOVENIJE"
+      ]
+    },
+    {
+      "tin": "11037245",
+      "latestName": "DRUŠTVO EVRPL",
+      "priorNames": [
+        "DRUŠTVO ENOTA VODNIKOV REŠEVALNIH PSOV LJUBLJANA"
+      ]
+    },
+    {
+      "tin": "11091681",
+      "latestName": "ZVEZA EKOLOŠKIH KMETOV",
+      "priorNames": [
+        "ZVEZA DRUŠTEV EKOLOŠKIH KMETOV SLOVENIJE"
+      ]
+    },
+    {
+      "tin": "11241209",
+      "latestName": "MASOVNA",
+      "priorNames": [
+        "MASOVNA ZAVOD NEINSTITUCIONALNE KULTURE"
+      ]
+    },
+    {
+      "tin": "11358378",
+      "latestName": "DRUŠTVO PAZI!PARK",
+      "priorNames": [
+        "KULTURNO OKOLJSKO DRUŠTVO PAZI!PARK"
+      ]
+    },
+    {
+      "tin": "11662336",
+      "latestName": "DRUŠTVO KULTURNI HRAM",
+      "priorNames": [
+        "DRUŠTVO ZA POMOČ UMETNIKOM DEŽELE KRANJSKE"
+      ]
+    },
+    {
+      "tin": "11678569",
+      "latestName": "ŽK KISOVEC",
+      "priorNames": [
+        "ŽUPNIJSKA KARITAS KISOVEC"
+      ]
+    },
+    {
+      "tin": "11713097",
+      "latestName": "ZAVOD PELIKAN - KARITAS",
+      "priorNames": [
+        "ZAVOD PELIKAN - KARITAS ZAVOD ZA SOCIALNO VARSTVENO, PREVENTIVNO, VZGOJNO IZOBRAŽEVALNO IN ZDRAVSTVE"
+      ]
+    },
+    {
+      "tin": "12102776",
+      "latestName": "DRUŠTVO SOŠKA FRONTA",
+      "priorNames": [
+        "DRUŠTVO SOŠKA FRONTA 1915-1917"
+      ]
+    },
+    {
+      "tin": "12287628",
+      "latestName": "DRUŠTVO SLOVENSKA KONFERENCA SSK",
+      "priorNames": [
+        "DRUŠTVO ZA SPODBUJANJE SLOVENSTVA IN POVEZOVANJE SLOVENCEV - SLOVENSKA KONFERENCA SVETOVNEGA SLOVENS"
+      ]
+    },
+    {
+      "tin": "12322229",
+      "latestName": "DRUŠTVO DVIG",
+      "priorNames": [
+        "DRUŠTVO DVIG - UNIVERZA ZA TRETJE ŽIVLJENJSKO OBDOBJE"
+      ]
+    },
+    {
+      "tin": "12348635",
+      "latestName": "DRUŠTVO ZDRAVA POT",
+      "priorNames": [
+        "DRUŠTVO ZA POMOČ IN SAMOPOMOČ NA PODROČJU ZASVOJENOSTI ZDRAVA POT"
+      ]
+    },
+    {
+      "tin": "12445118",
+      "latestName": "AEROKLUB CELJE",
+      "priorNames": [
+        "AEROKLUB LETALSKA ŠOLA CELJE"
+      ]
+    },
+    {
+      "tin": "12568252",
+      "latestName": "ZAVOD APGA",
+      "priorNames": [
+        "ZAVOD APGA, AGENCIJA ZA PROMOCIJO GIBALNIH AKTIVNOSTI"
+      ]
+    },
+    {
+      "tin": "12683485",
+      "latestName": "BELETRINA",
+      "priorNames": [
+        "BELETRINA, ZAVOD ZA ZALOŽNIŠKO DEJAVNOST"
+      ]
+    }
+  ]
+}

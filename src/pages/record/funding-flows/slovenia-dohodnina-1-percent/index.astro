@@ -1,0 +1,349 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/slovenia-dohodnina-1-percent/manifest.json';
+import regManifest from '../../../../../public/data/charity-registry/slovenia/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Slovenia 1% personal income-tax assignments (2019–2025)';
+const asset = '/data/funding-flows/slovenia-dohodnina-1-percent/';
+const count = (value: number) => value.toLocaleString('en-US');
+const eurM = (value: number) => `EUR ${(value / 1e6).toFixed(2)}M`;
+const eurExact = (value: number) =>
+  `EUR ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const sources = [
+  {
+    title: 'FURS — Seznam prejemnikov za leto 2025 (preliminarni podatki, XLSX)',
+    publisher: manifest.publisher,
+    url: regManifest.catalogues.furs2025Xlsx,
+  },
+  {
+    title: 'FURS — Seznam prejemnikov za leto 2024 (preliminarni podatki, XLSX)',
+    publisher: manifest.publisher,
+    url: regManifest.catalogues.furs2024Xlsx,
+  },
+  {
+    title: 'OPSI — Prejemniki namenitve dela dohodnine za donacije (2019–2023 XLSX archive)',
+    publisher: 'Open Data of Slovenia (OPSI / FURS)',
+    url: regManifest.catalogues.opsiDataset,
+  },
+  {
+    title: 'GOV.SI — Namenitev dela dohodnine za donacije',
+    publisher: 'Republic of Slovenia',
+    url: regManifest.catalogues.fursDohodninaPortal,
+  },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Funding Flows · Slovenia"
+  summary="Track EUR 93.47M in Slovenian 1% personal income-tax assignments across 7 tax years (2019–2025) and 4.19M taxpayer choices, showing the +96.5% jump when Slovenia doubled its statutory cap from 0.5% to 1.0% in 2020 and comparing five European tax-assignment systems."
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Funding Flows', href: '/record/funding-flows/' },
+    { label: 'Slovenia 1% income-tax assignments' },
+  ]}
+  filePath="src/pages/record/funding-flows/slovenia-dohodnina-1-percent/index.astro"
+  sources={sources}
+>
+  <p>
+    Across seven consecutive assessment years (<strong>2019–2025</strong>), Slovenian taxpayers directed{' '}
+    <strong>{eurM(manifest.sevenYearTotals.disclosedTotalEur)}</strong> (<code>{eurExact(manifest.sevenYearTotals.disclosedTotalEur)}</code>)
+    through <strong>{count(manifest.sevenYearTotals.disclosedTaxpayerChoices)} disclosed designations</strong> in the Financial Administration
+    of the Republic of Slovenia (<strong>FURS</strong>) <em>namenitev dela dohodnine za donacije</em> mechanism.
+    When Parliament doubled the statutory ceiling from <strong>0.5%</strong> to <strong>1.0%</strong> of assessed income tax starting tax year
+    2020 (PKP7 / ZDoh-2), average allocation per choice nearly doubled overnight from <strong>EUR 10.98</strong> to{' '}
+    <strong>EUR 20.96</strong> and total disclosed payouts surged <strong>+{manifest.sevenYearTotals.rateDoublingJumpPct2019To2020}%</strong>{' '}
+    (from <code>EUR 5.43M</code> in 2019 to <code>EUR 10.68M</code> in 2020), reaching <strong>EUR 19.24M</strong> across{' '}
+    <strong>737,819 choices</strong> in 2025.
+  </p>
+  <p>
+    To search all <strong>{count(regManifest.counts.includedOrganizations)}</strong> TIN-indexed recipients across 2023–2025, open the paired{' '}
+    <a href={url('/record/charity-index/slovenia/')}>Slovenia 1% charity index</a>.
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-si-flow
+    data-base={url(asset)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="si-top-search"
+  >
+    <h2 id="si-top-search">Explore the Top 250 Slovenian 1% recipients (2025)</h2>
+    <p id="si-top-hint">
+      Filter the 250 largest 2025 recipients by name or 8-digit TIN (e.g., <code>aed</code>, <code>karitas</code>, <code>zpm</code>,
+      <code>rdeci noski</code>, <code>gasilska</code>, <code>53655869</code>) and export as JSON or CSV.
+    </p>
+    <form aria-describedby="si-top-hint">
+      <label for="si-top-query">Recipient name or 8-digit TIN</label>
+      <div class="finance-actions">
+        <input type="search" id="si-top-query" maxlength="160" autocomplete="off" disabled />
+        <button type="submit" class="btn" disabled>Filter Top 250</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Reset</button>
+      </div>
+    </form>
+    <p role="status" data-status>
+      Load the Top 250 Slovenian 1% recipients ({(manifest.artifacts.top250.bytes / 1024).toFixed(1)} KB compressed).
+    </p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed rows as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed rows as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="alpineOnePct" aria-label="Top 250 Slovenian 1% recipients" data-results></ol>
+  </section>
+
+  <h2 id="seven-year-series">7-year evolution: 0.5% to 1.0% rate doubling &amp; concentration shift (2019–2025)</h2>
+  <p>
+    Beyond the 2020 rate-doubling jump, the seven-year series reveals a striking second shift: between 2019 and 2021, Slovenia’s top recipient
+    captured around <strong>4%</strong> of all payouts (Top-10: ~16%). From 2022 through 2025, one national cardiovascular-defibrillator campaign
+    (<em>Društvo za srčno žilne bolezni AED</em>) climbed to <strong>16.82%</strong> of the entire national pool (<strong>EUR 3.24M</strong> /
+    <strong>141,039 choices</strong>), lifting Top-10 concentration from <strong>15.95%</strong> in 2021 to <strong>29.13%</strong> in 2025.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Slovenia 7-year 1% income-tax assignment series" tabindex="0">
+    <table class="data si-flow-table">
+      <caption>FURS preliminary annual payouts, taxpayer choices, average EUR per choice, and concentration (2019–2025)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Year</th>
+          <th scope="col">Cap</th>
+          <th scope="col">Rows (disclosed / &lt;5 redacted)</th>
+          <th scope="col">Disclosed choices</th>
+          <th scope="col">Disclosed EUR</th>
+          <th scope="col">Avg EUR / choice</th>
+          <th scope="col">Top-1 / Top-10 / Top-50</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.annualSeries.map((y) => (
+            <tr>
+              <th scope="row">{y.year}</th>
+              <td><code>{y.statutoryCap}</code></td>
+              <td>{count(y.totalRows)} ({count(y.disclosedRows)} / {count(y.privacyRedactedRows)})</td>
+              <td>{count(y.disclosedTaxpayerChoices)}</td>
+              <td>{eurExact(y.disclosedTotalEur)}</td>
+              <td>EUR {y.avgEurPerChoice.toFixed(2)}</td>
+              <td>{y.top1SharePct.toFixed(2)}% / {y.top10SharePct.toFixed(2)}% / {y.top50SharePct.toFixed(2)}%</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="europe-tax-assignment-compare">Compare five European statutory tax-assignment systems</h2>
+  <p>
+    Charitology now tracks five European percentage-of-income-tax charity assignment systems using exact official tax-authority records,
+    exposing how statutory design shapes charity fundraising concentration:
+  </p>
+  <ul>
+    <li>
+      <strong>Slovenia (this page — 1.0% individual dohodnina, 2025):</strong> Doubling the statutory cap from 0.5% to 1.0% in 2020 lifted
+      disclosed payouts +96.5% overnight (reaching <code>EUR 19.24M</code> across <code>737,819</code> choices in 2025), while a single
+      national AED campaign drove Top-10 concentration from <code>15.95%</code> (2021) to <code>29.13%</code> (2025). FURS redacts rows with
+      fewer than 5 donors.
+    </li>
+    <li>
+      <strong><a href={url('/record/funding-flows/italy-five-per-mille/')}>Italy (5‰ / 0.5% IRPEF, AF 2025)</a>:</strong> Europe’s largest
+      euro pool (<code>EUR 603.10M</code> across <code>96,059</code> admitted entities and <code>15.56M</code> choices) with{' '}
+      <code>28.76%</code> Top-10 concentration led by cancer research and medical/humanitarian NGOs boosted by generic-category pools.
+    </li>
+    <li>
+      <strong><a href={url('/record/funding-flows/poland-pit-1-5-percent/')}>Poland (1.5% individual PIT, 2025)</a>:</strong> Patient and
+      disability sub-accounts (<em>cel szczegółowy</em>) drive Top-10 concentration to <code>45.69%</code> (<code>PLN 2.61B</code> across{' '}
+      <code>9,450</code> funded OPPs), while taxpayer counts omit recipients below 100 donors.
+    </li>
+    <li>
+      <strong><a href={url('/record/funding-flows/slovakia-pit-2-percent/')}>Slovakia (2%/3% individual + 1%/2% corporate PIT, 2025)</a>:</strong>{' '}
+      Permitting corporate income-tax designations places corporate foundations in 8 of the Top 10 spots, with <code>416</code> <em>Nadácia</em>{' '}
+      foundations capturing <code>30.87%</code> of payouts (<code>EUR 107.04M</code> across <code>17,457</code> recipients).
+    </li>
+    <li>
+      <strong><a href={url('/record/funding-flows/hungary-szja-1-percent/')}>Hungary (1% civil + 1% church/budget SZJA, 2026)</a>:</strong> Lowest
+      Top-10 civil concentration at <code>15.04%</code> (<code>HUF 21.40B</code> across <code>31,299</code> civil recipients, plus{' '}
+      <code>HUF 23.95B</code> across <code>186</code> second-1% technical-number recipients), led by independent public-interest newsrooms and
+      pediatric/emergency hospital foundations.
+    </li>
+  </ul>
+
+  <h2 id="downloads">Downloads, methodology and provenance</h2>
+  <p>
+    All seven FURS preliminary workbooks (2019–2025) are SHA-256 pinned in <code>src/data/slovenia-index-sources.tsv</code>. Years 2019–2022
+    omit the <code>DS_UPR</code> tax-number column and power the national aggregate series above; years 2023–2025 carry 100% modulo-11 valid TINs.
+    Withheld <code>manj kot 5</code> rows are counted transparently in annual totals and excluded from disclosed EUR sums rather than imputed.{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download flow manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(asset + manifest.artifacts.annualCsv.path)} download>Download 7-year summary (CSV)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="document" href={url('/data/charity-registry/slovenia/anomalies.json')} download>anomalies.json</a>.
+  </p>
+</Entry>
+
+<style>
+  .si-flow-table {
+    min-inline-size: 52rem;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../../../../lib/client/verified-json';
+
+  type TopRow = {
+    tin: string;
+    name: string;
+    altNames: string[];
+    norm: string;
+    donors2025: number | null;
+    eur2025: number | null;
+    donors2024: number | null;
+    eur2024: number | null;
+    donors2023: number | null;
+    eur2023: number | null;
+    total3yrEur: number | null;
+  };
+  type FlowManifest = {
+    publisher: string;
+    capturedOn: string;
+    artifacts: {
+      top250: VerifiedJsonAsset & { path: string; rows: number };
+    };
+  };
+
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/đ/g, 'dj')
+      .normalize('NFKD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  const fmtEur = (val: number | null) =>
+    val === null ? '—' : `EUR ${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-si-flow]')) {
+    const manifest: FlowManifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#si-top-query', root) as HTMLInputElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    for (const el of [queryEl, submitBtn, clearBtn]) el.disabled = false;
+
+    let cache: Promise<TopRow[]> | null = null;
+    let shown: TopRow[] = [];
+
+    const loadTop = () => {
+      if (!cache) {
+        const asset = manifest.artifacts.top250;
+        cache = loadVerifiedJson(base + asset.path, asset).then((data) => {
+          if (!Array.isArray(data) || data.length !== asset.rows) {
+            throw new Error('Unexpected Slovenia Top 250 row count.');
+          }
+          return data as TopRow[];
+        });
+      }
+      return cache;
+    };
+
+    const render = (rows: TopRow[], total: number, q: string) => {
+      shown = rows;
+      listEl.replaceChildren();
+      jsonBtn.disabled = rows.length === 0;
+      csvBtn.disabled = rows.length === 0;
+      if (!rows.length) {
+        statusEl.textContent = q ? `No Top 250 recipients matched “${q}”.` : 'No recipients matched.';
+        return;
+      }
+      statusEl.textContent =
+        total > rows.length
+          ? `Showing the first ${rows.length} of ${total} matching Top 250 recipients.`
+          : `Showing ${total} matching Top 250 recipient${total === 1 ? '' : 's'}.`;
+
+      for (const r of rows) {
+        listEl.append(
+          h(
+            'li',
+            {},
+            h('strong', { lang: 'sl' }, r.name),
+            ' ',
+            h('code', {}, `SI ${r.tin}`),
+            h(
+              'div',
+              { class: 'note' },
+              `2025: ${fmtEur(r.eur2025)} (${(r.donors2025 ?? 0).toLocaleString('en-US')} donors) · 2024: ${fmtEur(r.eur2024)} · 2023: ${fmtEur(r.eur2023)}`,
+            ),
+          ),
+        );
+      }
+    };
+
+    const runFilter = async () => {
+      const rawQ = queryEl.value.trim();
+      const normQ = normalize(rawQ);
+      const digitsQ = rawQ.replace(/\D+/g, '');
+      statusEl.textContent = 'Loading Slovenia Top 250 recipients…';
+      try {
+        const all = await loadTop();
+        const filtered = rawQ
+          ? all.filter(
+              (r) =>
+                (digitsQ && r.tin.includes(digitsQ)) ||
+                r.name.toLowerCase().includes(rawQ.toLowerCase()) ||
+                (normQ && r.norm.includes(normQ)),
+            )
+          : all;
+        render(filtered.slice(0, 50), filtered.length, rawQ);
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load Slovenia Top 250.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void runFilter();
+    });
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Filter reset.';
+      queryEl.focus();
+    });
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-slovenia-dohodnina-top250.json',
+        JSON.stringify({ source: manifest.publisher, capturedOn: manifest.capturedOn, rows: shown }, null, 2),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      const csvText = toCsv(
+        shown.map((r) => ({
+          tin_ds_upr: r.tin,
+          recipient_name: financialCsvName(r.name),
+          donors_2025: r.donors2025 ?? '',
+          eur_2025: r.eur2025 === null ? '' : r.eur2025.toFixed(2),
+          donors_2024: r.donors2024 ?? '',
+          eur_2024: r.eur2024 === null ? '' : r.eur2024.toFixed(2),
+          donors_2023: r.donors2023 ?? '',
+          eur_2023: r.eur2023 === null ? '' : r.eur2023.toFixed(2),
+          total_3yr_eur: r.total3yrEur === null ? '' : r.total3yrEur.toFixed(2),
+        })),
+      );
+      download('charitology-slovenia-dohodnina-top250.csv', '\uFEFF' + csvText, 'text/csv;charset=utf-8');
+    });
+  }
+</script>

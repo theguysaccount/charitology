@@ -1,4 +1,4 @@
-// Single source of truth for the Global Charity Index (28 jurisdictions) and
+// Single source of truth for the Global Charity Index (29 jurisdictions) and
 // published Funding Flows lookups and case studies. Powers /record/charity-index/coverage/,
 // /record/funding-flows/, /tools/charity-lookup/, /record/open-datasets/, and
 // /api/v1/charity-index.json + /api/v1/funding-flows.json.
@@ -29,6 +29,7 @@ import northernIreland from '../../public/data/charity-registry/northern-ireland
 import norway from '../../public/data/charity-registry/norway/manifest.json';
 import poland from '../../public/data/charity-registry/poland/manifest.json';
 import slovakia from '../../public/data/charity-registry/slovakia/manifest.json';
+import slovenia from '../../public/data/charity-registry/slovenia/manifest.json';
 import sweden from '../../public/data/charity-registry/sweden/manifest.json';
 import taiwan from '../../public/data/charity-registry/taiwan/manifest.json';
 import brazil from '../../public/data/charity-registry/brazil-osc/manifest.json';
@@ -444,6 +445,22 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     fundingFlowLabel: '2%/3% tax assignments (2016–2025)',
   },
   {
+    id: 'slovenia',
+    name: 'Slovenia',
+    source: 'Financial Administration of the Republic of Slovenia (FURS) 1% dohodnina',
+    route: '/record/charity-index/slovenia/',
+    label: 'Search Slovenian 1% income-tax recipients',
+    date: slovenia.capturedOn,
+    recordCount: slovenia.counts.includedOrganizations,
+    recordUnit: 'TIN recipients',
+    coverage: `${number(slovenia.counts.includedOrganizations)} distinct 8-digit Slovenian tax numbers (100% modulo-11 validated) across FURS 2023–2025 preliminary payout lists (${number(slovenia.counts.recipientsIn2025)} unique TINs in 2025: ${number(slovenia.counts.disclosedIn2025)} disclosed totaling EUR 19.24M across ${number(slovenia.annualSeries[6].disclosedTaxpayerChoices)} choices, plus ${number(slovenia.counts.privacyRedactedIn2025)} privacy-redacted <5-donor rows).`,
+    history: 'A paired 7-year funding-flows edition (2019–2025, EUR 93.47M across 4.19M choices) tracks Slovenia’s +96.5% single-year jump after doubling its statutory rate from 0.5% to 1.0% in 2020 and forms a five-country European tax-assignment comparison alongside Italy, Poland, Slovakia, and Hungary.',
+    boundary: 'FURS suppresses donor counts and euro amounts ("manj kot 5") when fewer than 5 taxpayers designate a recipient in a given year (kept null, never 0). Years 2019–2022 omit the TIN column and feed the national aggregate series; shared TIN 42192790 (school + school fund) stays documented verbatim in anomalies.json.',
+    manifest: '/data/charity-registry/slovenia/manifest.json',
+    fundingFlowRoute: '/record/funding-flows/slovenia-dohodnina-1-percent/',
+    fundingFlowLabel: '1% income-tax assignments (2019–2025)',
+  },
+  {
     id: 'sweden',
     name: 'Sweden',
     source: 'Svensk Insamlingskontroll (90-konto registry & 2025 audited statistics)',
@@ -558,6 +575,8 @@ export const COVERAGE_SOURCES = [
   { title: 'Wykaz OPP uprawnionych do 1,5% PIT za 2025 r.', publisher: 'NIW-CRSO (dane.gov.pl)', url: poland.catalogues.niw2025 },
   { title: 'Wykaz OPP, które otrzymały część należnego PIT (dataset 171)', publisher: 'Ministerstwo Finansów (dane.gov.pl)', url: poland.catalogues.mfPit15 },
   { title: 'Ročný prehľad prijímateľov podielu zaplatenej dane (2016–2025 CSVs)', publisher: slovakia.publisher, url: slovakia.catalogues.financnaSprava },
+  { title: 'Prejemniki namenitve dela dohodnine za donacije (2019–2025 FURS / OPSI XLSX archive)', publisher: slovenia.publisher, url: slovenia.catalogues.opsiDataset },
+  { title: 'Register of Charities CSV export (Northern Ireland)', publisher: northernIreland.publisher, url: northernIreland.catalogues.ccniBulkCsv },
   { title: '90-konto public directory & 2025 audited fundraising statistics', publisher: sweden.publisher, url: sweden.catalogues.directory },
   { title: 'Taiwan nonprofit institution and organization dataset', publisher: taiwan.publisher, url: taiwan.catalogue },
   { title: 'National NPO Portal bulk downloads', publisher: japan.publisher, url: japan.portal + 'download/all' },
@@ -612,6 +631,7 @@ export const FUNDING_FLOW_GROUPS: readonly FundingFlowCatalogGroup[] = [
       { slug: 'ocha-fts-global-clusters', title: 'Global humanitarian funding gaps (2019–2026)', scope: '58 crisis country codes', summary: 'Compare 3,958 UN OCHA FTS plan-cluster rows across 313 response plans ($269.49B required vs. $147.20B funded) and track the global funding drop to 41.0% in 2025.', manifest: '/data/funding-flows/ocha-fts-global-clusters/manifest.json' },
       { slug: 'poland-pit-1-5-percent', title: '1.5% personal income tax designations (2022–2025)', scope: 'Poland', summary: 'Search 10,395 Polish public benefit organizations totaling PLN 8.32B, inspect disclosed taxpayer counts and reconcile NIW eligibility lists against payouts.', manifest: '/data/funding-flows/poland-pit-1-5-percent/manifest.json' },
       { slug: 'slovakia-pit-2-percent', title: '2%/3% income-tax assignments (2016–2025)', scope: 'Slovakia', summary: 'Search EUR 782.06M in statutory individual and corporate income-tax assignments across 26,357 Slovak recipients and inspect corporate foundation concentration (30.9% in 2025).', manifest: '/data/funding-flows/slovakia-pit-2-percent/manifest.json' },
+      { slug: 'slovenia-dohodnina-1-percent', title: '1% personal income-tax assignments (2019–2025)', scope: 'Slovenia', summary: 'Track EUR 93.47M across 4.19M taxpayer choices (2019–2025), inspect Slovenia’s +96.5% jump when doubling its cap from 0.5% to 1.0% in 2020, and compare all five European tax-assignment systems.', manifest: '/data/funding-flows/slovenia-dohodnina-1-percent/manifest.json' },
       { slug: 'sweden-90-konto', title: 'Audited 90-konto giving & private-gift shares (2023–2025)', scope: 'Sweden', summary: 'Compare all Top-110 Swedish 90-konto charities (SEK 21,040M = 91.1% of collections) against Top-100 private individual donations alongside audited 2023–2025 sector totals.', manifest: '/data/funding-flows/sweden-90-konto/manifest.json' },
       { slug: 'taiwan-new-resident-fund', title: 'New Resident Development Fund', scope: 'Taiwan', summary: 'Search institutional grant reports. Follow the same project ID across approvals, execution figures and disbursement fields.' },
       { slug: 'us-schedule-i', title: 'Schedule I grants', scope: 'United States', summary: 'Trace grants and noncash assistance between filer and recipient EINs in one IRS archive.', manifest: '/data/funding-flows/us-schedule-i/manifest.json' },

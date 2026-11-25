@@ -1,0 +1,412 @@
+{
+  "format": "charitology-slovenia-registry-v1",
+  "jurisdiction": "Slovenia",
+  "asOf": "2025",
+  "capturedOn": "2026-11-25",
+  "currency": "EUR",
+  "publisher": "Financial Administration of the Republic of Slovenia (FURS)",
+  "catalogues": {
+    "fursDohodninaPortal": "https://www.gov.si/teme/namenitev-dela-dohodnine-za-donacije/",
+    "opsiDataset": "https://podatki.gov.si/dataset/prejemniki-namenitve-dela-dohodnine-za-donacije",
+    "furs2025Xlsx": "https://www.fu.gov.si/fileadmin/Internet/Davki_in_druge_dajatve/Podrocja/Dohodnina/Letna_odmera_dohodnine/Opis/Seznam_prejemnikov_za_leto_2025-preliminarni_podatki.xlsx",
+    "furs2024Xlsx": "https://www.fu.gov.si/fileadmin/Internet/Davki_in_druge_dajatve/Podrocja/Dohodnina/Letna_odmera_dohodnine/Opis/Seznam_prejemnikov_za_leto_2024-preliminarni_podatki.xlsx",
+    "ajpesPublicInterestPortal": "https://www.ajpes.si/Registri/Drugi_registri/Evidenca_nevladnih_organizacij/Splosno"
+  },
+  "sourceCaptures": [
+    {
+      "year": 2019,
+      "filename": "slovenia-furs-2019.xlsx",
+      "url": "https://podatki.gov.si/dataset/3ea7706b-4385-4460-aba6-a2ab7ff0922d/resource/30ab5c38-23f4-4ee1-8e44-476dfb5187cc/download/seznamprejemnikovzaleto2019preliminarnipodatki.xlsx",
+      "bytes": 241287,
+      "sha256": "76ad57938e6405368282e08a2c9cf25e70c473396336b174fb67cdfd86ae1c64",
+      "rows": 5555,
+      "includesTaxNumbers": false
+    },
+    {
+      "year": 2020,
+      "filename": "slovenia-furs-2020.xlsx",
+      "url": "https://podatki.gov.si/dataset/3ea7706b-4385-4460-aba6-a2ab7ff0922d/resource/bf608a76-3bd2-4052-b737-69c78bfcd817/download/seznamprejemnikovzaleto2020preliminarnipodatki.xlsx",
+      "bytes": 240652,
+      "sha256": "8d27cd0004946117d7725e703ef74e9cff1a7a196c56f04459107f6d6a01feb1",
+      "rows": 5554,
+      "includesTaxNumbers": false
+    },
+    {
+      "year": 2021,
+      "filename": "slovenia-furs-2021.xlsx",
+      "url": "https://podatki.gov.si/dataset/3ea7706b-4385-4460-aba6-a2ab7ff0922d/resource/feee92de-c334-4c21-859e-3ca555535e36/download/seznamprejemnikovzaleto2021preliminarnipodatki.xlsx",
+      "bytes": 226600,
+      "sha256": "19b4fa26cbbdcd6947447664de1816d67cb34894feaadd236e4580a8b80eb224",
+      "rows": 5844,
+      "includesTaxNumbers": false
+    },
+    {
+      "year": 2022,
+      "filename": "slovenia-furs-2022.xlsx",
+      "url": "https://podatki.gov.si/dataset/3ea7706b-4385-4460-aba6-a2ab7ff0922d/resource/a04cbd0d-1b7f-4507-b57f-a691dd060f06/download/seznamprejemnikovzaleto2022preliminarnipodatki.xlsx",
+      "bytes": 245065,
+      "sha256": "ee97f7293b067490b0d76ddc5ccac8f39c52f6e4c11de19a19197da8ea688445",
+      "rows": 6713,
+      "includesTaxNumbers": false
+    },
+    {
+      "year": 2023,
+      "filename": "slovenia-furs-2023.xlsx",
+      "url": "https://podatki.gov.si/dataset/3ea7706b-4385-4460-aba6-a2ab7ff0922d/resource/0a0d030a-efe6-4461-9d7d-a16e61c010da/download/seznamprejemnikovzaleto2023preliminarnipodatki.xlsx",
+      "bytes": 324234,
+      "sha256": "a62efe716777c46df3c227463995a6aefa15b8765e7e1c58e4f621315c7a2329",
+      "rows": 6960,
+      "includesTaxNumbers": true
+    },
+    {
+      "year": 2024,
+      "filename": "slovenia-furs-2024.xlsx",
+      "url": "https://www.fu.gov.si/fileadmin/Internet/Davki_in_druge_dajatve/Podrocja/Dohodnina/Letna_odmera_dohodnine/Opis/Seznam_prejemnikov_za_leto_2024-preliminarni_podatki.xlsx",
+      "bytes": 329923,
+      "sha256": "3414cde30f701fadffaea1f9998a393445ca0d1b89cea1a7afa6fe726a2e4145",
+      "rows": 7237,
+      "includesTaxNumbers": true
+    },
+    {
+      "year": 2025,
+      "filename": "slovenia-furs-2025.xlsx",
+      "url": "https://www.fu.gov.si/fileadmin/Internet/Davki_in_druge_dajatve/Podrocja/Dohodnina/Letna_odmera_dohodnine/Opis/Seznam_prejemnikov_za_leto_2025-preliminarni_podatki.xlsx",
+      "bytes": 332464,
+      "sha256": "e047e1d646c62ef591d934e7e53077954a904079798b598fe04f78865a8eb1a6",
+      "rows": 7435,
+      "includesTaxNumbers": true
+    }
+  ],
+  "counts": {
+    "includedOrganizations": 7567,
+    "uniqueTaxNumbers2023To2025": 7567,
+    "modulo11ValidTins": 7567,
+    "recipientsIn2025": 7434,
+    "disclosedIn2025": 6326,
+    "privacyRedactedIn2025": 1109,
+    "presentInAllThreeTinYears": 6828,
+    "newIn2025Only": 274,
+    "present2023Or2024Only": 133,
+    "sevenYearDisclosedChoices": 4185737,
+    "sevenYearDisclosedEur": 93470320.6,
+    "threeYearTinDisclosedChoices": 2065288,
+    "threeYearTinDisclosedEur": 51734971.93
+  },
+  "annualSeries": [
+    {
+      "year": 2019,
+      "statutoryCap": "0.5%",
+      "includesTaxNumbers": false,
+      "totalRows": 5555,
+      "uniqueTaxNumbers": null,
+      "disclosedRows": 4839,
+      "privacyRedactedRows": 716,
+      "disclosedTaxpayerChoices": 494770,
+      "disclosedTotalEur": 5433844.97,
+      "disclosedTotalCents": 543384497,
+      "avgEurPerChoice": 10.98,
+      "top1SharePct": 4.35,
+      "top10SharePct": 16.74,
+      "top50SharePct": 28.79
+    },
+    {
+      "year": 2020,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": false,
+      "totalRows": 5554,
+      "uniqueTaxNumbers": null,
+      "disclosedRows": 4840,
+      "privacyRedactedRows": 714,
+      "disclosedTaxpayerChoices": 509314,
+      "disclosedTotalEur": 10676302.51,
+      "disclosedTotalCents": 1067630251,
+      "avgEurPerChoice": 20.96,
+      "top1SharePct": 4.13,
+      "top10SharePct": 16.14,
+      "top50SharePct": 28.46
+    },
+    {
+      "year": 2021,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": false,
+      "totalRows": 5844,
+      "uniqueTaxNumbers": null,
+      "disclosedRows": 4947,
+      "privacyRedactedRows": 897,
+      "disclosedTaxpayerChoices": 526180,
+      "disclosedTotalEur": 12357973.79,
+      "disclosedTotalCents": 1235797379,
+      "avgEurPerChoice": 23.49,
+      "top1SharePct": 3.96,
+      "top10SharePct": 15.95,
+      "top50SharePct": 28.78
+    },
+    {
+      "year": 2022,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": false,
+      "totalRows": 6713,
+      "uniqueTaxNumbers": null,
+      "disclosedRows": 5604,
+      "privacyRedactedRows": 1109,
+      "disclosedTaxpayerChoices": 590185,
+      "disclosedTotalEur": 13267227.4,
+      "disclosedTotalCents": 1326722740,
+      "avgEurPerChoice": 22.48,
+      "top1SharePct": 6.55,
+      "top10SharePct": 19.67,
+      "top50SharePct": 32.15
+    },
+    {
+      "year": 2023,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": true,
+      "totalRows": 6960,
+      "uniqueTaxNumbers": 6959,
+      "disclosedRows": 5842,
+      "privacyRedactedRows": 1118,
+      "disclosedTaxpayerChoices": 638879,
+      "disclosedTotalEur": 15184578.1,
+      "disclosedTotalCents": 1518457810,
+      "avgEurPerChoice": 23.77,
+      "top1SharePct": 11.54,
+      "top10SharePct": 24.23,
+      "top50SharePct": 35.59
+    },
+    {
+      "year": 2024,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": true,
+      "totalRows": 7237,
+      "uniqueTaxNumbers": 7236,
+      "disclosedRows": 6126,
+      "privacyRedactedRows": 1111,
+      "disclosedTaxpayerChoices": 688590,
+      "disclosedTotalEur": 17308276.74,
+      "disclosedTotalCents": 1730827674,
+      "avgEurPerChoice": 25.14,
+      "top1SharePct": 14.01,
+      "top10SharePct": 26.57,
+      "top50SharePct": 37.22
+    },
+    {
+      "year": 2025,
+      "statutoryCap": "1.0%",
+      "includesTaxNumbers": true,
+      "totalRows": 7435,
+      "uniqueTaxNumbers": 7434,
+      "disclosedRows": 6326,
+      "privacyRedactedRows": 1109,
+      "disclosedTaxpayerChoices": 737819,
+      "disclosedTotalEur": 19242117.09,
+      "disclosedTotalCents": 1924211709,
+      "avgEurPerChoice": 26.08,
+      "top1SharePct": 16.82,
+      "top10SharePct": 29.13,
+      "top50SharePct": 39.35
+    }
+  ],
+  "top20In2025": [
+    {
+      "tin": "53655869",
+      "name": "DRUŠTVO ZA SRČNO ŽILNE BOLEZNI AED",
+      "donors2025": 141039,
+      "eur2025": 3237137.82,
+      "donors2024": 110409,
+      "eur2024": 2425494.67,
+      "eur2023": 1751840.23
+    },
+    {
+      "tin": "55670725",
+      "name": "DRUŠTVO RDEČI NOSKI",
+      "donors2025": 18805,
+      "eur2025": 531676.56,
+      "donors2024": 18968,
+      "eur2024": 527304.0,
+      "eur2023": 487310.68
+    },
+    {
+      "tin": "98136399",
+      "name": "DRUŠTVO VILJEM JULIJAN",
+      "donors2025": 12918,
+      "eur2025": 377443.07,
+      "donors2024": 8418,
+      "eur2024": 245395.49,
+      "eur2023": 166667.37
+    },
+    {
+      "tin": "22926518",
+      "name": "ZVEZA A. OGULIN IN ZPM",
+      "donors2025": 6500,
+      "eur2025": 334356.94,
+      "donors2024": 6206,
+      "eur2024": 322120.06,
+      "eur2023": 284113.9
+    },
+    {
+      "tin": "20210795",
+      "name": "SLOVENSKA KARITAS",
+      "donors2025": 14242,
+      "eur2025": 296429.13,
+      "donors2024": 14726,
+      "eur2024": 298737.19,
+      "eur2023": 285755.68
+    },
+    {
+      "tin": "95609091",
+      "name": "ZVEZA ZPMS",
+      "donors2025": 9201,
+      "eur2025": 256864.19,
+      "donors2024": 9474,
+      "eur2024": 262648.35,
+      "eur2023": 254700.43
+    },
+    {
+      "tin": "65283503",
+      "name": "ZAVOD MAČJA HIŠA",
+      "donors2025": 5318,
+      "eur2025": 171697.24,
+      "donors2024": 5123,
+      "eur2024": 154858.93,
+      "eur2023": 137794.6
+    },
+    {
+      "tin": "58869000",
+      "name": "ZAVETIŠČE HORJUL",
+      "donors2025": 4913,
+      "eur2025": 160689.0,
+      "donors2024": 4370,
+      "eur2024": 134445.83,
+      "eur2023": 84055.97
+    },
+    {
+      "tin": "16155742",
+      "name": "SLOVENSKO DRUŠTVO HOSPIC",
+      "donors2025": 4370,
+      "eur2025": 132153.76,
+      "donors2024": 4288,
+      "eur2024": 124522.02,
+      "eur2023": 111839.6
+    },
+    {
+      "tin": "34588728",
+      "name": "SLOVENSKA FUNDACIJA ZA UNICEF, USTANOVA",
+      "donors2025": 5240,
+      "eur2025": 107352.73,
+      "donors2024": 5179,
+      "eur2024": 103319.32,
+      "eur2023": 101250.99
+    },
+    {
+      "tin": "41242963",
+      "name": "KATOLIŠKA CERKEV",
+      "donors2025": 7998,
+      "eur2025": 101608.07,
+      "donors2024": 8037,
+      "eur2024": 101181.26,
+      "eur2023": 98271.93
+    },
+    {
+      "tin": "95857320",
+      "name": "ISLAMSKA SKUPNOST V RS",
+      "donors2025": 6111,
+      "eur2025": 101213.24,
+      "donors2024": 5935,
+      "eur2024": 92211.98,
+      "eur2023": 81262.08
+    },
+    {
+      "tin": "13876970",
+      "name": "ZVEZA SONČEK SO.P.",
+      "donors2025": 3158,
+      "eur2025": 92773.84,
+      "donors2024": 3285,
+      "eur2024": 92597.88,
+      "eur2023": 92975.94
+    },
+    {
+      "tin": "91692997",
+      "name": "DRUŠTVO PALČICA POMAGALČICA IN DOBRODELNI ŠKRATKI",
+      "donors2025": 2555,
+      "eur2025": 84542.44,
+      "donors2024": 2344,
+      "eur2024": 71292.48,
+      "eur2023": 71542.43
+    },
+    {
+      "tin": "26611066",
+      "name": "ZDRUŽENJE SLOVENSKIH KATOLIŠKIH SKAVTINJ IN SKAVTOV",
+      "donors2025": 2805,
+      "eur2025": 82463.87,
+      "donors2024": 2802,
+      "eur2024": 76627.81,
+      "eur2023": 73904.87
+    },
+    {
+      "tin": "71753281",
+      "name": "ZDRUŽENJE EUROPA DONNA SLOVENIJA",
+      "donors2025": 3294,
+      "eur2025": 77072.77,
+      "donors2024": 3416,
+      "eur2024": 78372.57,
+      "eur2023": 76899.2
+    },
+    {
+      "tin": "19446993",
+      "name": "DRUŠTVO ZA ZAŠČITO ŽIVALI POMURJA",
+      "donors2025": 3195,
+      "eur2025": 76831.37,
+      "donors2024": 3146,
+      "eur2024": 71160.94,
+      "eur2023": 64591.77
+    },
+    {
+      "tin": "71490701",
+      "name": "DRUŠTVO AMNESTY INTERNATIONAL SLOVENIJE",
+      "donors2025": 2416,
+      "eur2025": 75411.41,
+      "donors2024": 2166,
+      "eur2024": 67747.42,
+      "eur2023": 59718.59
+    },
+    {
+      "tin": "16465288",
+      "name": "GORSKA REŠEVALNA ZVEZA SLOVENIJE",
+      "donors2025": 1915,
+      "eur2025": 62043.36,
+      "donors2024": 1842,
+      "eur2024": 56879.52,
+      "eur2023": 45750.48
+    },
+    {
+      "tin": "67353258",
+      "name": "USTANOVA ZA POMOČ OTROKU Z RAKOM",
+      "donors2025": 2457,
+      "eur2025": 61562.08,
+      "donors2024": 2533,
+      "eur2024": 63305.99,
+      "eur2023": 66433.52
+    }
+  ],
+  "artifacts": {
+    "organizations": {
+      "path": "organizations.json.gz",
+      "bytes": 474224,
+      "sha256": "9b6cb2ebff4301f4cb5abfd465858dda4c5e2ad31a8bad2857a2521c58e193aa",
+      "decodedBytes": 2639809,
+      "decodedSha256": "77c739f9af2b8fb4248fadd75c4b5d3db0922f11f9a0f0d6c2342b1cc83b013d",
+      "rows": 7567
+    },
+    "csv": {
+      "path": "slovenia-furs-charities.csv",
+      "bytes": 843287,
+      "sha256": "e6425f43c71f2f7f3c228c60b9a008785845e7ac11bcdfe281e35983a57f2eb3",
+      "rows": 7567
+    },
+    "anomalies": {
+      "path": "anomalies.json",
+      "bytes": 6884,
+      "sha256": "5ff53bc67bc50eede9b15cc7d2ebe14c2485d9c1954b61a574bf3c107c1dc87e"
+    }
+  }
+}

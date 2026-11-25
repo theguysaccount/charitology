@@ -297,6 +297,18 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['funding', 'Inspect the 10-year 2%/3% tax-assignment funding flow', 'taxAssign'],
     ['coverage', 'Scope, encoding recovery and boundaries', 'archive'],
   ],
+  '/record/charity-index/slovenia/': [
+    ['si-search-heading', 'Search Slovenian 1% income-tax recipients', 'lens'],
+    ['top-2025', 'Top 20 Slovenian 1% recipients in 2025', 'coins'],
+    ['funding', 'Follow Slovenia’s 7-year 1% funding flow', 'alpineOnePct'],
+    ['coverage', 'Scope, modulo-11 TINs, privacy and anomalies', 'archive'],
+  ],
+  '/record/funding-flows/slovenia-dohodnina-1-percent/': [
+    ['si-top-search', 'Explore the Top 250 recipients (2025)', 'lens'],
+    ['seven-year-series', '7-year evolution and 2020 rate doubling', 'chart'],
+    ['europe-tax-assignment-compare', 'Compare five European tax-assignment systems', 'compare'],
+    ['downloads', 'Downloads, methodology and provenance', 'download'],
+  ],
   '/record/charity-index/sweden/': [
     ['se-search-heading', 'Search Swedish 90-konto organizations', 'lens'],
     ['top-2025', 'Largest active 90-konto organizations by 2025 revenue', 'coins'],
