@@ -1,0 +1,238 @@
+{
+  "format": "charitology-northern-ireland-anomalies-v1",
+  "capturedOn": "2026-11-25",
+  "sourceFile": "ccni-register.csv",
+  "sourceSha256": "002a9bcd38cd1612f3bb469935e0a343e43a0a80e99028a0fff9da70465e4cbc",
+  "summary": {
+    "totalRows": 8396,
+    "trailingEmptyHeaderColumnPresent": true,
+    "companyNumberAllZeroCount": 8396,
+    "previousPeriodIncomeAllZeroCount": 8396,
+    "negativeFinancialRowsCount": 3,
+    "unfiledWithNonzeroFinancialsCount": 0,
+    "largeUnverifiedOutliersCount": 1,
+    "activeWithoutFinancialYearEndCount": 550,
+    "removedWithHistoricalFinancialYearEndCount": 1189,
+    "duplicateExactCharityNamesCount": 40,
+    "duplicateExactCharityNameRows": 80,
+    "netAssetsPositiveRows": 51,
+    "netAssetsNegativeRows": 921,
+    "netAssetsZeroRows": 7424,
+    "droppedInvalidWebsiteStrings": 358,
+    "privacyStrippedColumns": [
+      "Public address",
+      "Email",
+      "Telephone"
+    ]
+  },
+  "notes": [
+    "CCNI exports 'Company number' as '0' and 'Total income. Previous financial period.' as '0' across all 8,396 rows, plus a trailing blank 39th CSV column.",
+    "CCNI's 'Charitable spending' and 'Income generation and governance' summary columns are rounded percentages of income (pence per £1), whereas 'Expenditure on Charitable activities' and 'Total expenditure' are integer GBP. We display integer GBP fields only.",
+    "CCNI's 'Total net assets and liabilities' column is negative for 921 charities (including major universities and housing associations) and positive for only 51 charities, reflecting an inverted sign convention in CCNI's export; it is omitted from headline sums.",
+    "When 'Date for financial year ending' is blank and all financial columns are 0 (newly registered or unfiled charities), financial fields are stored as null rather than £0.",
+    "Public address, Email, and Telephone are stripped to avoid republishing small-charity trustees' residential addresses and personal contact details."
+  ],
+  "negativeFinancialRows": [
+    {
+      "nic": "NIC100612",
+      "name": "Garvagh Women's Network",
+      "status": "Removed",
+      "fye": "2019-03-31",
+      "totalIncomeGbp": -280,
+      "totalSpendingGbp": 870
+    },
+    {
+      "nic": "NIC100631",
+      "name": "Manna (Kells) Ltd",
+      "status": "Removed",
+      "fye": "2019-10-15",
+      "totalIncomeGbp": 0,
+      "totalSpendingGbp": -5821
+    },
+    {
+      "nic": "NIC102945",
+      "name": "Bawn Ladies",
+      "status": "Overdue: 750 days",
+      "fye": "2018-12-31",
+      "totalIncomeGbp": 2826,
+      "totalSpendingGbp": -359
+    }
+  ],
+  "unfiledWithNonzeroFinancials": [],
+  "largeUnverifiedOutliers": [
+    {
+      "nic": "NIC103967",
+      "name": "Armagh/Brantry/Holy Trinity/Armagh/Church of Ireland",
+      "status": "Received: on time",
+      "fye": "2025-12-31",
+      "totalIncomeGbp": 106471091,
+      "totalSpendingGbp": 43964092,
+      "charitableExpenditureGbp": 0,
+      "employedStaff": 0,
+      "volunteers": 15,
+      "note": "Reported verbatim from CCNI CSV without adjustment; >£50M reported income with 0 employed staff and 0 itemized charitable expenditure may reflect a source filing scale/unit or diocesan aggregation anomaly."
+    }
+  ],
+  "duplicateExactNamesSample": [
+    {
+      "name": "Apsley Hall Assembly",
+      "count": 2,
+      "nics": [
+        "NIC101167",
+        "NIC111116"
+      ]
+    },
+    {
+      "name": "Armagh District Scout Council",
+      "count": 2,
+      "nics": [
+        "NIC104477",
+        "NIC103941"
+      ]
+    },
+    {
+      "name": "Armoy Cross Community Playgroup",
+      "count": 2,
+      "nics": [
+        "NIC110977",
+        "NIC108801"
+      ]
+    },
+    {
+      "name": "Ballinascreen Early Years",
+      "count": 2,
+      "nics": [
+        "NIC106346",
+        "NIC100060"
+      ]
+    },
+    {
+      "name": "Ballysillan Youth For Christ",
+      "count": 2,
+      "nics": [
+        "NIC107256",
+        "NIC101663"
+      ]
+    },
+    {
+      "name": "Belfast Operatic Company",
+      "count": 2,
+      "nics": [
+        "NIC108133",
+        "NIC102042"
+      ]
+    },
+    {
+      "name": "Care for Cancer",
+      "count": 2,
+      "nics": [
+        "NIC110138",
+        "NIC103595"
+      ]
+    },
+    {
+      "name": "Castlewellan Community Partnership",
+      "count": 2,
+      "nics": [
+        "NIC108934",
+        "NIC107003"
+      ]
+    },
+    {
+      "name": "Clogher Valley Playgroup",
+      "count": 2,
+      "nics": [
+        "NIC108037",
+        "NIC100302"
+      ]
+    },
+    {
+      "name": "Counselling All Nations Services",
+      "count": 2,
+      "nics": [
+        "NIC108200",
+        "NIC100444"
+      ]
+    },
+    {
+      "name": "FEDERATION OF WOMEN'S INSTITUTES OF NORTHERN IRELAND",
+      "count": 2,
+      "nics": [
+        "NIC101656",
+        "NIC110662"
+      ]
+    },
+    {
+      "name": "Foyle Search and Rescue",
+      "count": 2,
+      "nics": [
+        "NIC106685",
+        "NIC100514"
+      ]
+    },
+    {
+      "name": "Garrison Community Group",
+      "count": 2,
+      "nics": [
+        "NIC109143",
+        "NIC100879"
+      ]
+    },
+    {
+      "name": "Golift Weightlifting Club",
+      "count": 2,
+      "nics": [
+        "NIC108050",
+        "NIC107557"
+      ]
+    },
+    {
+      "name": "Ionad Uíbh Eachach",
+      "count": 2,
+      "nics": [
+        "NIC107062",
+        "NIC100328"
+      ]
+    },
+    {
+      "name": "Irish Evangelistic Band",
+      "count": 2,
+      "nics": [
+        "NIC101702",
+        "NIC109471"
+      ]
+    },
+    {
+      "name": "Irish Street Youth and Community Association",
+      "count": 2,
+      "nics": [
+        "NIC107313",
+        "NIC102216"
+      ]
+    },
+    {
+      "name": "Kids Together Belfast",
+      "count": 2,
+      "nics": [
+        "NIC107518",
+        "NIC100903"
+      ]
+    },
+    {
+      "name": "Knocknagin Hall Committee",
+      "count": 2,
+      "nics": [
+        "NIC107121",
+        "NIC102886"
+      ]
+    },
+    {
+      "name": "MUCKAMORE PARISH DEVELOPMENT ASSOCIATION",
+      "count": 2,
+      "nics": [
+        "NIC101010",
+        "NIC109788"
+      ]
+    }
+  ]
+}

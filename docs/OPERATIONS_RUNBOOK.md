@@ -17,12 +17,14 @@ This runbook documents how Charitology's live production surfaces are hosted, mo
 - **What it verifies (strictly read-only, zero side effects):**
   1. `https://charitology.com/` returns `HTTP 200` with expected homepage markup.
   2. `https://charitology.org/` redirects (`3xx`) to `https://charitology.com/`.
-  3. `https://charitology.com/api/v1/charity-index.json` and `/api/v1/funding-flows.json` return valid JSON catalogs meeting minimum jurisdiction/record/flow floors.
-  4. `https://charitology.com/downloads/extension-release.json` returns a valid extension manifest with a semver `extensionVersion`.
-  5. `https://os.charitology.org/` returns `HTTP 200` with the in-app `pilot-feedback-trigger` and `pilot-feedback-dialog` controls.
-  6. `https://os.charitology.org/api/session` returns `HTTP 200` with `{ "ok": true }`.
-  7. `https://os.charitology.org/api/pilot-feedback` enforces `GET -> 405`, unauthenticated same-origin `POST -> 401`, and cross-origin `POST -> 403` without creating database rows or sending email.
-  8. `https://mail.charitology.org/api/health` returns `HTTP 200` with `{ "ok": true, "service": "charitology-newsletter" }`.
+  3. `https://charitology.com/api/v1/charity-index.json` and `/api/v1/funding-flows.json` return valid JSON catalogs meeting minimum jurisdiction/record/flow floors (`>= 27` jurisdictions, `>= 3.2M` records, `>= 45` funding flows).
+  4. `https://charitology.com/tools/` serves the 3-path Charity OS & MCP quickstart, and `https://charitology.com/for-charities/free/` + `/data/free-charity-resources.json` serve all 65 verified nonprofit programs.
+  5. `https://charitology.com/sitemap.xml` (`>= 590` canonical URLs), `https://charitology.com/llms.txt`, `https://os.charitology.org/robots.txt`, and `https://os.charitology.org/sitemap.xml` return `HTTP 200` with expected discovery markers.
+  6. `https://charitology.com/downloads/extension-release.json` returns a valid extension manifest with a semver `extensionVersion`.
+  7. `https://os.charitology.org/` returns `HTTP 200` with the in-app `pilot-feedback-trigger` and `pilot-feedback-dialog` controls.
+  8. `https://os.charitology.org/api/session` returns `HTTP 200` with `{ "ok": true }`.
+  9. `https://os.charitology.org/api/pilot-feedback` enforces `GET -> 405`, unauthenticated same-origin `POST -> 401`, and cross-origin `POST -> 403` without creating database rows or sending email.
+  10. `https://mail.charitology.org/api/health` returns `HTTP 200` with `{ "ok": true, "service": "charitology-newsletter" }`.
 - **Run locally on demand:**
   ```bash
   node scripts/check-production-health.mjs
