@@ -275,6 +275,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['nz-search-heading', 'Look up a charity', 'lens'],
     ['coverage', 'Coverage and original records', 'permit'],
   ],
+  '/record/charity-index/northern-ireland/': [
+    ['ni-search-heading', 'Search Northern Ireland charities', 'lens'],
+    ['top-20', 'Top 20 active charities by reported income', 'coins'],
+    ['purposes', 'All 12 statutory charitable purposes', 'layers'],
+    ['coverage', 'Scope, anomalies, UK cross-links and privacy', 'archive'],
+  ],
   '/record/charity-index/norway/': [
     ['norway-search-heading', 'Search voluntary organizations', 'lens'],
     ['funding', 'Follow VAT compensation grants', 'tranche'],

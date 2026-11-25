@@ -1,0 +1,500 @@
+{
+  "format": "charitology-northern-ireland-registry-v1",
+  "jurisdiction": "Northern Ireland (United Kingdom)",
+  "asOf": "2026-11-25",
+  "capturedOn": "2026-11-25",
+  "currency": "GBP",
+  "publisher": "Charity Commission for Northern Ireland (CCNI)",
+  "catalogues": {
+    "ccniCharitySearch": "https://www.charitycommissionni.org.uk/charity-search/",
+    "ccniBulkCsv": "https://www.charitycommissionni.org.uk/api/charity-search/exportSearchResultsToCsv/?pageNumber=1&include=Linked&include=Removed",
+    "openDataNi": "https://admin.opendatani.gov.uk/dataset/register-of-charities",
+    "ccniCharityDetailsPrefix": "https://www.charitycommissionni.org.uk/charity-details/?regId="
+  },
+  "sourceCapture": {
+    "filename": "ccni-register.csv",
+    "bytes": 10302379,
+    "sha256": "002a9bcd38cd1612f3bb469935e0a343e43a0a80e99028a0fff9da70465e4cbc",
+    "capturedOn": "2026-11-25",
+    "rawRows": 8396
+  },
+  "counts": {
+    "includedOrganizations": 8396,
+    "uniqueCharityNumbers": 8396,
+    "distinctExactNames": 8356,
+    "activeOrganizations": 7002,
+    "removedOrganizations": 1394,
+    "byStatusBucket": {
+      "received_on_time": 4921,
+      "received_late": 778,
+      "overdue": 958,
+      "registered_no_return_due": 345,
+      "removed": 1394
+    },
+    "withFinancialYearEnd": 7641,
+    "activeWithFinancialYearEnd": 6452,
+    "activeWithoutFinancialYearEnd": 550,
+    "withWebsite": 4344,
+    "earliestRegistration": "2013-12-13",
+    "latestRegistration": "2026-11-19",
+    "registrationsByYear": {
+      "2013": 14,
+      "2014": 756,
+      "2015": 2647,
+      "2016": 1923,
+      "2017": 717,
+      "2018": 244,
+      "2019": 93,
+      "2020": 363,
+      "2021": 332,
+      "2022": 529,
+      "2023": 306,
+      "2024": 184,
+      "2025": 162,
+      "2026": 126
+    },
+    "financialYearEndsByYear": {
+      "2015": 2,
+      "2016": 39,
+      "2017": 112,
+      "2018": 275,
+      "2019": 320,
+      "2020": 143,
+      "2021": 100,
+      "2022": 93,
+      "2023": 230,
+      "2024": 536,
+      "2025": 5125,
+      "2026": 666
+    },
+    "incomeEndowmentMatches": 7174,
+    "incomeEndowmentNonZeroRows": 7174
+  },
+  "financialTotalsGbp": {
+    "activeTotalIncomeGbp": 3302628648,
+    "activeTotalSpendingGbp": 3059034519,
+    "allTotalIncomeGbp": 3380936172,
+    "allTotalSpendingGbp": 3146385497,
+    "activeEmployedStaff": 45200,
+    "activeUkIrelandVolunteers": 185783,
+    "allEmployedStaff": 46632,
+    "allUkIrelandVolunteers": 191458
+  },
+  "purposes": [
+    {
+      "code": "education",
+      "label": "The advancement of education",
+      "short": "Education",
+      "total": 4449,
+      "active": 3517,
+      "removed": 932
+    },
+    {
+      "code": "community",
+      "label": "The advancement of citizenship or community development",
+      "short": "Citizenship & community development",
+      "total": 3238,
+      "active": 2535,
+      "removed": 703
+    },
+    {
+      "code": "need",
+      "label": "The relief of those in need by reason of youth, age, ill-health, disability, financial hardship or other disadvantage",
+      "short": "Relief of those in need",
+      "total": 2824,
+      "active": 2319,
+      "removed": 505
+    },
+    {
+      "code": "religion",
+      "label": "The advancement of religion",
+      "short": "Religion",
+      "total": 2140,
+      "active": 1954,
+      "removed": 186
+    },
+    {
+      "code": "health",
+      "label": "The advancement of health or the saving of lives",
+      "short": "Health or saving of lives",
+      "total": 1426,
+      "active": 1161,
+      "removed": 265
+    },
+    {
+      "code": "arts",
+      "label": "The advancement of the arts, culture, heritage or science",
+      "short": "Arts, culture, heritage & science",
+      "total": 1356,
+      "active": 1168,
+      "removed": 188
+    },
+    {
+      "code": "poverty",
+      "label": "The prevention or relief of poverty",
+      "short": "Prevention or relief of poverty",
+      "total": 1127,
+      "active": 935,
+      "removed": 192
+    },
+    {
+      "code": "other",
+      "label": "Other charitable purposes (including recreational/ leisure facilities)",
+      "short": "Other charitable purposes & recreation",
+      "total": 589,
+      "active": 517,
+      "removed": 72
+    },
+    {
+      "code": "human_rights",
+      "label": "The advancement of human rights conflict resolution or reconciliation or the promotion of religious or racial harmony and equality or diversity",
+      "short": "Human rights, reconciliation & equality",
+      "total": 543,
+      "active": 453,
+      "removed": 90
+    },
+    {
+      "code": "sport",
+      "label": "The advancement of amateur sport",
+      "short": "Amateur sport",
+      "total": 356,
+      "active": 298,
+      "removed": 58
+    },
+    {
+      "code": "environment",
+      "label": "The advancement of environmental protection or improvement",
+      "short": "Environmental protection",
+      "total": 279,
+      "active": 239,
+      "removed": 40
+    },
+    {
+      "code": "animals",
+      "label": "The advancement of animal welfare",
+      "short": "Animal welfare",
+      "total": 105,
+      "active": 93,
+      "removed": 12
+    }
+  ],
+  "governingDocuments": [
+    {
+      "type": "Constitution",
+      "total": 4695,
+      "active": 3942,
+      "removed": 753
+    },
+    {
+      "type": "Memorandum and Articles",
+      "total": 2075,
+      "active": 1807,
+      "removed": 268
+    },
+    {
+      "type": "Royal Charter",
+      "total": 700,
+      "active": 433,
+      "removed": 267
+    },
+    {
+      "type": "Trust Deed or Declaration of Trust",
+      "total": 470,
+      "active": 388,
+      "removed": 82
+    },
+    {
+      "type": "(Not stated)",
+      "total": 217,
+      "active": 209,
+      "removed": 8
+    },
+    {
+      "type": "Other",
+      "total": 181,
+      "active": 172,
+      "removed": 9
+    },
+    {
+      "type": "IPS Rules / Community Benefit Society Rules",
+      "total": 27,
+      "active": 23,
+      "removed": 4
+    },
+    {
+      "type": "Will",
+      "total": 17,
+      "active": 15,
+      "removed": 2
+    },
+    {
+      "type": "Scheme",
+      "total": 14,
+      "active": 13,
+      "removed": 1
+    }
+  ],
+  "top20ActiveByIncome": [
+    {
+      "regId": "101788",
+      "nic": "NIC101788",
+      "name": "The Queen's University of Belfast",
+      "fye": "2025-07-31",
+      "incomeGbp": 489483000,
+      "spendingGbp": 512274000,
+      "staff": 4832,
+      "volunteers": 0,
+      "statusRaw": "Received: on time",
+      "govDoc": "Other"
+    },
+    {
+      "regId": "100166",
+      "nic": "NIC100166",
+      "name": "University of Ulster",
+      "fye": "2025-07-31",
+      "incomeGbp": 304235000,
+      "spendingGbp": 325898000,
+      "staff": 3392,
+      "volunteers": 0,
+      "statusRaw": "Received: on time",
+      "govDoc": "Other"
+    },
+    {
+      "regId": "102575",
+      "nic": "NIC102575",
+      "name": "Radius Housing Association Limited",
+      "fye": "2025-03-31",
+      "incomeGbp": 116091659,
+      "spendingGbp": 101899964,
+      "staff": 954,
+      "volunteers": 2,
+      "statusRaw": "Received: on time",
+      "govDoc": "IPS Rules / Community Benefit Society Rules"
+    },
+    {
+      "regId": "103967",
+      "nic": "NIC103967",
+      "name": "Armagh/Brantry/Holy Trinity/Armagh/Church of Ireland",
+      "fye": "2025-12-31",
+      "incomeGbp": 106471091,
+      "spendingGbp": 43964092,
+      "staff": 0,
+      "volunteers": 15,
+      "statusRaw": "Received: on time",
+      "govDoc": "Constitution"
+    },
+    {
+      "regId": "100095",
+      "nic": "NIC100095",
+      "name": "Choice Housing Ireland Limited",
+      "fye": "2025-03-31",
+      "incomeGbp": 85050000,
+      "spendingGbp": 71686000,
+      "staff": 336,
+      "volunteers": 0,
+      "statusRaw": "Received: on time",
+      "govDoc": "IPS Rules / Community Benefit Society Rules"
+    },
+    {
+      "regId": "106107",
+      "nic": "NIC106107",
+      "name": "Apex Housing Association Limited",
+      "fye": "2025-03-31",
+      "incomeGbp": 77858396,
+      "spendingGbp": 74669685,
+      "staff": 670,
+      "volunteers": 0,
+      "statusRaw": "Received: on time",
+      "govDoc": "IPS Rules / Community Benefit Society Rules"
+    },
+    {
+      "regId": "101435",
+      "nic": "NIC101435",
+      "name": "Northern Ireland Co-Ownership Housing Association Limited",
+      "fye": "2026-03-31",
+      "incomeGbp": 72233668,
+      "spendingGbp": 43762369,
+      "staff": 62,
+      "volunteers": 0,
+      "statusRaw": "Received: on time",
+      "govDoc": "IPS Rules / Community Benefit Society Rules"
+    },
+    {
+      "regId": "101111",
+      "nic": "NIC101111",
+      "name": "Ardbarron Trust Limited",
+      "fye": "2025-12-31",
+      "incomeGbp": 72149478,
+      "spendingGbp": 11729435,
+      "staff": 0,
+      "volunteers": 0,
+      "statusRaw": "Received: on time",
+      "govDoc": "Memorandum and Articles"
+    },
+    {
+      "regId": "103672",
+      "nic": "NIC103672",
+      "name": "Praxis Care",
+      "fye": "2025-03-31",
+      "incomeGbp": 71879864,
+      "spendingGbp": 69391833,
+      "staff": 1672,
+      "volunteers": 90,
+      "statusRaw": "Received: on time",
+      "govDoc": "Memorandum and Articles"
+    },
+    {
+      "regId": "103840",
+      "nic": "NIC103840",
+      "name": "Clanmil Housing Association Limited",
+      "fye": "2025-03-31",
+      "incomeGbp": 56889968,
+      "spendingGbp": 46544178,
+      "staff": 325,
+      "volunteers": 0,
+      "statusRaw": "Received: on time",
+      "govDoc": "IPS Rules / Community Benefit Society Rules"
+    },
+    {
+      "regId": "101396",
+      "nic": "NIC101396",
+      "name": "Bryson Charitable Group",
+      "fye": "2025-03-31",
+      "incomeGbp": 44923716,
+      "spendingGbp": 44082438,
+      "staff": 1015,
+      "volunteers": 10,
+      "statusRaw": "Received: on time",
+      "govDoc": "Memorandum and Articles"
+    },
+    {
+      "regId": "103565",
+      "nic": "NIC103565",
+      "name": "Ulster Independent Clinic Limited",
+      "fye": "2025-04-30",
+      "incomeGbp": 42873122,
+      "spendingGbp": 40060110,
+      "staff": 508,
+      "volunteers": 0,
+      "statusRaw": "Received: on time",
+      "govDoc": "Memorandum and Articles"
+    },
+    {
+      "regId": "108435",
+      "nic": "NIC108435",
+      "name": "Methodist Church in Ireland",
+      "fye": "2025-12-31",
+      "incomeGbp": 36346000,
+      "spendingGbp": 33333000,
+      "staff": 487,
+      "volunteers": 3000,
+      "statusRaw": "Received: on time",
+      "govDoc": "Constitution"
+    },
+    {
+      "regId": "104483",
+      "nic": "NIC104483",
+      "name": "The Presbyterian Church in Ireland",
+      "fye": "2024-12-31",
+      "incomeGbp": 31881960,
+      "spendingGbp": 33698751,
+      "staff": 556,
+      "volunteers": 1500,
+      "statusRaw": "Overdue: 20 days",
+      "govDoc": "Other"
+    },
+    {
+      "regId": "101121",
+      "nic": "NIC101121",
+      "name": "The Cedar Foundation",
+      "fye": "2026-03-31",
+      "incomeGbp": 26524110,
+      "spendingGbp": 26317933,
+      "staff": 578,
+      "volunteers": 36,
+      "statusRaw": "Received: on time",
+      "govDoc": "Memorandum and Articles"
+    },
+    {
+      "regId": "100113",
+      "nic": "NIC100113",
+      "name": "The Odyssey Trust Company Limited",
+      "fye": "2025-03-31",
+      "incomeGbp": 25942359,
+      "spendingGbp": 23332686,
+      "staff": 198,
+      "volunteers": 0,
+      "statusRaw": "Received: on time",
+      "govDoc": "Memorandum and Articles"
+    },
+    {
+      "regId": "101486",
+      "nic": "NIC101486",
+      "name": "Triangle Housing Association Ltd",
+      "fye": "2025-03-31",
+      "incomeGbp": 25784184,
+      "spendingGbp": 24814418,
+      "staff": 467,
+      "volunteers": 0,
+      "statusRaw": "Received: on time",
+      "govDoc": "Constitution"
+    },
+    {
+      "regId": "103729",
+      "nic": "NIC103729",
+      "name": "National Museums and Galleries of Northern Ireland",
+      "fye": "2025-03-31",
+      "incomeGbp": 25529523,
+      "spendingGbp": 27594944,
+      "staff": 282,
+      "volunteers": 346,
+      "statusRaw": "Received: on time",
+      "govDoc": "Constitution"
+    },
+    {
+      "regId": "103226",
+      "nic": "NIC103226",
+      "name": "Extern Group",
+      "fye": "2025-03-31",
+      "incomeGbp": 24431392,
+      "spendingGbp": 24248955,
+      "staff": 510,
+      "volunteers": 6,
+      "statusRaw": "Received: on time",
+      "govDoc": "Memorandum and Articles"
+    },
+    {
+      "regId": "103983",
+      "nic": "NIC103983",
+      "name": "Down and Connor Diocesan Trust",
+      "fye": "2025-12-31",
+      "incomeGbp": 21604000,
+      "spendingGbp": 23056000,
+      "staff": 241,
+      "volunteers": 5000,
+      "statusRaw": "Received: on time",
+      "govDoc": "Constitution"
+    }
+  ],
+  "artifacts": {
+    "organizations": {
+      "path": "organizations.json.gz",
+      "bytes": 527040,
+      "sha256": "549c16d2d003bfbb42e417cbe94f355f24e8f34ed342caa8eb9e0dfff1234cb9",
+      "decodedBytes": 3775420,
+      "decodedSha256": "74fda8ab6024e1d60f78fd4651c3e8e5aa5a7840799dfc4dbf16d71eee641fb4",
+      "rows": 8396
+    },
+    "csv": {
+      "path": "northern-ireland-ccni-charities.csv",
+      "bytes": 2210866,
+      "sha256": "a0fe15e4a9a2ae1ded5a2e9bb055d4fcc90e20bc3e765c9ff9e180284c56b5c8",
+      "rows": 8396
+    },
+    "anomalies": {
+      "path": "anomalies.json",
+      "bytes": 6084,
+      "sha256": "b8689f5cee3440909d12bfd70afaef1d3403fcf23aceb0e4fc9df93263d2a5e3"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-// Single source of truth for the Global Charity Index (27 jurisdictions) and
+// Single source of truth for the Global Charity Index (28 jurisdictions) and
 // published Funding Flows lookups and case studies. Powers /record/charity-index/coverage/,
 // /record/funding-flows/, /tools/charity-lookup/, /record/open-datasets/, and
 // /api/v1/charity-index.json + /api/v1/funding-flows.json.
@@ -25,6 +25,7 @@ import italy from '../../public/data/charity-registry/italy/manifest.json';
 import latvia from '../../public/data/charity-registry/latvia/manifest.json';
 import newZealand from '../../public/data/charity-registry/new-zealand/manifest.json';
 import netherlands from '../../public/data/charity-registry/netherlands/manifest.json';
+import northernIreland from '../../public/data/charity-registry/northern-ireland/manifest.json';
 import norway from '../../public/data/charity-registry/norway/manifest.json';
 import poland from '../../public/data/charity-registry/poland/manifest.json';
 import slovakia from '../../public/data/charity-registry/slovakia/manifest.json';
@@ -365,6 +366,20 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     history: `${number(newZealand.registry.withBothYears)} entries have selected Tier 3 returns for periods ending in both 2024 and 2025.`,
     boundary: 'The financial selection covers individual Tier 3 returns. Currency follows the reporting standard where the source field is blank.',
     manifest: '/data/charity-registry/new-zealand/manifest.json',
+  },
+  {
+    id: 'northern-ireland',
+    name: 'Northern Ireland',
+    source: 'Charity Commission for Northern Ireland (CCNI) Register of Charities',
+    route: '/record/charity-index/northern-ireland/',
+    label: 'Search Northern Ireland charities and financial filings',
+    date: northernIreland.capturedOn,
+    recordCount: northernIreland.counts.includedOrganizations,
+    recordUnit: 'registered charities',
+    coverage: `${number(northernIreland.counts.includedOrganizations)} Northern Ireland charities with unique NIC numbers (${number(northernIreland.counts.activeOrganizations)} active and ${number(northernIreland.counts.removedOrganizations)} removed as of ${northernIreland.asOf}), completing all three UK charity regulators alongside England & Wales and Scotland.`,
+    history: `Active charities with a filed financial year end report GBP 3.30 billion in annual income, GBP 3.06 billion in spending, ${number(northernIreland.financialTotalsGbp.activeEmployedStaff)} employed staff, and ${number(northernIreland.financialTotalsGbp.activeUkIrelandVolunteers)} UK and Ireland volunteers across all 12 statutory charitable purposes.`,
+    boundary: 'Public address, Email, and Telephone columns are stripped for trustee privacy. Unfiled blank-FYE rows stay null rather than £0, CCNI’s sign-inverted net-assets column is omitted from headline totals, and 3 negative financial rows plus 1 unverified £106.47M parish filing outlier stay documented verbatim in anomalies.json.',
+    manifest: '/data/charity-registry/northern-ireland/manifest.json',
   },
   {
     id: 'norway',

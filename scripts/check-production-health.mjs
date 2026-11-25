@@ -50,9 +50,9 @@ const checks = [
       const payload = await res.json();
       assert.equal(payload.name, 'charity-index');
       const data = payload.data ?? {};
-      assert.ok(Array.isArray(data.jurisdictions) && data.jurisdictions.length >= 20, `Expected >=20 jurisdictions, got ${data.jurisdictions?.length}`);
+      assert.ok(Array.isArray(data.jurisdictions) && data.jurisdictions.length >= 27, `Expected >=27 jurisdictions, got ${data.jurisdictions?.length}`);
       assert.ok(
-        typeof data.totalRegistryRecordsAcrossJurisdictions === 'number' && data.totalRegistryRecordsAcrossJurisdictions >= 2_900_000,
+        typeof data.totalRegistryRecordsAcrossJurisdictions === 'number' && data.totalRegistryRecordsAcrossJurisdictions >= 3_200_000,
         `Unexpected totalRegistryRecordsAcrossJurisdictions: ${data.totalRegistryRecordsAcrossJurisdictions}`,
       );
       return `${data.jurisdictions.length} jurisdictions, ${data.totalRegistryRecordsAcrossJurisdictions.toLocaleString('en-US')} records`;
@@ -66,8 +66,58 @@ const checks = [
       const payload = await res.json();
       assert.equal(payload.name, 'funding-flows');
       const data = payload.data ?? {};
-      assert.ok(Array.isArray(data.entries) && data.entries.length >= 40, `Expected >=40 entries, got ${data.entries?.length}`);
+      assert.ok(Array.isArray(data.entries) && data.entries.length >= 45, `Expected >=45 entries, got ${data.entries?.length}`);
       return `${data.entries.length} funding-flow entries`;
+    },
+  },
+  {
+    name: 'Agent-first /tools/ quickstart & MCP handoff',
+    run: async () => {
+      const res = await fetchWithTimeout('https://charitology.com/tools/', { redirect: 'follow' });
+      assert.equal(res.status, 200, `Expected 200, got ${res.status}`);
+      const html = await res.text();
+      assert.ok(html.includes('https://os.charitology.org/mcp'), 'Missing MCP endpoint on /tools/');
+      assert.ok(html.includes('Pick the fastest way in'), 'Missing 3-path quickstart heading on /tools/');
+      return `HTTP ${res.status} (${html.length} bytes)`;
+    },
+  },
+  {
+    name: 'Free Things for Charities directory (/for-charities/free/ + JSON)',
+    run: async () => {
+      const pageRes = await fetchWithTimeout('https://charitology.com/for-charities/free/', { redirect: 'follow' });
+      assert.equal(pageRes.status, 200, `Expected 200, got ${pageRes.status}`);
+      const jsonRes = await fetchWithTimeout('https://charitology.com/data/free-charity-resources.json', { redirect: 'follow' });
+      assert.equal(jsonRes.status, 200, `Expected 200, got ${jsonRes.status}`);
+      const payload = await jsonRes.json();
+      assert.ok(Array.isArray(payload.items) && payload.items.length >= 65, `Expected >=65 programs, got ${payload.items?.length}`);
+      return `HTTP ${pageRes.status}, ${payload.items.length} verified programs`;
+    },
+  },
+  {
+    name: 'Canonical sitemap.xml & /llms.txt discovery',
+    run: async () => {
+      const smRes = await fetchWithTimeout('https://charitology.com/sitemap.xml', { redirect: 'follow' });
+      assert.equal(smRes.status, 200, `Expected 200, got ${smRes.status}`);
+      const smXml = await smRes.text();
+      const locs = smXml.match(/<loc>/g)?.length ?? 0;
+      assert.ok(locs >= 590, `Expected >=590 sitemap URLs, got ${locs}`);
+      const llmsRes = await fetchWithTimeout('https://charitology.com/llms.txt', { redirect: 'follow' });
+      assert.equal(llmsRes.status, 200, `Expected 200, got ${llmsRes.status}`);
+      const llmsTxt = await llmsRes.text();
+      assert.ok(llmsTxt.includes('https://os.charitology.org/mcp'), 'Missing MCP endpoint in /llms.txt');
+      return `${locs} sitemap URLs, /llms.txt ${llmsTxt.length} bytes`;
+    },
+  },
+  {
+    name: 'Charity OS crawl files (robots.txt & sitemap.xml)',
+    run: async () => {
+      const robRes = await fetchWithTimeout('https://os.charitology.org/robots.txt', { redirect: 'follow' });
+      assert.equal(robRes.status, 200, `Expected 200, got ${robRes.status}`);
+      const robTxt = await robRes.text();
+      assert.ok(robTxt.includes('Sitemap: https://os.charitology.org/sitemap.xml'), 'Missing Sitemap directive in Charity OS robots.txt');
+      const osSmRes = await fetchWithTimeout('https://os.charitology.org/sitemap.xml', { redirect: 'follow' });
+      assert.equal(osSmRes.status, 200, `Expected 200, got ${osSmRes.status}`);
+      return `robots.txt & sitemap.xml HTTP 200`;
     },
   },
   {

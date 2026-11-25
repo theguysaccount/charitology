@@ -1,0 +1,542 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/northern-ireland/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Northern Ireland charities (CCNI Register of Charities)';
+const dataPath = '/data/charity-registry/northern-ireland/';
+const count = (value: number) => value.toLocaleString('en-US');
+const gbp = (value: number | null) =>
+  value === null ? '—' : `£${value.toLocaleString('en-US')}`;
+
+const sources = [
+  {
+    title: 'Charity Commission for Northern Ireland — Register of Charities CSV export (captured 2026-11-25)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.ccniBulkCsv,
+  },
+  {
+    title: 'Charity Commission for Northern Ireland — Charity Search Portal',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.ccniCharitySearch,
+  },
+  {
+    title: 'Open Data NI — Register of Charities Dataset',
+    publisher: 'Open Data NI (Department of Finance)',
+    url: manifest.catalogues.openDataNi,
+  },
+];
+
+const regYears = Object.entries(manifest.counts.registrationsByYear).map(([year, n]) => ({
+  year,
+  count: n as number,
+}));
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Global Charity Index · Northern Ireland"
+  summary="Search all 8,396 Northern Ireland charities in the Charity Commission for Northern Ireland (CCNI) statutory register (7,002 active and 1,394 removed as of 2026-11-25), with reported GBP income, expenditure, employed staff, volunteers, filing timeliness, and all 12 statutory charitable purposes."
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Global Charity Index', href: '/record/charity-index/' },
+    { label: 'Northern Ireland' },
+  ]}
+  filePath="src/pages/record/charity-index/northern-ireland.astro"
+  sources={sources}
+>
+  <p>
+    This edition indexes the complete official Register of Charities published by the
+    <strong>{manifest.publisher}</strong> (captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>),
+    completing all three statutory charity regulators of the United Kingdom alongside
+    <a href={url('/record/charity-financials/england-wales/')}>England &amp; Wales (CCEW)</a> and
+    <a href={url('/record/charity-financials/scotland/')}>Scotland (OSCR)</a>.
+    Every one of the <strong>{count(manifest.counts.includedOrganizations)} registrations</strong> carries a unique
+    six-digit NIC number (<code>NIC100002</code>–<code>NIC111294</code>):
+    <strong>{count(manifest.counts.activeOrganizations)}</strong> currently active charities
+    (<strong>{count(manifest.counts.byStatusBucket.received_on_time)}</strong> filing on time,
+    <strong>{count(manifest.counts.byStatusBucket.received_late)}</strong> received late,
+    <strong>{count(manifest.counts.byStatusBucket.overdue)}</strong> overdue, and
+    <strong>{count(manifest.counts.byStatusBucket.registered_no_return_due)}</strong> newly registered with no return yet due)
+    plus <strong>{count(manifest.counts.removedOrganizations)}</strong> removed charities retained for historical verification.
+  </p>
+  <p>
+    Across the <strong>{count(manifest.counts.activeWithFinancialYearEnd)}</strong> active charities with a filed financial year end,
+    latest reported annual income sums to <strong>{gbp(manifest.financialTotalsGbp.activeTotalIncomeGbp)}</strong>
+    and spending to <strong>{gbp(manifest.financialTotalsGbp.activeTotalSpendingGbp)}</strong>,
+    employing <strong>{count(manifest.financialTotalsGbp.activeEmployedStaff)}</strong> paid staff and mobilizing
+    <strong>{count(manifest.financialTotalsGbp.activeUkIrelandVolunteers)}</strong> UK and Ireland volunteers
+    (see <a href="#coverage">anomalies</a> regarding one unverified £106.47M parish filing preserved verbatim from CCNI).
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-ni-registry
+    data-base={url(dataPath)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="ni-search-heading"
+  >
+    <h2 id="ni-search-heading">Search Northern Ireland charities</h2>
+    <p id="ni-search-hint">
+      Enter part of a charity name or alternative name (e.g., <code>queen's university</code>, <code>cancer lifeline</code>,
+      <code>praxis care</code>, <code>belfast</code>, <code>ulster</code>) or a NIC number (e.g., <code>NIC101788</code> or <code>100002</code>).
+      Search runs locally in your browser.
+    </p>
+    <form aria-describedby="ni-search-hint">
+      <label for="ni-query">Charity name or NIC registration number</label>
+      <div class="finance-actions">
+        <input type="search" id="ni-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="ni-status">Filing status</label>
+          <select id="ni-status" disabled>
+            <option value="">All charities ({count(manifest.counts.includedOrganizations)})</option>
+            <option value="active">All active ({count(manifest.counts.activeOrganizations)})</option>
+            <option value="received_on_time">Received: on time ({count(manifest.counts.byStatusBucket.received_on_time)})</option>
+            <option value="received_late">Received: late ({count(manifest.counts.byStatusBucket.received_late)})</option>
+            <option value="overdue">Overdue return ({count(manifest.counts.byStatusBucket.overdue)})</option>
+            <option value="registered_no_return_due">Registered — no return yet due ({count(manifest.counts.byStatusBucket.registered_no_return_due)})</option>
+            <option value="removed">Removed ({count(manifest.counts.removedOrganizations)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="ni-purpose">Statutory purpose</label>
+          <select id="ni-purpose" disabled>
+            <option value="">All 12 purposes</option>
+            {
+              manifest.purposes.map((p) => (
+                <option value={p.code}>
+                  {p.short} ({count(p.total)})
+                </option>
+              ))
+            }
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="ni-sort">Sort by</label>
+          <select id="ni-sort" disabled>
+            <option value="income">Reported income (highest)</option>
+            <option value="spending">Reported spending (highest)</option>
+            <option value="staff">Employed staff (highest)</option>
+            <option value="volunteers">Volunteers (highest)</option>
+            <option value="name">Name (A–Z)</option>
+          </select>
+        </span>
+        <button type="submit" class="btn" disabled>Search charities</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>
+      Search when you are ready to load Northern Ireland’s CCNI register ({(manifest.artifacts.organizations.bytes / 1024).toFixed(1)} KB compressed).
+    </p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="basaltColumn" aria-label="Northern Ireland CCNI charity results" data-results></ol>
+    <noscript>
+      <p>
+        Without JavaScript, download the
+        <a href={url(dataPath + manifest.artifacts.csv.path)} download>
+          Northern Ireland CCNI charities CSV ({count(manifest.counts.includedOrganizations)} rows)
+        </a>
+        or consult <a href={manifest.catalogues.ccniCharitySearch}>CCNI’s online charity search</a> directly.
+      </p>
+    </noscript>
+  </section>
+
+  <h2 id="top-20">Top 20 active Northern Ireland charities by reported annual income</h2>
+  <p>
+    Higher-education institutions, registered housing associations, and social-care providers account for the largest reported annual
+    revenues in Northern Ireland. Figures come verbatim from each charity’s latest filed CCNI return.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Top 20 active Northern Ireland charities by reported income" tabindex="0">
+    <table class="data ni-table">
+      <caption>Largest active CCNI charities by latest reported annual income (GBP, captured 2026-11-25)</caption>
+      <thead>
+        <tr>
+          <th scope="col">NIC</th>
+          <th scope="col">Charity</th>
+          <th scope="col">FY end</th>
+          <th scope="col">Income (GBP)</th>
+          <th scope="col">Spending (GBP)</th>
+          <th scope="col">Staff</th>
+          <th scope="col">Volunteers</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.top20ActiveByIncome.map((row) => (
+            <tr>
+              <th scope="row">
+                <a href={`${manifest.catalogues.ccniCharityDetailsPrefix}${row.regId}&subId=0`}>
+                  <code>{row.nic}</code>
+                </a>
+              </th>
+              <td>{row.name}</td>
+              <td>{row.fye ?? '—'}</td>
+              <td>{gbp(row.incomeGbp)}</td>
+              <td>{gbp(row.spendingGbp)}</td>
+              <td>{row.staff === null ? '—' : count(row.staff)}</td>
+              <td>{row.volunteers === null ? '—' : count(row.volunteers)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="purposes">All 12 statutory charitable purposes &amp; governing documents</h2>
+  <p>
+    Under the Charities Act (Northern Ireland) 2008, charities may select multiple statutory purposes in CCNI’s
+    <em>What the charity does</em> field. Education (<strong>{count(manifest.purposes[0].total)}</strong>),
+    citizenship &amp; community development (<strong>{count(manifest.purposes[1].total)}</strong>), and
+    relief of those in need (<strong>{count(manifest.purposes[2].total)}</strong>) lead the register.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Northern Ireland statutory charitable purposes" tabindex="0">
+    <table class="data ni-table">
+      <caption>Charities by statutory purpose under the Charities Act (Northern Ireland) 2008 (multi-label)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Statutory purpose</th>
+          <th scope="col">Total</th>
+          <th scope="col">Active</th>
+          <th scope="col">Removed</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.purposes.map((p) => (
+            <tr>
+              <th scope="row">
+                <strong>{p.short}</strong><br />
+                <span class="note">{p.label}</span>
+              </th>
+              <td>{count(p.total)}</td>
+              <td>{count(p.active)}</td>
+              <td>{count(p.removed)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" role="region" aria-label="Northern Ireland registrations by calendar year" tabindex="0">
+    <table class="data ni-wave-table">
+      <caption>CCNI charity registrations by year (2013–2026, reflecting the initial statutory register rollout after December 2013)</caption>
+      <thead>
+        <tr>
+          {regYears.map((y) => <th scope="col">{y.year}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {regYears.map((y) => <td>{count(y.count)}</td>)}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="coverage">Scope, source anomalies, UK cross-links and privacy boundaries</h2>
+  <p>
+    <strong>Completing the United Kingdom:</strong> UK charity law is devolved across three independent regulators —
+    <a href={url('/record/charity-financials/england-wales/')}>England &amp; Wales (CCEW)</a>,
+    <a href={url('/record/charity-financials/scotland/')}>Scotland (OSCR)</a>, and
+    Northern Ireland (CCNI). Cross-border charities operating in multiple UK nations may hold separate registration numbers across
+    regulators; CCNI’s compulsory statutory register opened in December 2013, which explains the large 2014–2016 registration wave.
+  </p>
+  <p>
+    <strong>Preserved missingness and verbatim CCNI export quirks:</strong> Exactly <strong>{count(manifest.counts.activeWithoutFinancialYearEnd)}</strong> active
+    charities carry a blank financial year end with placeholder zeros in CCNI’s CSV; those unfiled financial cells are preserved as
+    <code>null</code> rather than <code>£0</code>. All <strong>{count(manifest.counts.includedOrganizations)}</strong> rows in CCNI’s raw export emit
+    <code>Company number = 0</code>, <code>Total income. Previous financial period. = 0</code>, and a blank trailing 39th column.
+    CCNI’s <code>Total net assets and liabilities</code> column is negative for 921 charities (including major universities and housing associations)
+    and positive for only 51, so it is omitted from headline sums. Three rows with negative income or spending (<code>NIC100612</code>,
+    <code>NIC100631</code>, <code>NIC102945</code>), one unverified £106.47M parish filing outlier (<code>NIC103967</code>, reporting 0 staff and
+    £0 itemized charitable expenditure), and 40 exact charity names shared across distinct NIC numbers remain documented verbatim in{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'anomalies.json')} download>anomalies.json</a>.
+  </p>
+  <p>
+    <strong>Privacy boundary:</strong> <code>Public address</code>, <code>Email</code>, and <code>Telephone</code> columns are stripped
+    from all public files so small-charity trustees’ residential addresses and personal contact details are never republished. Each result links
+    directly to its official CCNI profile page.{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(dataPath + manifest.artifacts.csv.path)} download>Download full CSV ({count(manifest.counts.includedOrganizations)} rows)</a> ·{' '}
+    <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.
+  </p>
+</Entry>
+
+<style>
+  .ni-table {
+    min-inline-size: 46rem;
+  }
+  .ni-wave-table {
+    min-inline-size: 44rem;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName } from '../../../lib/client/financial-directory';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../../../lib/client/verified-json';
+
+  type NiRow = {
+    regId: string;
+    nic: string;
+    name: string;
+    otherName: string | null;
+    norm: string;
+    registered: string;
+    active: boolean;
+    statusBucket: string;
+    statusRaw: string;
+    days: number | null;
+    fye: string | null;
+    income: number | null;
+    spending: number | null;
+    charitableExp: number | null;
+    staff: number | null;
+    volunteers: number | null;
+    govDoc: string | null;
+    purposes: string[];
+    website: string | null;
+  };
+  type NiPurpose = {
+    code: string;
+    label: string;
+    short: string;
+    total: number;
+    active: number;
+    removed: number;
+  };
+  type NiManifest = {
+    format: string;
+    asOf: string;
+    capturedOn: string;
+    publisher: string;
+    catalogues: {
+      ccniCharityDetailsPrefix: string;
+    };
+    purposes: NiPurpose[];
+    artifacts: {
+      organizations: VerifiedJsonAsset & { path: string; rows: number };
+    };
+  };
+
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  const fmtGbp = (value: number | null) =>
+    value === null ? 'No filed return' : `£${value.toLocaleString('en-US')}`;
+
+  const limit = 40;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-ni-registry]')) {
+    const manifest: NiManifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#ni-query', root) as HTMLInputElement;
+    const statusSelect = $('#ni-status', root) as HTMLSelectElement;
+    const purposeSelect = $('#ni-purpose', root) as HTMLSelectElement;
+    const sortSelect = $('#ni-sort', root) as HTMLSelectElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    const purposeMap = new Map(manifest.purposes.map((p) => [p.code, p.short]));
+
+    for (const el of [queryEl, statusSelect, purposeSelect, sortSelect, submitBtn, clearBtn]) {
+      el.disabled = false;
+    }
+
+    let cache: Promise<NiRow[]> | null = null;
+    let shown: NiRow[] = [];
+
+    const loadAll = () => {
+      if (!cache) {
+        const asset = manifest.artifacts.organizations;
+        cache = loadVerifiedJson(base + asset.path, asset).then((data) => {
+          if (!Array.isArray(data) || data.length !== asset.rows) {
+            throw new Error('Unexpected Northern Ireland CCNI organization count.');
+          }
+          return data as NiRow[];
+        });
+      }
+      return cache;
+    };
+
+    const sortRows = (rows: NiRow[], mode: string) => {
+      const copy = [...rows];
+      if (mode === 'name') {
+        copy.sort((a, b) => a.name.localeCompare(b.name, 'en'));
+      } else if (mode === 'spending') {
+        copy.sort((a, b) => (b.spending ?? -1e18) - (a.spending ?? -1e18) || a.regId.localeCompare(b.regId));
+      } else if (mode === 'staff') {
+        copy.sort((a, b) => (b.staff ?? -1) - (a.staff ?? -1) || (b.income ?? -1e18) - (a.income ?? -1e18));
+      } else if (mode === 'volunteers') {
+        copy.sort((a, b) => (b.volunteers ?? -1) - (a.volunteers ?? -1) || (b.income ?? -1e18) - (a.income ?? -1e18));
+      } else {
+        copy.sort((a, b) => (b.income ?? -1e18) - (a.income ?? -1e18) || a.regId.localeCompare(b.regId));
+      }
+      return copy;
+    };
+
+    const render = (rows: NiRow[], total: number, q: string) => {
+      shown = rows;
+      listEl.replaceChildren();
+      jsonBtn.disabled = rows.length === 0;
+      csvBtn.disabled = rows.length === 0;
+      if (!rows.length) {
+        statusEl.textContent = q
+          ? `No Northern Ireland charities matched “${q}” under the selected filters.`
+          : 'No charities matched the selected filters.';
+        return;
+      }
+      statusEl.textContent =
+        total > rows.length
+          ? `Showing the first ${rows.length} of ${total.toLocaleString('en-US')} matching charities.`
+          : `Showing ${total.toLocaleString('en-US')} matching charit${total === 1 ? 'y' : 'ies'}.`;
+
+      for (const r of rows) {
+        const profileUrl = `${manifest.catalogues.ccniCharityDetailsPrefix}${r.regId}&subId=0`;
+        const metaParts = [
+          r.statusRaw,
+          `Registered ${r.registered}`,
+          r.fye ? `FYE ${r.fye}` : 'No FYE filed',
+          `Income: ${fmtGbp(r.income)}`,
+          `Spending: ${fmtGbp(r.spending)}`,
+        ];
+        if (r.staff !== null) metaParts.push(`Staff: ${r.staff.toLocaleString('en-US')}`);
+        if (r.volunteers !== null) metaParts.push(`Volunteers: ${r.volunteers.toLocaleString('en-US')}`);
+        if (r.govDoc) metaParts.push(r.govDoc);
+
+        const purposeLabels = r.purposes.map((c) => purposeMap.get(c) ?? c).join(' · ');
+
+        const itemChildren: (Node | string)[] = [
+          h('strong', {}, r.name),
+          ' ',
+          h('code', {}, r.nic),
+          ' ',
+          h('a', { href: profileUrl, rel: 'noopener' }, 'CCNI profile ↗'),
+        ];
+        if (r.website) {
+          itemChildren.push(' · ', h('a', { href: r.website, rel: 'noopener' }, 'Website ↗'));
+        }
+        if (r.otherName) {
+          itemChildren.push(h('div', { class: 'note' }, `Also known as: ${r.otherName}`));
+        }
+        itemChildren.push(h('div', { class: 'note' }, metaParts.join(' · ')));
+        if (purposeLabels) {
+          itemChildren.push(h('div', { class: 'note' }, `Purposes: ${purposeLabels}`));
+        }
+        listEl.append(h('li', {}, ...itemChildren));
+      }
+    };
+
+    const runSearch = async () => {
+      const rawQ = queryEl.value.trim();
+      const normQ = normalize(rawQ);
+      const digitsQ = rawQ.toUpperCase().replace(/^NIC/, '').replace(/\D+/g, '');
+      const st = statusSelect.value;
+      const purp = purposeSelect.value;
+      const sortMode = sortSelect.value;
+
+      statusEl.textContent = 'Loading Northern Ireland CCNI register snapshot…';
+      try {
+        const all = await loadAll();
+        const filtered = all.filter((r) => {
+          if (st === 'active' && !r.active) return false;
+          if (st && st !== 'active' && r.statusBucket !== st) return false;
+          if (purp && !r.purposes.includes(purp)) return false;
+          if (!rawQ) return true;
+          if (digitsQ && r.regId.includes(digitsQ)) return true;
+          if (r.nic.toLowerCase().includes(rawQ.toLowerCase())) return true;
+          if (r.name.toLowerCase().includes(rawQ.toLowerCase())) return true;
+          if (normQ && r.norm.includes(normQ)) return true;
+          return false;
+        });
+        const ordered = sortRows(filtered, sortMode);
+        render(ordered.slice(0, limit), ordered.length, rawQ);
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load Northern Ireland CCNI snapshot.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void runSearch();
+    });
+    for (const sel of [statusSelect, purposeSelect, sortSelect]) {
+      sel.addEventListener('change', () => {
+        void runSearch();
+      });
+    }
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      statusSelect.value = '';
+      purposeSelect.value = '';
+      sortSelect.value = 'income';
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Search cleared.';
+      queryEl.focus();
+    });
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-northern-ireland-ccni-charities.json',
+        JSON.stringify(
+          {
+            source: manifest.publisher,
+            asOf: manifest.asOf,
+            capturedOn: manifest.capturedOn,
+            rows: shown,
+          },
+          null,
+          2,
+        ),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      const csvText = toCsv(
+        shown.map((r) => ({
+          nic_number: r.nic,
+          reg_charity_number: r.regId,
+          charity_name: financialCsvName(r.name),
+          other_name: financialCsvName(r.otherName ?? ''),
+          date_registered: r.registered,
+          status_bucket: r.statusBucket,
+          status_raw: financialCsvName(r.statusRaw),
+          financial_year_ending: r.fye ?? '',
+          total_income_gbp: r.income ?? '',
+          total_spending_gbp: r.spending ?? '',
+          employed_staff: r.staff ?? '',
+          uk_ireland_volunteers: r.volunteers ?? '',
+          governing_document: financialCsvName(r.govDoc ?? ''),
+          statutory_purposes: r.purposes.join('; '),
+          website: r.website ?? '',
+          ccni_profile_url: `${manifest.catalogues.ccniCharityDetailsPrefix}${r.regId}&subId=0`,
+        })),
+      );
+      download(
+        'charitology-northern-ireland-ccni-charities.csv',
+        '\uFEFF' + csvText,
+        'text/csv;charset=utf-8',
+      );
+    });
+  }
+</script>

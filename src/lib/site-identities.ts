@@ -54,6 +54,7 @@ export const sections: Section[] = [
     'charity-index/hungary': 'danubeArch',
     'charity-index/latvia': 'amber',
     'charity-index/netherlands': 'tulip',
+    'charity-index/northern-ireland': 'basaltColumn',
     'charity-index/norway': 'fjord', 'charity-index/poland': 'poppy', 'charity-index/slovakia': 'tatraPeak', 'charity-index/sweden': 'nordicStar', 'charity-index/taiwan': 'orchid',
     'charity-financials': 'coins', 'charity-financials/canada': 'maple', 'charity-financials/united-states': 'columns',
     'charity-financials/united-states/990-ez': 'notes', 'charity-financials/united-states/990-pf': 'building',
