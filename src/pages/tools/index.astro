@@ -39,7 +39,7 @@ const groupSymbols: Record<string, SymbolName> = {
 const groupId = (group: string) => `g-${group.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 ---
 
-<Base title={title} description={lede}>
+<Base title={title} description={lede} crumbs={[{ label: title }]}>
   <header class="page-head">
     <div class="wrap">
       <Crumbs items={[{ label: title }]} />

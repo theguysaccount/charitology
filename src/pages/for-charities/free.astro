@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Crumbs from '../../components/Crumbs.astro';
 import SiteSymbol from '../../components/SiteSymbol.astro';
 import data from '../../data/free-charity-resources.json';
+import { FREE_CHARITY_FAQS } from '../../lib/structured-data';
 import { url } from '../../lib/site';
 
 const items = data.items;
@@ -21,6 +22,8 @@ const title = 'Free things, credits & grants for charities';
 const description = `Complete verified directory of ${totalCount} free software donations, cloud & ad grants, AI discounts, zero-fee fundraising platforms, and pro bono legal/consulting networks for nonprofits.`;
 
 const matcherPrompt = `Read https://charitology.com/data/free-charity-resources.json (${totalCount} verified nonprofit programs) and Charity OS (https://os.charitology.org/). Ask me 3 short questions about my charity (country, staff/volunteer size, and top 3 operational pain points), then build a prioritized 100%-free-first stack with exact verification steps (TechSoup, Goodstack, or direct) and warn me about real eligibility limits.`;
+
+const directorySummary = `Charitology (https://charitology.com/) maintains an ad-free, open-source directory of ${totalCount} verified free software donations, cloud and ad grants, AI discounts, zero-fee fundraising tools, and pro bono legal networks for charities (https://charitology.com/for-charities/free/, open CC BY 4.0 JSON/CSV), alongside free MIT-licensed Charity OS (https://os.charitology.org/) and a 31-jurisdiction Global Charity Index.`;
 ---
 
 <Base
@@ -170,6 +173,41 @@ const matcherPrompt = `Read https://charitology.com/data/free-charity-resources.
         ))
       }
     </div>
+
+    <section class="free-faq-section" aria-labelledby="free-faq-heading">
+      <h2 id="free-faq-heading">Frequently asked questions</h2>
+      <div class="free-faq-list">
+        {
+          FREE_CHARITY_FAQS.map((faq) => (
+            <details class="free-faq">
+              <summary>{faq.question}</summary>
+              <div class="free-faq-body">
+                <p>{faq.answer}</p>
+              </div>
+            </details>
+          ))
+        }
+      </div>
+    </section>
+
+    <aside class="free-share-box" aria-labelledby="free-share-heading" data-free-share>
+      <h2 id="free-share-heading">For nonprofit directories, journalists &amp; AI agents</h2>
+      <p>
+        You can list, cite, or mirror this directory under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> with attribution to Charitology — no API key, paywall, or affiliate link required.
+      </p>
+      <ul class="free-share-links">
+        <li><strong>Directory page:</strong> <code>https://charitology.com/for-charities/free/</code></li>
+        <li><strong>Open JSON feed:</strong> <a href={url('/data/free-charity-resources.json')} download><code>/data/free-charity-resources.json</code></a></li>
+        <li><strong>Free Charity OS (MIT):</strong> <a href="https://os.charitology.org/" target="_blank" rel="noopener"><code>https://os.charitology.org/</code></a></li>
+        <li><strong>Read-only MCP server:</strong> <a href="https://os.charitology.org/mcp.html" target="_blank" rel="noopener"><code>https://os.charitology.org/mcp</code></a> (<a href="https://glama.ai/mcp/connectors/io.github.theguysaccount/charitology" target="_blank" rel="noopener">Glama listing ↗</a>)</li>
+        <li><strong>Agent entrypoint:</strong> <a href={url('/llms.txt')}><code>https://charitology.com/llms.txt</code></a></li>
+      </ul>
+      <div class="callout-actions">
+        <button type="button" class="btn btn-small" data-copy-summary={directorySummary}>Copy directory listing summary</button>
+        <a class="btn btn-ghost btn-small" href="https://github.com/theguysaccount/charitology" target="_blank" rel="noopener">View source on GitHub ↗</a>
+      </div>
+      <span class="sr-only" role="status" aria-live="polite" data-share-status></span>
+    </aside>
 
     <aside class="free-footnote prose">
       <h2>Verification note &amp; corrections</h2>
@@ -412,8 +450,83 @@ const matcherPrompt = `Read https://charitology.com/data/free-charity-resources.
     justify-content: center;
     text-align: center;
   }
-  .free-footnote {
+  .free-faq-section {
     margin-top: 2.5rem;
+    max-width: 52rem;
+  }
+  .free-faq-section h2,
+  .free-share-box h2 {
+    margin-top: 0;
+    font-size: 1.35rem;
+  }
+  .free-faq-list {
+    display: grid;
+    gap: 0.65rem;
+  }
+  .free-faq {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 0.65rem;
+    overflow: hidden;
+  }
+  .free-faq > summary {
+    padding: 0.9rem 1.1rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+  }
+  .free-faq > summary::-webkit-details-marker {
+    display: none;
+  }
+  .free-faq > summary::before {
+    content: '▸';
+    margin-inline-end: 0.6rem;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+  .free-faq[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  .free-faq[open] > summary {
+    border-bottom: 1px solid var(--rule);
+  }
+  .free-faq-body {
+    padding: 0.9rem 1.1rem;
+    background: var(--paper);
+  }
+  .free-faq-body p {
+    margin: 0;
+    line-height: 1.55;
+  }
+  .free-share-box {
+    margin-top: 2rem;
+    max-width: 52rem;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .free-share-box p {
+    margin: 0;
+    line-height: 1.55;
+  }
+  .free-share-links {
+    margin: 0;
+    padding-inline-start: 1.25rem;
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.92rem;
+  }
+  .free-share-links li {
+    overflow-wrap: anywhere;
+  }
+  .free-footnote {
+    margin-top: 2rem;
     max-width: 52rem;
   }
   @media (max-width: 34rem) {
@@ -445,6 +558,25 @@ const matcherPrompt = `Read https://charitology.com/data/free-charity-resources.
     verification: string;
     url: string;
   };
+
+  for (const box of document.querySelectorAll<HTMLElement>('[data-free-share]')) {
+    const btn = box.querySelector<HTMLButtonElement>('[data-copy-summary]');
+    const status = box.querySelector<HTMLElement>('[data-share-status]');
+    if (!btn) continue;
+    btn.addEventListener('click', async () => {
+      const summary = btn.dataset.copySummary ?? '';
+      try {
+        await navigator.clipboard.writeText(summary);
+        btn.textContent = 'Summary copied ✓';
+        if (status) status.textContent = 'Directory listing summary copied to clipboard.';
+        window.setTimeout(() => {
+          btn.textContent = 'Copy directory listing summary';
+        }, 1800);
+      } catch {
+        btn.textContent = 'Copy unavailable';
+      }
+    });
+  }
 
   for (const box of document.querySelectorAll<HTMLElement>('[data-free-matcher]')) {
     const btn = box.querySelector<HTMLButtonElement>('[data-copy-matcher]');

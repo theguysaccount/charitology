@@ -1,5 +1,7 @@
 # Charitology
 
+[![Charitology MCP connector](https://glama.ai/mcp/connectors/io.github.theguysaccount/charitology/badges/score.svg)](https://glama.ai/mcp/connectors/io.github.theguysaccount/charitology)
+
 **The science of doing the most good.** An open field that studies charity as a system: where generosity flows, why it flows there, and how to route it from the symptoms of the world’s problems to their sources.
 
 Giving USA estimates that [U.S. charitable giving reached $617.2 billion in 2025](https://givingusa.org/giving-usa-charitable-giving-rose-to-617-20-billion-in-2025-surpassing-the-600-billion-mark-for-the-first-time/). Charitology proposes a shared craft for studying the signals, channels, incentives and feedback that aim generosity. It connects existing work in philanthropy, ethics and evaluation across causes and moral frameworks. Its own causal claims remain hypotheses to test.
@@ -23,6 +25,8 @@ Giving USA estimates that [U.S. charitable giving reached $617.2 billion in 2025
 | **[The Open Problems](src/content/problems/)** | Twenty-three unanswered questions, Hilbert-style, each with a test for what counts as progress.                                                                                                   |
 | **[Programs](src/content/programs/)**          | 26 programs have usable browser functions. Institutional operations still need people, resources and governance. Each page states its exact scope.                                                |
 | **[Tools](src/content/tools/)**                | 20 catalog tools, including [Charity OS](https://os.charitology.org/), Charity Lookup, Due Diligence Checklist, Values Compass, Portfolio Builder, Compare Tool, Grant Evaluator, Impact Calculator, Cost-Effectiveness Model Kit, Giving Dashboard, and Forecasting Platform. |
+| **[Free Things for Charities](https://charitology.com/for-charities/free/)** | **65 verified** free software donations, cloud and ad grants, AI discounts, zero-fee fundraising tools, and pro bono legal networks for nonprofits, with open CC BY 4.0 JSON/CSV downloads ([`/data/free-charity-resources.json`](https://charitology.com/data/free-charity-resources.json)). |
+| **[MCP Server & Agent Access](https://os.charitology.org/mcp.html)** | Read-only public Streamable HTTP MCP server at `https://os.charitology.org/mcp` (listed on [Glama](https://glama.ai/mcp/connectors/io.github.theguysaccount/charitology)), `/.well-known/mcp.json`, and [`/llms.txt`](https://charitology.com/llms.txt) for Claude, ChatGPT, Codex, and Cursor. |
 | **[The Record](src/content/record/)**          | 21 information bases: Encyclopedia, Intervention Database, Cause Atlas, Gap Map, Failure Archive, Disagreement Register, Principles textbook (with all 10 computer-narrated podcast chapters), Lexicon and more. |
 | **[Public API](src/lib/api.ts)**               | 42 static JSON datasets at `/api/v1/*.json` (including `/api/v1/charity-index.json` and `/api/v1/funding-flows.json`), with exact factual source/edition pins and source-specific reuse terms. |
 | **[Browser extension](extension/)**            | *Before You Give* (`v0.2.0`): the Giver’s Checklist on supported donation pages, without analytics or background data transmission.                                                              |
