@@ -1,0 +1,378 @@
+{
+  "format": "charitology-finland-registry-v1",
+  "jurisdiction": "FI",
+  "jurisdictionName": "Finland",
+  "asOf": "2026-11-25",
+  "capturedOn": "2026-11-25",
+  "publisher": "Patentti- ja rekisterihallitus (PRH) / Finnish Business Information System (YTJ)",
+  "license": "CC BY 4.0 (PRH Open Data)",
+  "catalogues": {
+    "prhYtjApi": "https://avoindata.prh.fi/opendata-ytj-api/v3/companies",
+    "prhYtjSchema": "https://avoindata.prh.fi/opendata-ytj-api/v3/schema?lang=en",
+    "ytjSearch": "https://www.ytj.fi/en/index.html",
+    "prhAssociations": "https://yhdistysrekisteri.prh.fi/"
+  },
+  "sources": [
+    {
+      "id": "prh-ytj-ayh",
+      "title": "PRH YTJ Open Data API v3 — Non-profit associations (companyForm=AYH)",
+      "url": "https://avoindata.prh.fi/opendata-ytj-api/v3/companies?companyForm=AYH",
+      "bytes": 14415565,
+      "sha256": "0426614b7d5659855508b73f29901bc8f62430fa451cbcdc7133c886882dfbd2",
+      "totalResults": 4948,
+      "capturedCount": 4948
+    },
+    {
+      "id": "prh-ytj-saa",
+      "title": "PRH YTJ Open Data API v3 — Foundations (companyForm=SÄÄ)",
+      "url": "https://avoindata.prh.fi/opendata-ytj-api/v3/companies?companyForm=S%C3%84%C3%84",
+      "bytes": 1152218,
+      "sha256": "0019886e92e58ea2c225420452807511765e50933407ab597725802a7f9fc185",
+      "totalResults": 371,
+      "capturedCount": 371
+    }
+  ],
+  "counts": {
+    "includedOrganizations": 5319,
+    "uniqueBusinessIds": 5319,
+    "mod11ValidBusinessIds": 5319,
+    "activeOrganizations": 4253,
+    "endedOrganizations": 1066,
+    "byForm": {
+      "association": 4948,
+      "foundation": 371
+    },
+    "byFormActive": {
+      "association": 3940,
+      "foundation": 313
+    },
+    "byTradeRegisterStatus": {
+      "0": {
+        "label": "Unregistered from Trade Register",
+        "count": 342
+      },
+      "1": {
+        "label": "Registered in Trade Register",
+        "count": 905
+      },
+      "3": {
+        "label": "Start-up not registered (Tax/YTJ entry)",
+        "count": 3945
+      },
+      "4": {
+        "label": "Ceased",
+        "count": 127
+      }
+    },
+    "activeStatutoryRegisters": {
+      "1": {
+        "label": "Trade Register",
+        "count": 905
+      },
+      "4": {
+        "label": "Tax Administration",
+        "count": 4258
+      },
+      "5": {
+        "label": "Prepayment Register",
+        "count": 2082
+      },
+      "6": {
+        "label": "VAT Register",
+        "count": 753
+      }
+    },
+    "withParallelNames": 70,
+    "withVerifiedWebsite": 1883,
+    "unnamedRecords": 56,
+    "byRegistrationDecade": {
+      "1900s": 3,
+      "1910s": 20,
+      "1920s": 6,
+      "1950s": 1,
+      "1960s": 2,
+      "1970s": 519,
+      "1980s": 318,
+      "1990s": 1068,
+      "2000s": 1422,
+      "2010s": 1571,
+      "2020s": 382
+    }
+  },
+  "topSectors": [
+    {
+      "code": "94999",
+      "description": "Activities of other miscellaneous membership organisations n.e.c.",
+      "count": 2720
+    },
+    {
+      "code": "93120",
+      "description": "Activities of sports clubs",
+      "count": 616
+    },
+    {
+      "code": "94120",
+      "description": "Activities of professional membership organisations",
+      "count": 166
+    },
+    {
+      "code": "94200",
+      "description": "Activities of trade unions",
+      "count": 152
+    },
+    {
+      "code": "88999",
+      "description": "Other miscellaneous social work activities without accommodation n.e.c.",
+      "count": 141
+    },
+    {
+      "code": "90209",
+      "description": "Other performing arts",
+      "count": 119
+    },
+    {
+      "code": "85100",
+      "description": "Pre-primary education",
+      "count": 101
+    },
+    {
+      "code": "94991",
+      "description": "Activities of organisations supporting research and culture",
+      "count": 85
+    },
+    {
+      "code": "94910",
+      "description": "Activities of religious organisations",
+      "count": 83
+    },
+    {
+      "code": "87301",
+      "description": "Residential care activities for older persons",
+      "count": 78
+    },
+    {
+      "code": "93199",
+      "description": "Other sport activities n.e.c.",
+      "count": 76
+    },
+    {
+      "code": "94110",
+      "description": "Activities of business and employers membership organisations",
+      "count": 64
+    }
+  ],
+  "topMunicipalities": [
+    {
+      "municipality": "HELSINKI",
+      "count": 848
+    },
+    {
+      "municipality": "ESPOO",
+      "count": 191
+    },
+    {
+      "municipality": "TAMPERE",
+      "count": 179
+    },
+    {
+      "municipality": "TURKU",
+      "count": 175
+    },
+    {
+      "municipality": "VANTAA",
+      "count": 120
+    },
+    {
+      "municipality": "OULU",
+      "count": 110
+    },
+    {
+      "municipality": "JYVÄSKYLÄ",
+      "count": 94
+    },
+    {
+      "municipality": "KUOPIO",
+      "count": 76
+    },
+    {
+      "municipality": "JOENSUU",
+      "count": 65
+    },
+    {
+      "municipality": "LAHTI",
+      "count": 62
+    },
+    {
+      "municipality": "VAASA",
+      "count": 57
+    },
+    {
+      "municipality": "ROVANIEMI",
+      "count": 55
+    },
+    {
+      "municipality": "PORI",
+      "count": 51
+    },
+    {
+      "municipality": "MIKKELI",
+      "count": 48
+    }
+  ],
+  "oldestActiveOrganizations": [
+    {
+      "id": "0200070-9",
+      "name": "Sotainvalidien Veljesliiton Naisjärjestö-Krigsinvalidernas Brödraförbunds Kvinnoorganisation ry",
+      "formCode": "AYH",
+      "formEn": "Non-profit association",
+      "regDate": "1900-01-01",
+      "city": "HELSINKI",
+      "sector": "Activities of other miscellaneous membership organisations n.e.c."
+    },
+    {
+      "id": "0223167-0",
+      "name": "Keskustanaisten Varsinais-Suomen piiri ry",
+      "formCode": "AYH",
+      "formEn": "Non-profit association",
+      "regDate": "1900-01-01",
+      "city": "TURKU",
+      "sector": "Activities of political adult organisations"
+    },
+    {
+      "id": "0943814-8",
+      "name": "Mielen ry",
+      "formCode": "AYH",
+      "formEn": "Non-profit association",
+      "regDate": "1900-01-01",
+      "city": "TAMPERE",
+      "sector": "Residential nursing and care activities for mental health patients"
+    },
+    {
+      "id": "0133048-2",
+      "name": "Ikaalisten Säästöpankkisäätiö sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1915-09-09",
+      "city": "IKAALINEN",
+      "sector": "Other monetary intermediation"
+    },
+    {
+      "id": "0131296-2",
+      "name": "Stiftelsen för Ekenäs Sparbank sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-05-30",
+      "city": "TAMMISAARI",
+      "sector": "Other monetary intermediation"
+    },
+    {
+      "id": "0181349-2",
+      "name": "Sparbanksstiftelsen i Närpes sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-08-06",
+      "city": "NÄRPIÖ",
+      "sector": "Activities of other miscellaneous membership organisations n.e.c."
+    },
+    {
+      "id": "0128371-9",
+      "name": "Länsi-Uudenmaan Säästöpankkisäätiö sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-08-13",
+      "city": "LOHJA",
+      "sector": "Activities of organisations supporting research and culture"
+    },
+    {
+      "id": "0132326-6",
+      "name": "Eurajoen Säästöpankkisäätiö sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-08-13",
+      "city": "RAUMA",
+      "sector": "Other monetary intermediation"
+    },
+    {
+      "id": "0132825-1",
+      "name": "Huittisten Säästöpankkisäätiö sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-08-13",
+      "city": "VANHA-ULVILA",
+      "sector": "Other monetary intermediation"
+    },
+    {
+      "id": "0139853-2",
+      "name": "Suodenniemen Säästöpankkisäätiö sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-08-13",
+      "city": "SASTAMALA",
+      "sector": "Other monetary intermediation"
+    },
+    {
+      "id": "0145884-9",
+      "name": "Hauhon Säästöpankkisäätiö sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-08-13",
+      "city": "HÄMEENLINNA",
+      "sector": "Other monetary intermediation"
+    },
+    {
+      "id": "0152226-5",
+      "name": "Rengon Säästöpankkisäätiö sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-08-13",
+      "city": "HÄMEENLINNA",
+      "sector": "Activities of other miscellaneous membership organisations n.e.c."
+    },
+    {
+      "id": "0162211-9",
+      "name": "Etelä-Karjalan Säästöpankkisäätiö sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-08-13",
+      "city": "LAPPEENRANTA",
+      "sector": "Activities of other miscellaneous membership organisations n.e.c."
+    },
+    {
+      "id": "0179850-1",
+      "name": "Sparbanksstiftelsen i Kristinestad sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-08-13",
+      "city": "KRISTIINANKAUPUNKI",
+      "sector": "Other monetary intermediation"
+    },
+    {
+      "id": "0180122-1",
+      "name": "Kuortaneen Säästöpankkisäätiö sr",
+      "formCode": "SÄÄ",
+      "formEn": "Foundation",
+      "regDate": "1919-08-13",
+      "city": "KUORTANE",
+      "sector": "Other monetary intermediation"
+    }
+  ],
+  "artifacts": {
+    "organizations": {
+      "path": "organizations.json.gz",
+      "bytes": 217355,
+      "sha256": "8260689f9a6152e8d2230ca5a6a1b109cd4ade43c6902615aa535508783e0169",
+      "decodedBytes": 2161254,
+      "decodedSha256": "da4c8e6dd84cff5527e171cf22b0c08e4b4948bb84ec4934671d413f00594f4b"
+    },
+    "csv": {
+      "path": "finland-prh-nonprofits.csv",
+      "bytes": 1303065,
+      "sha256": "771e67e25519f97eab1b8c1aaf1c8fe58220ce7231b9fc49de8228b4fd5d9e51"
+    },
+    "anomalies": {
+      "path": "anomalies.json",
+      "bytes": 4030,
+      "sha256": "6e9408aadec585915d1aa136ab49ac0d7e51d7c54b3533e0160c67889243c41d"
+    }
+  }
+}

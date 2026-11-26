@@ -51,6 +51,7 @@ export const sections: Section[] = [
     'charity-index/czechia': 'lindenLeaf',
     'charity-index/denmark': 'danishCrown',
     'charity-index/estonia': 'balticPine',
+    'charity-index/finland': 'nordicBirch',
     'charity-index/hong-kong': 'bauhinia',
     'charity-index/hungary': 'danubeArch',
     'charity-index/latvia': 'amber',

@@ -6,20 +6,117 @@ import SiteSymbol from '../../../components/SiteSymbol.astro';
 import {
   COVERAGE_SOURCES as sources,
   GLOBAL_CHARITY_INDEX_PANELS as panels,
+  GLOBAL_CHARITY_INDEX_TOTAL_RECORDS as totalRecords,
   US_ADDITIONAL_EDITIONS,
 } from '../../../lib/global-index-catalog';
 import manchester from '../../../data/home-from-hospital.json';
 
 const title = 'Charity Index coverage';
 const number = (value: number) => value.toLocaleString('en-US');
+
+const REGION_BY_ID: Record<string, string> = {
+  australia: 'asia-pacific',
+  austria: 'europe',
+  brazil: 'americas',
+  canada: 'americas',
+  colombia: 'americas',
+  croatia: 'europe',
+  czechia: 'europe',
+  denmark: 'europe',
+  'england-wales': 'europe',
+  estonia: 'europe',
+  finland: 'europe',
+  france: 'europe',
+  'hong-kong': 'asia-pacific',
+  hungary: 'europe',
+  israel: 'middle-east-africa',
+  italy: 'europe',
+  japan: 'asia-pacific',
+  kenya: 'middle-east-africa',
+  latvia: 'europe',
+  mexico: 'americas',
+  netherlands: 'europe',
+  'new-zealand': 'asia-pacific',
+  'northern-ireland': 'europe',
+  norway: 'europe',
+  poland: 'europe',
+  scotland: 'europe',
+  slovakia: 'europe',
+  slovenia: 'europe',
+  sweden: 'europe',
+  taiwan: 'asia-pacific',
+  'united-states': 'americas',
+};
+
+const TAX_ASSIGNMENT_IDS = new Set(['hungary', 'italy', 'poland', 'slovakia', 'slovenia']);
+const FINANCIAL_IDS = new Set([
+  'australia', 'canada', 'england-wales', 'estonia', 'france', 'israel',
+  'japan', 'kenya', 'mexico', 'new-zealand', 'northern-ireland', 'scotland',
+  'sweden', 'united-states',
+]);
+
+const panelMeta = panels.map((panel) => {
+  const region = REGION_BY_ID[panel.id] ?? 'other';
+  const tags: string[] = [];
+  if (FINANCIAL_IDS.has(panel.id)) tags.push('financials');
+  if (TAX_ASSIGNMENT_IDS.has(panel.id)) tags.push('tax-assignment');
+  if (panel.fundingFlowRoute) tags.push('funding-flow');
+  return {
+    ...panel,
+    region,
+    tags: tags.join(' '),
+    searchText: `${panel.name} ${panel.source} ${panel.coverage} ${panel.history ?? ''} ${panel.boundary ?? ''}`.toLowerCase(),
+  };
+});
+
+const regionCounts = {
+  europe: panelMeta.filter((p) => p.region === 'europe').length,
+  americas: panelMeta.filter((p) => p.region === 'americas').length,
+  'asia-pacific': panelMeta.filter((p) => p.region === 'asia-pacific').length,
+  'middle-east-africa': panelMeta.filter((p) => p.region === 'middle-east-africa').length,
+};
+const kindCounts = {
+  financials: panelMeta.filter((p) => p.tags.includes('financials')).length,
+  'tax-assignment': panelMeta.filter((p) => p.tags.includes('tax-assignment')).length,
+  'funding-flow': panelMeta.filter((p) => p.tags.includes('funding-flow')).length,
+};
 ---
 
-<Entry title={title} eyebrow="The Record · Global Charity Index" summary="See which organizations, financial periods and funding stages each source covers." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Coverage'}]} sources={sources}>
-  <p>The Index separates registry identities, reported financial periods and individual funding records. This page describes the current editions and where each one leaves questions open. Coverage counts describe the included source records. Organization identities, currencies and reporting rules differ across jurisdictions.</p>
+<Entry title={title} eyebrow="The Record · Global Charity Index" summary={`See which organizations, financial periods and funding stages each source covers across ${panels.length} live jurisdictions (${number(totalRecords)} dated registry records).`} crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Coverage'}]} sources={sources}>
+  <p>The Index separates registry identities, reported financial periods and individual funding records across <strong>{panels.length} live jurisdictions</strong> (<strong>{number(totalRecords)}</strong> dated official records in total; each jurisdiction keeps its own legal definitions, currencies and coverage boundaries rather than forming a single global census). This page describes the current editions and where each one leaves questions open.</p>
   <h2 id="filings">Registry and financial editions</h2>
   <PageSections label="Jump to a jurisdiction" sections={panels.map(({ id, name, symbol }) => ({ slug: id, text: name, symbol }))} />
-  <ul class="coverage-list" aria-labelledby="filings" role="list">
-    {panels.map(panel => <li class="card" id={panel.id} data-site-tone={panel.tone}>
+  <section class="coverage-filter" data-coverage-filter aria-label="Filter jurisdictions">
+    <div class="coverage-filter-row">
+      <div class="coverage-field coverage-field-search">
+        <label for="cov-q">Find a jurisdiction</label>
+        <input id="cov-q" type="search" placeholder="Country, regulator, currency, or tax scheme…" autocomplete="off" />
+      </div>
+      <div class="coverage-field">
+        <label for="cov-region">Region</label>
+        <select id="cov-region">
+          <option value="">All regions ({panels.length})</option>
+          <option value="europe">Europe ({regionCounts.europe})</option>
+          <option value="americas">Americas ({regionCounts.americas})</option>
+          <option value="asia-pacific">Asia-Pacific ({regionCounts['asia-pacific']})</option>
+          <option value="middle-east-africa">Middle East &amp; Africa ({regionCounts['middle-east-africa']})</option>
+        </select>
+      </div>
+      <div class="coverage-field">
+        <label for="cov-kind">Data included</label>
+        <select id="cov-kind">
+          <option value="">All editions ({panels.length})</option>
+          <option value="financials">Financial filings ({kindCounts.financials})</option>
+          <option value="tax-assignment">European tax-assignment ({kindCounts['tax-assignment']})</option>
+          <option value="funding-flow">Paired funding-flow explorer ({kindCounts['funding-flow']})</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-ghost coverage-clear" data-cov-clear>Reset</button>
+    </div>
+    <p class="note coverage-status" role="status" data-cov-status>Showing {panels.length} of {panels.length} jurisdictions.</p>
+  </section>
+  <ul class="coverage-list" aria-labelledby="filings" role="list" data-coverage-list>
+    {panelMeta.map(panel => <li class="card" id={panel.id} data-site-tone={panel.tone} data-region={panel.region} data-tags={panel.tags} data-search={panel.searchText}>
       <h3 class="identity-label"><SiteSymbol name={panel.symbol} />{panel.name}</h3>
       <p class="eyebrow">{panel.source}</p>
       <p><strong>{panel.coverage}</strong></p>
@@ -28,6 +125,7 @@ const number = (value: number) => value.toLocaleString('en-US');
       {panel.date && <p class="note">Captured on <time datetime={panel.date}>{panel.date}</time>.</p>}
       <p class="coverage-links">
         <a class="identity-link" href={url(panel.route)}>{panel.label}</a>
+        {panel.fundingFlowRoute && panel.fundingFlowLabel && <a class="identity-link" data-source-symbol="split" href={url(panel.fundingFlowRoute)}>{panel.fundingFlowLabel}</a>}
         {panel.manifest && <a class="identity-link" data-source-symbol="document" href={url(panel.manifest)}>Source and coverage manifest</a>}
       </p>
     </li>)}
@@ -77,6 +175,7 @@ const number = (value: number) => value.toLocaleString('en-US');
   <p><a class="identity-link" href={url('/record/funding-flows/ocha-fts-global-clusters/')}>Compare 2019–2026 UN OCHA FTS global humanitarian funding gaps</a>. Filter 3,958 plan-cluster rows across 313 humanitarian response plans and 58 country codes ($269.49B required vs. $147.20B funded) to see sectoral shortfalls in WASH (25.3%), Nutrition (26.3%) and Refugees (18.8%).</p>
   <p><a class="identity-link" href={url('/record/funding-flows/poland-pit-1-5-percent/')}>Search Poland’s 2022–2025 1.5% personal income tax designations</a>. Follow 10,395 funded public benefit organizations totaling PLN 8.32 billion, inspect disclosed taxpayer counts and sub-account concentration, and reconcile NIW eligibility lists against Ministry of Finance disbursements.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/slovakia-pit-2-percent/')}>Search Slovakia’s 2016–2025 2%/3% income-tax assignment disbursements</a>. Follow EUR 782.06 million across 26,357 distinct Slovak recipients (EUR 107.04M in 2025) and inspect how corporate tax assignment drives corporate foundations to 30.9% of payouts.</p>
+  <p><a class="identity-link" href={url('/record/funding-flows/slovenia-dohodnina-1-percent/')}>Track Slovenia’s 2019–2025 1% personal income-tax assignments (EUR 93.47M)</a>. Inspect 4,185,737 taxpayer choices across seven years, the +96.48% jump when Slovenia doubled its statutory cap from 0.5% to 1.0% in 2020, and cross-country comparisons with Italy, Poland, Slovakia, and Hungary.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/sweden-90-konto/')}>Explore Sweden’s audited 90-konto giving and private-vs-institutional funding (2023–2025)</a>. Compare all 110 largest Swedish charities (SEK 21,040M = 91.1% of sector collections) against Top-100 private individual gifts alongside audited sector totals across 481 organizations.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/taiwan-new-resident-fund/')}>Compare Taiwan New Resident Development Fund reports</a>. Use the project ID to follow recurring approvals and see where the reports differ on execution figures or dates.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/heal-nepal/')}>Compare Heal Nepal funding in the UK and Nepal</a>. The case keeps pounds and rupees in their original records and shows where a single disbursement may correspond to two receipts.</p>
@@ -91,8 +190,100 @@ const number = (value: number) => value.toLocaleString('en-US');
 </Entry>
 
 <style>
+  .coverage-filter {
+    margin-block: 1rem 1.25rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 0.5rem;
+    background: var(--surface, var(--paper));
+  }
+  .coverage-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-end;
+  }
+  .coverage-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1 1 12rem;
+    min-width: 0;
+  }
+  .coverage-field-search {
+    flex: 2 1 16rem;
+  }
+  .coverage-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .coverage-field input,
+  .coverage-field select {
+    min-height: 2.75rem;
+    width: 100%;
+    max-width: 100%;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--rule);
+    border-radius: 0.35rem;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+  }
+  .coverage-clear {
+    min-height: 2.75rem;
+  }
+  .coverage-status {
+    margin: 0.65rem 0 0;
+  }
   .coverage-list { display: grid; gap: 1rem; list-style: none; padding-inline-start: 0; }
   .coverage-list > .card { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .coverage-list > .card[hidden] { display: none; }
   .coverage-list h3 { margin-block-start: 0; }
   .coverage-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.2rem; }
 </style>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-coverage-filter]')) {
+    const qInput = box.querySelector<HTMLInputElement>('#cov-q');
+    const regionSel = box.querySelector<HTMLSelectElement>('#cov-region');
+    const kindSel = box.querySelector<HTMLSelectElement>('#cov-kind');
+    const clearBtn = box.querySelector<HTMLButtonElement>('[data-cov-clear]');
+    const statusEl = box.querySelector<HTMLElement>('[data-cov-status]');
+    const list = document.querySelector<HTMLElement>('[data-coverage-list]');
+    if (!qInput || !regionSel || !kindSel || !clearBtn || !statusEl || !list) continue;
+    const cards = Array.from(list.querySelectorAll<HTMLElement>(':scope > li.card'));
+    const total = cards.length;
+
+    const apply = () => {
+      const q = qInput.value.trim().toLowerCase();
+      const region = regionSel.value;
+      const kind = kindSel.value;
+      let visible = 0;
+      for (const card of cards) {
+        const matchRegion = !region || card.dataset.region === region;
+        const matchKind = !kind || (card.dataset.tags ?? '').split(' ').includes(kind);
+        const matchQ = !q || (card.dataset.search ?? '').includes(q);
+        const show = matchRegion && matchKind && matchQ;
+        card.hidden = !show;
+        if (show) visible++;
+      }
+      statusEl.textContent =
+        visible === total
+          ? `Showing ${total} of ${total} jurisdictions.`
+          : visible === 0
+            ? 'No jurisdictions matched those filters. Clear a filter to see all editions.'
+            : `Showing ${visible} of ${total} jurisdictions.`;
+    };
+
+    qInput.addEventListener('input', apply);
+    regionSel.addEventListener('change', apply);
+    kindSel.addEventListener('change', apply);
+    clearBtn.addEventListener('click', () => {
+      qInput.value = '';
+      regionSel.value = '';
+      kindSel.value = '';
+      apply();
+      qInput.focus();
+    });
+  }
+</script>

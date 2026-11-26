@@ -178,6 +178,7 @@ export const symbols = {
   triglavPeak: 'M2.5 19 7.5 10.5 10 13.5 12 6 14 13.5 16.5 10.5 21.5 19H2.5ZM4 21.5h16',
   alpineOnePct: 'M4 5h16v14H4V5Zm3.5 10.5 8-7M7.8 8.2a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Zm8.4 5.2a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Z',
   emeraldPrism: 'M8 3h8l4 4v10l-4 4H8l-4-4V7l4-4Zm1.8 3.5h4.4l2.3 2.3v6.4l-2.3 2.3H9.8l-2.3-2.3V8.8l2.3-2.3Z',
+  nordicBirch: 'M12 3c-4 2.8-6.5 6.3-6.5 9.6 0 2.5 2.4 4.4 6.5 4.4s6.5-1.9 6.5-4.4C18.5 9.3 16 5.8 12 3Zm0 0v18m0-11-3.2 2.2m3.2 1.3 3.2-2.2M5 21h14',
 } as const;
 
 export type SymbolName = keyof typeof symbols;

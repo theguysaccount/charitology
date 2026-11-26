@@ -95,6 +95,7 @@ for (const rel of [
   'src/pages/record/charity-index/northern-ireland.astro',
   'src/pages/record/charity-index/slovenia.astro',
   'src/pages/record/charity-index/colombia.astro',
+  'src/pages/record/charity-index/finland.astro',
   'src/pages/for-charities/free.astro',
   'src/pages/record/funding-flows/hong-kong-fundraising-permits/index.astro',
   'src/pages/record/funding-flows/italy-five-per-mille/index.astro',
