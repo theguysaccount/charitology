@@ -1,0 +1,147 @@
+{
+  "format": "charitology-colombia-anomalies-v1",
+  "capturedOn": "2026-11-25",
+  "sourceFile": "colombia-dian-rte.csv",
+  "sourceSha256": "4bdcb3da864aff835a1ec2172a627a4e384e92aaa0eeecd2a63e29d057d69d62",
+  "summary": {
+    "rawRows": 340038,
+    "distinctNits": 112201,
+    "sameYearDuplicateNitRowsRemoved": 400,
+    "entitiesWithNameVariantsAcrossYears": 0,
+    "droppedAfter2018_2019ReformCliff": 59348,
+    "continuousFiveYearEntities2018To2022": 38624
+  },
+  "notes": [
+    "DIAN dataset 8tdc-u2ga contains 400 same-year duplicate (NIT, year) rows across 2018–2022; deduplication keeps one record per (NIT, year) while preserving exact raw and deduplicated counts.",
+    "Following Colombia's Ley 1819 de 2016 mandatory annual RTE web-disclosure and re-qualification reform, qualified entities dropped sharply from 106,643 (2018) to 49,168 (2020) and 45,171 unique NITs (2022); 59,088+ legacy entities from 2018–2019 (including commercial/cooperative edge cases such as NIT 800000076 DAGRO S.A.) did not renew into 2020–2022.",
+    "DIAN publishes only NIT, legal name (razón social), and fiscal year in dataset 8tdc-u2ga; financial figures, addresses, and sector codes are unpublished (null) in this open bulk release.",
+    "Legal-form groupings (Fundación, Asociación, Corporación, Cooperativa/Mutual, etc.) are deterministic text classifications derived from official Spanish legal designations in razón social and are labeled transparently as derived keywords."
+  ],
+  "sameYearDuplicatesSample": [
+    {
+      "nit": "800037265",
+      "year": 2018,
+      "name": "ASOCIACION IMAGENES TEATRO"
+    },
+    {
+      "nit": "800039402",
+      "year": 2018,
+      "name": "HOGAR INFANTIL EL HORMIGUERO"
+    },
+    {
+      "nit": "800045297",
+      "year": 2018,
+      "name": "COOPERATIVA DE TRABAJO ASOCIADO PUERTO SANTANDER"
+    },
+    {
+      "nit": "800046550",
+      "year": 2018,
+      "name": "FUNDACION JUAN DIEGO ALEJANDRO Y FELIPE VELEZ PALACIO"
+    },
+    {
+      "nit": "800048904",
+      "year": 2018,
+      "name": "COOPERATIVA DE LABORES ASOCIADAS Y SOLIDARIAS COOLABOR LTDA"
+    },
+    {
+      "nit": "800050138",
+      "year": 2018,
+      "name": "FUNDACION AMIGOS DE LOS NIÑOS Y JOVENES"
+    },
+    {
+      "nit": "800051489",
+      "year": 2018,
+      "name": "FUNDACION PROFAMILIA COLOMBIA"
+    },
+    {
+      "nit": "800058503",
+      "year": 2018,
+      "name": "COOPERATIVA DE APORTES Y CREDITO DE PENSIONADOS DEL SECTOR ESTATAL LTDA EN LIQUIDACION"
+    },
+    {
+      "nit": "800058864",
+      "year": 2018,
+      "name": "FUNDACION PROGRESO Y CULTURA FUTURA"
+    },
+    {
+      "nit": "800063231",
+      "year": 2018,
+      "name": "ASOCIACION DE TELEVISION COMUNITARIA DEL SUR DE BUCARAMANGA TV SUR"
+    },
+    {
+      "nit": "800063780",
+      "year": 2018,
+      "name": "FUNDACION IMPULSO BOYACENSISTA F.I.B."
+    },
+    {
+      "nit": "800064337",
+      "year": 2018,
+      "name": "ASOCIACION PARA LA ENSEÑANZA DE TECNICAS LABORALES ASTEDENT - EN LIQUIDACION"
+    },
+    {
+      "nit": "800064430",
+      "year": 2018,
+      "name": "FUNDACION MEDIA COLOMBIA"
+    },
+    {
+      "nit": "800064797",
+      "year": 2018,
+      "name": "FONDO NACIONAL UNIVERSITARIO INSTITUCION AUXILIAR DEL COOPERATIVISMO EN LIQUIDACION"
+    },
+    {
+      "nit": "800064941",
+      "year": 2018,
+      "name": "FUNDACION SANTILLANA PARA IBEROAMERICA"
+    },
+    {
+      "nit": "800067300",
+      "year": 2018,
+      "name": "INSTITUTO MATERNO INFANTIL"
+    },
+    {
+      "nit": "800067411",
+      "year": 2018,
+      "name": "FUNDACION PROGRESAMOS"
+    },
+    {
+      "nit": "800069669",
+      "year": 2018,
+      "name": "FUNDACION PAVCO"
+    },
+    {
+      "nit": "800076208",
+      "year": 2018,
+      "name": "ASOCIACION DE COPROPIETARIOS DE TELEVISION COMUNITARIA PARACENTRAL"
+    },
+    {
+      "nit": "800076708",
+      "year": 2018,
+      "name": "FUNDACION INSTITUTO DE INMUNOLOGIA CLINICA BIOLOGIA MOLECULAR E INGENIERIA GENETICA - INBIOGEN"
+    },
+    {
+      "nit": "800079544",
+      "year": 2018,
+      "name": "COOPERATIVA MULTIACTIVA DE TRANSPORTADORES DE MANRIQUE ORIENTAL"
+    },
+    {
+      "nit": "800080461",
+      "year": 2018,
+      "name": "COOPERATIVA DE PRODUCCION Y COMERCIALIZACION DE ALIMENTOS PROCOAL LTDA."
+    },
+    {
+      "nit": "800087521",
+      "year": 2018,
+      "name": "CORPORACION LOS FUNAMBULOS CENTRO DE EXPERIMENTACION ARTISTICA EN LIQUIDACION"
+    },
+    {
+      "nit": "800108948",
+      "year": 2018,
+      "name": "CIRCULO HEFE"
+    },
+    {
+      "nit": "800109520",
+      "year": 2018,
+      "name": "COOPERATIVA DE CREDITO EL CASTILLO"
+    }
+  ]
+}

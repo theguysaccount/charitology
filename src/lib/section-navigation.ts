@@ -218,6 +218,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['coverage', 'Registry coverage', 'permit'],
     ['finance', 'Read financial summaries', 'coins'],
   ],
+  '/record/charity-index/colombia/': [
+    ['co-search-heading', 'Search Colombian DIAN RTE nonprofits', 'lens'],
+    ['annual-cliff', '2018–2022 Ley 1819 retention cliff', 'chart'],
+    ['legal-forms', 'Derived Spanish legal-form cohorts', 'layers'],
+    ['coverage', 'Scope, anomalies and Latin America boundaries', 'archive'],
+  ],
   '/record/charity-index/croatia/': [
     ['hr-search-heading', 'Search Croatian associations and foundations', 'lens'],
     ['domains', 'Statutory activity domains across Croatian associations', 'layers'],
