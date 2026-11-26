@@ -1,0 +1,538 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/eu-transparency-register-ngos/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'EU Transparency Register: Civil Society, NGOs & EUR 7.80B in EU Grants';
+const dataPath = '/data/funding-flows/eu-transparency-register-ngos/';
+const count = (value: number) => value.toLocaleString('en-US');
+const eur = (value: number | null) =>
+  value === null ? '—' : `€${value.toLocaleString('en-US')}`;
+
+const sources = [
+  {
+    title: 'EU Transparency Register — Official Open Data XML Export (2026-11-25)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.xmlFeed,
+  },
+  {
+    title: 'EU Transparency Register — Open Data Portal & Reuse Policy',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.openDataPortal,
+  },
+];
+
+const cats = Object.entries(manifest.counts.byCategory).map(([key, v]) => ({
+  key,
+  ...(v as {
+    label: string;
+    organizations: number;
+    withBudget: number;
+    totalBudgetEur: number;
+    withEuGrants: number;
+    totalEuGrantsEur: number;
+    grantItemCount: number;
+  }),
+}));
+
+const countryOptions = manifest.topCountries.map((c) => ({
+  country: c.country,
+  organizations: c.organizations,
+}));
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Funding Flows · European Union"
+  summary="Search all 6,317 civil-society organizations, NGOs, think tanks, academic institutions, and religious communities across 106 countries in the official 2026-11-25 EU Transparency Register (out of 18,169 total registrants), tracking EUR 7.80 billion in self-reported closed-year EU grants across 2,162 recipients and 5,538 itemized grants with verbatim anomaly disclosures."
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Funding flows', href: '/record/funding-flows/' },
+    { label: 'EU Transparency Register NGOs & EU Grants' },
+  ]}
+  filePath="src/pages/record/funding-flows/eu-transparency-register-ngos/index.astro"
+  sources={sources}
+>
+  <p>
+    From the official <time datetime={manifest.asOf}>{manifest.asOf}</time> open-data XML snapshot of the
+    <strong>{manifest.publisher}</strong> (<strong>{count(manifest.counts.allRegisterEntities)}</strong> total registrants
+    across all 13 statutory categories), this explorer extracts all
+    <strong>{count(manifest.counts.includedCivilSocietyOrganizations)}</strong> non-commercial civil-society, knowledge,
+    and religious organizations headquartered across <strong>{manifest.counts.distinctHeadquartersCountries}</strong> countries:
+    <strong>{count(manifest.counts.byCategory.ngo.organizations)}</strong> NGOs, platforms &amp; networks,
+    <strong>{count(manifest.counts.byCategory.think_tank.organizations)}</strong> think tanks &amp; research institutions,
+    <strong>{count(manifest.counts.byCategory.academic.organizations)}</strong> academic institutions, and
+    <strong>{count(manifest.counts.byCategory.religious.organizations)}</strong> churches &amp; religious communities.
+  </p>
+  <p>
+    Across these four groups, <strong>{count(manifest.counts.withPositiveEuGrants)}</strong> organizations disclosed
+    <strong>{eur(manifest.counts.totalEuGrantsEur)}</strong> in closed-year EU grants across
+    <strong>{count(manifest.counts.totalItemizedEuGrants)}</strong> itemized grant entries
+    (<strong>{eur(manifest.counts.byCategory.ngo.totalEuGrantsEur)}</strong> across
+    <strong>{count(manifest.counts.byCategory.ngo.withEuGrants)}</strong> NGOs,
+    <strong>{eur(manifest.counts.byCategory.academic.totalEuGrantsEur)}</strong> across universities/academic bodies, and
+    <strong>{eur(manifest.counts.byCategory.think_tank.totalEuGrantsEur)}</strong> across think tanks/research institutes).
+    Because every entry is self-reported by registrants, <strong>{manifest.counts.grantsExceedBudgetCount}</strong> records
+    where EU grants exceed total annual budget and potential decimal/unit errors are flagged and disclosed verbatim in
+    <a href="#coverage">anomalies</a>.
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-eu-tr
+    data-base={url(dataPath)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="eutr-search-heading"
+  >
+    <h2 id="eutr-search-heading">Search EU-registered NGOs, research bodies &amp; EU grants</h2>
+    <p id="eutr-search-hint">
+      Search by organization name, acronym, HQ city/country, EU grant program, or EU Register ID
+      (e.g., <code>action contre la faim</code>, <code>arnika</code>, <code>horizon</code>, <code>belgium</code>, <code>272646820681-30</code>).
+      Search runs locally in your browser after verifying the SHA-256 snapshot.
+    </p>
+    <form aria-describedby="eutr-search-hint">
+      <label for="eutr-query">Organization name, acronym, grant program, country or EU ID</label>
+      <div class="finance-actions">
+        <input type="search" id="eutr-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="eutr-cat">Category</label>
+          <select id="eutr-cat" disabled>
+            <option value="">All 4 categories ({count(manifest.counts.includedCivilSocietyOrganizations)})</option>
+            {cats.map((c) => <option value={c.key}>{c.label} ({count(c.organizations)})</option>)}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="eutr-country">HQ Country (Top 25)</label>
+          <select id="eutr-country" disabled>
+            <option value="">All {manifest.counts.distinctHeadquartersCountries} countries</option>
+            {countryOptions.map((c) => <option value={c.country}>{c.country} ({count(c.organizations)})</option>)}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="eutr-grants">EU grants filter</label>
+          <select id="eutr-grants" disabled>
+            <option value="">All organizations</option>
+            <option value="positive">Positive EU grants ({count(manifest.counts.withPositiveEuGrants)})</option>
+            <option value="zero">No closed-year EU grants</option>
+            <option value="anomaly">Flagged: grants &gt; budget ({manifest.counts.grantsExceedBudgetCount})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="eutr-sort">Sort by</label>
+          <select id="eutr-sort" disabled>
+            <option value="grants">EU grants (highest)</option>
+            <option value="budget">Total budget (highest)</option>
+            <option value="share">EU grant share of budget (highest)</option>
+            <option value="name">Organization name (A–Z)</option>
+          </select>
+        </span>
+        <button type="submit" class="btn" disabled>Search register</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>
+      Search when you are ready to load the verified EU Transparency Register civil-society snapshot ({(manifest.artifacts.organizations.bytes / 1024).toFixed(1)} KB compressed).
+    </p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="euStars" aria-label="EU Transparency Register civil-society results" data-results></ol>
+    <noscript>
+      <p>
+        Without JavaScript, download the
+        <a href={url(dataPath + manifest.artifacts.csv.path)} download>
+          EU Transparency Register civil-society CSV ({count(manifest.counts.includedCivilSocietyOrganizations)} rows)
+        </a>.
+      </p>
+    </noscript>
+  </section>
+
+  <h2 id="categories">Breakdown across the 4 civil-society &amp; research categories</h2>
+  <p>
+    Universities and public research institutes receive larger average EU Horizon/research grants than advocacy NGOs, so
+    all four statutory categories are reported separately below.
+  </p>
+  <div class="table-wrap" role="region" aria-label="EU Transparency Register breakdown by category" tabindex="0">
+    <table class="data eutr-table">
+      <caption>Closed-year budgets and EU grants across 6,317 non-commercial EU Transparency Register entities (2026-11-25)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Statutory category</th>
+          <th scope="col">Organizations</th>
+          <th scope="col">Reporting budget</th>
+          <th scope="col">Total reported budgets (EUR)</th>
+          <th scope="col">With EU grants</th>
+          <th scope="col">Itemized grants</th>
+          <th scope="col">Closed-year EU grants (EUR)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          cats.map((c) => (
+            <tr>
+              <th scope="row">{c.label}</th>
+              <td>{count(c.organizations)}</td>
+              <td>{count(c.withBudget)}</td>
+              <td>{eur(c.totalBudgetEur)}</td>
+              <td>{count(c.withEuGrants)}</td>
+              <td>{count(c.grantItemCount)}</td>
+              <td><strong>{eur(c.totalEuGrantsEur)}</strong></td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="top-ngos">Top 20 NGOs, platforms &amp; networks by closed-year EU grants</h2>
+  <p>
+    Figures below are preserved verbatim from each organization’s official Transparency Register filing. Entries marked
+    as self-reported outliers or carrying unusually round/large figures should be verified directly against the European
+    Commission’s Financial Transparency System (FTS).
+  </p>
+  <div class="table-wrap" role="region" aria-label="Top 20 NGOs by reported EU grants" tabindex="0">
+    <table class="data eutr-table">
+      <caption>Largest closed-year EU grant disclosures in category “Non-governmental organisations, platforms and networks and similar”</caption>
+      <thead>
+        <tr>
+          <th scope="col">EU Register ID</th>
+          <th scope="col">Organization</th>
+          <th scope="col">HQ Country</th>
+          <th scope="col">FY end</th>
+          <th scope="col">EU Grants (EUR)</th>
+          <th scope="col">Total Budget (EUR)</th>
+          <th scope="col">Grants</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.top20NgosByEuGrants.map((row) => (
+            <tr>
+              <th scope="row">
+                <a href={`${manifest.catalogues.profilePrefix}${row.id}`}><code>{row.id}</code></a>
+              </th>
+              <td>{row.name}</td>
+              <td>{row.country ?? '—'}</td>
+              <td>{row.fyEnd ?? '—'}</td>
+              <td><strong>{eur(row.grantsEur)}</strong></td>
+              <td>{eur(row.budgetEur)}</td>
+              <td>{row.grantCount}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="countries">Top 20 headquarters countries by closed-year EU grants</h2>
+  <div class="table-wrap" role="region" aria-label="Top 20 HQ countries in EU Transparency Register civil society" tabindex="0">
+    <table class="data eutr-table">
+      <caption>Civil-society organizations and closed-year EU grants by headquarters country (all 4 non-commercial categories)</caption>
+      <thead>
+        <tr>
+          <th scope="col">HQ Country</th>
+          <th scope="col">Organizations</th>
+          <th scope="col">Recipients with EU grants</th>
+          <th scope="col">Closed-year EU grants (EUR)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.topCountries.slice(0, 20).map((c) => (
+            <tr>
+              <th scope="row">{c.country}</th>
+              <td>{count(c.organizations)}</td>
+              <td>{count(c.withEuGrants)}</td>
+              <td><strong>{eur(c.totalEuGrantsEur)}</strong></td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="coverage">Scope, self-reported anomalies &amp; privacy boundaries</h2>
+  <p>
+    <strong>Denominator &amp; exclusions:</strong> The full EU Transparency Register snapshot contains
+    <strong>{count(manifest.counts.allRegisterEntities)}</strong> entities across 13 categories. Commercial companies
+    (<code>5,419</code>), trade/business associations (<code>3,026</code>), trade unions/professional bodies
+    (<code>1,147</code>), consultancies (<code>838</code>), law firms (<code>126</code>), public-authority networks
+    (<code>245</code>), self-employed individuals (<code>243</code>), public/mixed entities (<code>801</code>), and
+    third-country offices (<code>7</code>) are excluded from this civil-society funding explorer while preserved in the
+    manifest’s denominator breakdown.
+  </p>
+  <p>
+    <strong>Self-reported financial anomalies (preserved verbatim):</strong> Every budget and EU grant figure is
+    self-reported by the registrant rather than audited by the European Commission. Exactly
+    <strong>{manifest.counts.grantsExceedBudgetCount}</strong> civil-society organizations reported closed-year EU grants
+    exceeding their reported total annual budget (commonly multi-year consortium grants booked in one year or unit/decimal
+    mistakes), <strong>{manifest.counts.negativeFinancialValuesCount}</strong> financial fields carry negative values, and
+    several large NGO entries (such as <code>209304118333-41</code> and <code>8229341100943-10</code>) appear to reflect
+    registrant decimal-shift or consortium-scale reporting rather than audited standalone operating budgets. Exactly
+    <strong>{count(manifest.counts.newOrganizations)}</strong> newly formed organizations carry no closed financial year
+    (<code>null</code>), and 8 XML 1.1 control-character entity references were sanitized deterministically — all documented
+    in <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'anomalies.json')} download>anomalies.json</a>.
+  </p>
+  <p>
+    <strong>Privacy boundary:</strong> Street addresses, postal codes, telephone numbers, and named officers
+    (<code>headOfEntity</code> / <code>personInCharge</code>) are omitted from all public artifacts.{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(dataPath + manifest.artifacts.csv.path)} download>Download full CSV ({count(manifest.counts.includedCivilSocietyOrganizations)} rows)</a> ·{' '}
+    <a href={url('/record/funding-flows/')}>Browse all funding flows</a>.
+  </p>
+</Entry>
+
+<style>
+  .charity-financial-search .inline-field {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+  .charity-financial-search .inline-field select {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+  .eutr-table {
+    min-inline-size: 46rem;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../../../../lib/client/verified-json';
+
+  type EuRow = {
+    id: string;
+    name: string;
+    acr: string | null;
+    cat: 'ngo' | 'think_tank' | 'academic' | 'religious';
+    country: string | null;
+    city: string | null;
+    reg: string | null;
+    upd: string | null;
+    newOrg: boolean;
+    fyEnd: string | null;
+    budget: number | null;
+    grants: number | null;
+    gCount: number;
+    gShare: number | null;
+    gSrc: string[];
+    fSrc: string[];
+    anom: boolean;
+    web: string | null;
+  };
+
+  type EuManifest = {
+    publisher: string;
+    asOf: string;
+    capturedOn: string;
+    catalogues: { profilePrefix: string };
+    counts: { includedCivilSocietyOrganizations: number };
+    artifacts: { organizations: VerifiedJsonAsset & { path: string } };
+  };
+
+  const CAT_LABELS: Record<string, string> = {
+    ngo: 'NGO / platform',
+    think_tank: 'Think tank / research',
+    academic: 'Academic institution',
+    religious: 'Church / religious',
+  };
+
+  const fmtEur = (v: number | null) => (v === null ? 'Not reported' : `€${v.toLocaleString('en-US')}`);
+  const limit = 40;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-eu-tr]')) {
+    const manifest: EuManifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#eutr-query', root) as HTMLInputElement;
+    const catSel = $('#eutr-cat', root) as HTMLSelectElement;
+    const countrySel = $('#eutr-country', root) as HTMLSelectElement;
+    const grantsSel = $('#eutr-grants', root) as HTMLSelectElement;
+    const sortSel = $('#eutr-sort', root) as HTMLSelectElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    for (const el of [queryEl, catSel, countrySel, grantsSel, sortSel, submitBtn, clearBtn]) {
+      el.disabled = false;
+    }
+
+    let cache: Promise<EuRow[]> | null = null;
+    let shown: EuRow[] = [];
+
+    const loadAll = () => {
+      if (!cache) {
+        const asset = manifest.artifacts.organizations;
+        cache = loadVerifiedJson(base + asset.path, asset).then((data) => {
+          if (!Array.isArray(data) || data.length !== manifest.counts.includedCivilSocietyOrganizations) {
+            throw new Error('Unexpected EU Transparency Register civil-society row count.');
+          }
+          return data as EuRow[];
+        });
+      }
+      return cache;
+    };
+
+    const sortRows = (rows: EuRow[], mode: string) => {
+      const copy = [...rows];
+      if (mode === 'budget') {
+        copy.sort((a, b) => (b.budget ?? -1e18) - (a.budget ?? -1e18) || a.id.localeCompare(b.id));
+      } else if (mode === 'share') {
+        copy.sort((a, b) => (b.gShare ?? -1) - (a.gShare ?? -1) || (b.grants ?? -1) - (a.grants ?? -1));
+      } else if (mode === 'name') {
+        copy.sort((a, b) => a.name.localeCompare(b.name, 'en'));
+      } else {
+        copy.sort((a, b) => (b.grants ?? -1e18) - (a.grants ?? -1e18) || (b.budget ?? -1e18) - (a.budget ?? -1e18));
+      }
+      return copy;
+    };
+
+    const render = (rows: EuRow[], total: number, q: string) => {
+      shown = rows;
+      listEl.replaceChildren();
+      jsonBtn.disabled = rows.length === 0;
+      csvBtn.disabled = rows.length === 0;
+      if (!rows.length) {
+        statusEl.textContent = q
+          ? `No EU Transparency Register civil-society organizations matched “${q}” under the selected filters.`
+          : 'No organizations matched the selected filters.';
+        return;
+      }
+      statusEl.textContent =
+        total > rows.length
+          ? `Showing the first ${rows.length} of ${total.toLocaleString('en-US')} matching organizations.`
+          : `Showing ${total.toLocaleString('en-US')} matching organization${total === 1 ? '' : 's'}.`;
+
+      for (const r of rows) {
+        const profUrl = `${manifest.catalogues.profilePrefix}${r.id}`;
+        const meta: string[] = [
+          CAT_LABELS[r.cat] ?? r.cat,
+          r.country ? (r.city ? `${r.city}, ${r.country}` : r.country) : 'HQ country unknown',
+          `EU Grants: ${fmtEur(r.grants)}${r.gCount ? ` (${r.gCount})` : ''}`,
+          `Total Budget: ${fmtEur(r.budget)}`,
+        ];
+        if (r.gShare !== null) meta.push(`EU share: ${r.gShare}%`);
+        if (r.fyEnd) meta.push(`FYE ${r.fyEnd}`);
+        if (r.newOrg) meta.push('New organisation (no closed year)');
+        if (r.anom) meta.push('Flagged: EU grants > total budget');
+
+        const children: (Node | string)[] = [
+          h('strong', {}, r.acr ? `${r.name} (${r.acr})` : r.name),
+          ' ',
+          h('code', {}, r.id),
+          ' ',
+          h('a', { href: profUrl, rel: 'noopener' }, 'EU Register ↗'),
+        ];
+        if (r.web) {
+          children.push(' · ', h('a', { href: r.web, rel: 'noopener' }, 'Website ↗'));
+        }
+        children.push(h('div', { class: 'note' }, meta.join(' · ')));
+        if (r.gSrc.length) {
+          children.push(h('div', { class: 'note' }, `Top EU grant sources: ${r.gSrc.join(' · ')}`));
+        }
+        if (r.fSrc.length) {
+          children.push(h('div', { class: 'note' }, `Funding sources: ${r.fSrc.join(', ')}`));
+        }
+        listEl.append(h('li', {}, ...children));
+      }
+    };
+
+    const runSearch = async () => {
+      const rawQ = queryEl.value.trim();
+      const lowerQ = rawQ.toLowerCase();
+      const catVal = catSel.value;
+      const countryVal = countrySel.value;
+      const grantVal = grantsSel.value;
+      const sortMode = sortSel.value;
+
+      statusEl.textContent = 'Loading verified EU Transparency Register snapshot…';
+      try {
+        const all = await loadAll();
+        const filtered = all.filter((r) => {
+          if (catVal && r.cat !== catVal) return false;
+          if (countryVal && r.country !== countryVal) return false;
+          if (grantVal === 'positive' && !(r.grants !== null && r.grants > 0)) return false;
+          if (grantVal === 'zero' && r.grants !== null && r.grants > 0) return false;
+          if (grantVal === 'anomaly' && !r.anom) return false;
+          if (!lowerQ) return true;
+          if (r.id.toLowerCase().includes(lowerQ)) return true;
+          if (r.name.toLowerCase().includes(lowerQ)) return true;
+          if (r.acr && r.acr.toLowerCase().includes(lowerQ)) return true;
+          if (r.country && r.country.toLowerCase().includes(lowerQ)) return true;
+          if (r.city && r.city.toLowerCase().includes(lowerQ)) return true;
+          if (r.gSrc.some((g) => g.toLowerCase().includes(lowerQ))) return true;
+          return false;
+        });
+        const ordered = sortRows(filtered, sortMode);
+        render(ordered.slice(0, limit), ordered.length, rawQ);
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load EU Transparency Register snapshot.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void runSearch();
+    });
+    for (const sel of [catSel, countrySel, grantsSel, sortSel]) {
+      sel.addEventListener('change', () => {
+        void runSearch();
+      });
+    }
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      catSel.value = '';
+      countrySel.value = '';
+      grantsSel.value = '';
+      sortSel.value = 'grants';
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Search cleared.';
+      queryEl.focus();
+    });
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-eu-transparency-register-ngos.json',
+        JSON.stringify({ source: manifest.publisher, asOf: manifest.asOf, rows: shown }, null, 2),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      const csvText = toCsv(
+        shown.map((r) => ({
+          eu_register_id: r.id,
+          organization_name: financialCsvName(r.name),
+          acronym: financialCsvName(r.acr ?? ''),
+          category: r.cat,
+          hq_country: financialCsvName(r.country ?? ''),
+          hq_city: financialCsvName(r.city ?? ''),
+          closed_year_end: r.fyEnd ?? '',
+          total_budget_eur: r.budget ?? '',
+          eu_grants_eur: r.grants ?? '',
+          eu_grant_item_count: r.gCount,
+          eu_grant_share_pct: r.gShare ?? '',
+          grants_exceed_budget_flag: r.anom ? 'true' : 'false',
+          top_eu_grant_sources: financialCsvName(r.gSrc.join(' | ')),
+          website: r.web ?? '',
+          eu_register_url: `${manifest.catalogues.profilePrefix}${r.id}`,
+        })),
+      );
+      download(
+        'charitology-eu-transparency-register-ngos.csv',
+        '\uFEFF' + csvText,
+        'text/csv;charset=utf-8',
+      );
+    });
+  }
+</script>

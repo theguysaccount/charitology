@@ -1,0 +1,52 @@
+{
+  "format": "charitology-europe-tax-assignment-compare-manifest-v1",
+  "asOf": "2026-11-25",
+  "capturedOn": "2026-11-25",
+  "countryCount": 5,
+  "countries": [
+    "Italy",
+    "Poland",
+    "Slovakia",
+    "Hungary",
+    "Slovenia"
+  ],
+  "sourceManifests": [
+    {
+      "path": "public/data/funding-flows/italy-five-per-mille/manifest.json",
+      "bytes": 15613,
+      "sha256": "3f294d77e6ffc57f060efe091f65f000bed6557cc0a8b29123e80c438c9c3d42"
+    },
+    {
+      "path": "public/data/funding-flows/poland-pit-1-5-percent/manifest.json",
+      "bytes": 15585,
+      "sha256": "09f9bcdf11f069b9a049771b9389e75f712b2944a8ced58cfcabf73e3e21f4ca"
+    },
+    {
+      "path": "public/data/funding-flows/slovakia-pit-2-percent/manifest.json",
+      "bytes": 17657,
+      "sha256": "32879dd82d4922b7a50e3268c7ea2e092e5ba887cc5fa94c50c4f05ce40b549d"
+    },
+    {
+      "path": "public/data/funding-flows/hungary-szja-1-percent/manifest.json",
+      "bytes": 14877,
+      "sha256": "10ab1c220c668fcbcefd1c0840e7aff32e799bb5f8de314783eb406f1c833cd0"
+    },
+    {
+      "path": "public/data/funding-flows/slovenia-dohodnina-1-percent/manifest.json",
+      "bytes": 4237,
+      "sha256": "3dd42eee24c3e1aaac3e41293fc9b2169f1979bb91e3b4c60ebff9536f118adb"
+    }
+  ],
+  "artifacts": {
+    "comparison": {
+      "path": "comparison.json",
+      "bytes": 9231,
+      "sha256": "0a0bc0b4a55540e51a02abe583c2c732c0fa14a225f6e9a5ca57cf0e096c8d31"
+    },
+    "csv": {
+      "path": "europe-tax-assignment-comparison.csv",
+      "bytes": 1706,
+      "sha256": "3d2c83d21576b284ec5e69999a2570b4d3e1fa7c738121d9aadbd99dd3643f01"
+    }
+  }
+}

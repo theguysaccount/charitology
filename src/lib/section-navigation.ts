@@ -321,6 +321,19 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['europe-tax-assignment-compare', 'Compare five European tax-assignment systems', 'compare'],
     ['downloads', 'Downloads, methodology and provenance', 'download'],
   ],
+  '/record/funding-flows/europe-tax-assignment-compare/': [
+    ['compare-heading', 'Interactive 5-country comparison', 'compare'],
+    ['concentration', 'Why Top-10 concentration spans 15% to 46%', 'chart'],
+    ['shocks', 'Statutory rate reforms & natural experiments', 'scale'],
+    ['downloads', 'National explorers, downloads & provenance', 'download'],
+  ],
+  '/record/funding-flows/eu-transparency-register-ngos/': [
+    ['eutr-search-heading', 'Search 6,317 civil-society organizations', 'lens'],
+    ['categories', 'Breakdown across 4 non-commercial categories', 'table'],
+    ['top-ngos', 'Top 20 NGOs by closed-year EU grants', 'coins'],
+    ['countries', 'Top 20 headquarters countries by EU grants', 'globe'],
+    ['coverage', 'Scope, self-reported anomalies & privacy', 'archive'],
+  ],
   '/record/charity-index/sweden/': [
     ['se-search-heading', 'Search Swedish 90-konto organizations', 'lens'],
     ['top-2025', 'Largest active 90-konto organizations by 2025 revenue', 'coins'],

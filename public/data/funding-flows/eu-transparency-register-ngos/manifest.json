@@ -1,0 +1,635 @@
+{
+  "format": "charitology-eu-transparency-register-ngos-v1",
+  "asOf": "2026-11-25",
+  "exportDate": "2026-11-25T21:00:00.037+00:00",
+  "capturedOn": "2026-11-25",
+  "publisher": "Joint Transparency Register Secretariat (European Parliament, Council of the EU & European Commission)",
+  "license": "European Commission Reuse Policy (Decision 2011/833/EU — CC BY 4.0 equivalent)",
+  "catalogues": {
+    "openDataPortal": "https://transparency-register.europa.eu/open-data_en",
+    "xmlFeed": "https://transparency-register.europa.eu/odplastorganisationxml_en",
+    "profilePrefix": "https://transparency-register.europa.eu/searchregister-or-update/organisation-detail_en?id="
+  },
+  "source": {
+    "filename": "eu-transparency-register-20261125.xml",
+    "url": "https://transparency-register.europa.eu/odplastorganisationxml_en",
+    "bytes": 119316766,
+    "sha256": "ac8d8d96ae4336edf62cdfb467a233876183c8c09e8355228a959fa3f66fbe01",
+    "declaredTotalRegistrants": 18169,
+    "observedTotalRegistrants": 18169
+  },
+  "counts": {
+    "allRegisterEntities": 18169,
+    "includedCivilSocietyOrganizations": 6317,
+    "distinctHeadquartersCountries": 106,
+    "withReportedBudget": 4477,
+    "totalReportedBudgetEur": 256549192740,
+    "withPositiveEuGrants": 2162,
+    "totalEuGrantsEur": 7799715769,
+    "totalItemizedEuGrants": 5538,
+    "newOrganizations": 279,
+    "grantsExceedBudgetCount": 54,
+    "negativeFinancialValuesCount": 18,
+    "byCategory": {
+      "ngo": {
+        "label": "NGOs, platforms & networks",
+        "organizations": 4966,
+        "withBudget": 3428,
+        "totalBudgetEur": 80738917142,
+        "withEuGrants": 1591,
+        "totalEuGrantsEur": 2692893726,
+        "grantItemCount": 3724
+      },
+      "think_tank": {
+        "label": "Think tanks & research institutions",
+        "organizations": 798,
+        "withBudget": 583,
+        "totalBudgetEur": 35099770207,
+        "withEuGrants": 286,
+        "totalEuGrantsEur": 1803499794,
+        "grantItemCount": 921
+      },
+      "academic": {
+        "label": "Academic institutions",
+        "organizations": 490,
+        "withBudget": 419,
+        "totalBudgetEur": 140063877201,
+        "withEuGrants": 278,
+        "totalEuGrantsEur": 3296828461,
+        "grantItemCount": 883
+      },
+      "religious": {
+        "label": "Churches & religious communities",
+        "organizations": 63,
+        "withBudget": 47,
+        "totalBudgetEur": 646628190,
+        "withEuGrants": 7,
+        "totalEuGrantsEur": 6493788,
+        "grantItemCount": 10
+      }
+    },
+    "fundingSources": {
+      "Grants": 2204,
+      "Donations": 1897,
+      "Member's contributions": 1762,
+      "Public funding": 1722,
+      "EU funding": 1560,
+      "Other": 1462
+    },
+    "allRegisterCategories": {
+      "Companies & groups": 5419,
+      "Non-governmental organisations, platforms and networks and similar": 4966,
+      "Trade and business associations": 3026,
+      "Trade unions and professional associations": 1147,
+      "Professional consultancies": 838,
+      "Other organisations, public or mixed entities": 801,
+      "Think tanks and research institutions": 798,
+      "Academic institutions": 490,
+      "Associations and networks of public authorities": 245,
+      "Self-employed individuals": 243,
+      "Law firms": 126,
+      "Organisations representing churches and religious communities": 63,
+      "Entities, offices or networks established by third countries": 7
+    }
+  },
+  "topCountries": [
+    {
+      "country": "FRANCE",
+      "organizations": 495,
+      "withEuGrants": 162,
+      "totalEuGrantsEur": 1072174123
+    },
+    {
+      "country": "NETHERLANDS",
+      "organizations": 421,
+      "withEuGrants": 155,
+      "totalEuGrantsEur": 1061826526
+    },
+    {
+      "country": "BELGIUM",
+      "organizations": 1131,
+      "withEuGrants": 408,
+      "totalEuGrantsEur": 724051929
+    },
+    {
+      "country": "SLOVENIA",
+      "organizations": 47,
+      "withEuGrants": 28,
+      "totalEuGrantsEur": 611907963
+    },
+    {
+      "country": "GERMANY",
+      "organizations": 666,
+      "withEuGrants": 162,
+      "totalEuGrantsEur": 588646531
+    },
+    {
+      "country": "SPAIN",
+      "organizations": 358,
+      "withEuGrants": 138,
+      "totalEuGrantsEur": 476368639
+    },
+    {
+      "country": "ITALY",
+      "organizations": 391,
+      "withEuGrants": 156,
+      "totalEuGrantsEur": 472227516
+    },
+    {
+      "country": "FINLAND",
+      "organizations": 97,
+      "withEuGrants": 47,
+      "totalEuGrantsEur": 394668283
+    },
+    {
+      "country": "SWEDEN",
+      "organizations": 122,
+      "withEuGrants": 56,
+      "totalEuGrantsEur": 307846427
+    },
+    {
+      "country": "DENMARK",
+      "organizations": 94,
+      "withEuGrants": 32,
+      "totalEuGrantsEur": 196353298
+    },
+    {
+      "country": "UNITED KINGDOM",
+      "organizations": 338,
+      "withEuGrants": 78,
+      "totalEuGrantsEur": 186201649
+    },
+    {
+      "country": "IRELAND",
+      "organizations": 113,
+      "withEuGrants": 43,
+      "totalEuGrantsEur": 184481701
+    },
+    {
+      "country": "SWITZERLAND",
+      "organizations": 144,
+      "withEuGrants": 39,
+      "totalEuGrantsEur": 176667741
+    },
+    {
+      "country": "PORTUGAL",
+      "organizations": 82,
+      "withEuGrants": 40,
+      "totalEuGrantsEur": 165522635
+    },
+    {
+      "country": "CYPRUS",
+      "organizations": 30,
+      "withEuGrants": 13,
+      "totalEuGrantsEur": 141510368
+    },
+    {
+      "country": "UNITED STATES",
+      "organizations": 290,
+      "withEuGrants": 32,
+      "totalEuGrantsEur": 127420194
+    },
+    {
+      "country": "AUSTRIA",
+      "organizations": 171,
+      "withEuGrants": 48,
+      "totalEuGrantsEur": 120901252
+    },
+    {
+      "country": "CROATIA",
+      "organizations": 49,
+      "withEuGrants": 25,
+      "totalEuGrantsEur": 106288813
+    },
+    {
+      "country": "ROMANIA",
+      "organizations": 133,
+      "withEuGrants": 52,
+      "totalEuGrantsEur": 88246614
+    },
+    {
+      "country": "NORWAY",
+      "organizations": 45,
+      "withEuGrants": 15,
+      "totalEuGrantsEur": 84747257
+    },
+    {
+      "country": "CZECH REPUBLIC",
+      "organizations": 80,
+      "withEuGrants": 30,
+      "totalEuGrantsEur": 78868207
+    },
+    {
+      "country": "ESTONIA",
+      "organizations": 39,
+      "withEuGrants": 18,
+      "totalEuGrantsEur": 78252983
+    },
+    {
+      "country": "GREECE",
+      "organizations": 101,
+      "withEuGrants": 44,
+      "totalEuGrantsEur": 71399705
+    },
+    {
+      "country": "BULGARIA",
+      "organizations": 64,
+      "withEuGrants": 26,
+      "totalEuGrantsEur": 42574493
+    },
+    {
+      "country": "POLAND",
+      "organizations": 141,
+      "withEuGrants": 40,
+      "totalEuGrantsEur": 34951465
+    }
+  ],
+  "top20NgosByEuGrants": [
+    {
+      "id": "272646820681-30",
+      "name": "ACTION CONTRE LA FAIM",
+      "country": "FRANCE",
+      "fyEnd": "2024-12-01",
+      "grantsEur": 167000000,
+      "budgetEur": 660000000,
+      "grantCount": 4,
+      "exceedsBudget": false
+    },
+    {
+      "id": "209304118333-41",
+      "name": "European Federation of Hard of Hearing People",
+      "country": "NETHERLANDS",
+      "fyEnd": "2024-12-01",
+      "grantsEur": 154150083,
+      "budgetEur": 291081087,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "8229341100943-10",
+      "name": "Oxygono",
+      "country": "CYPRUS",
+      "fyEnd": "2024-12-01",
+      "grantsEur": 137703950,
+      "budgetEur": 232426000,
+      "grantCount": 6,
+      "exceedsBudget": false
+    },
+    {
+      "id": "336765244362-96",
+      "name": "International Rescue Committee Inc",
+      "country": "UNITED STATES",
+      "fyEnd": "2025-09-01",
+      "grantsEur": 95626046,
+      "budgetEur": 853047768,
+      "grantCount": 8,
+      "exceedsBudget": false
+    },
+    {
+      "id": "667858034535-07",
+      "name": "EIT Urban Mobility",
+      "country": "SPAIN",
+      "fyEnd": "2023-12-01",
+      "grantsEur": 90112271,
+      "budgetEur": null,
+      "grantCount": 3,
+      "exceedsBudget": false
+    },
+    {
+      "id": "882280025943-49",
+      "name": "Grupo de Ativistas em Tratamentos",
+      "country": "PORTUGAL",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 77885410,
+      "budgetEur": 3317895140,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "435792917444-12",
+      "name": "GÉANT Association",
+      "country": "NETHERLANDS",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 75186016,
+      "budgetEur": null,
+      "grantCount": 6,
+      "exceedsBudget": false
+    },
+    {
+      "id": "7293855103765-87",
+      "name": "Udruga za pomoć mladima \"HELP\" - Split",
+      "country": "CROATIA",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 64343000,
+      "budgetEur": 160000,
+      "grantCount": 1,
+      "exceedsBudget": true
+    },
+    {
+      "id": "475897351582-51",
+      "name": "Acted",
+      "country": "FRANCE",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 62682356,
+      "budgetEur": 415088607,
+      "grantCount": 2,
+      "exceedsBudget": false
+    },
+    {
+      "id": "630081038878-45",
+      "name": "Solidarités International",
+      "country": "FRANCE",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 54650000,
+      "budgetEur": 173977085,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "479045950408-91",
+      "name": "Clovek v tisni, o.p.s. (People in Need)",
+      "country": "CZECH REPUBLIC",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 44671313,
+      "budgetEur": 167336069,
+      "grantCount": 13,
+      "exceedsBudget": false
+    },
+    {
+      "id": "213754916822-68",
+      "name": "ASSOCIATION FEDERATION HANDICAP INTERNATIONAL",
+      "country": "FRANCE",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 42629000,
+      "budgetEur": 212680000,
+      "grantCount": 3,
+      "exceedsBudget": false
+    },
+    {
+      "id": "763605593361-56",
+      "name": "Prosper Global (NL)",
+      "country": "NETHERLANDS",
+      "fyEnd": "2025-06-01",
+      "grantsEur": 36556029,
+      "budgetEur": 53776642,
+      "grantCount": 2,
+      "exceedsBudget": false
+    },
+    {
+      "id": "744358723155-50",
+      "name": "Les Restaurants du Cœur",
+      "country": "FRANCE",
+      "fyEnd": "2025-04-01",
+      "grantsEur": 35851755,
+      "budgetEur": 280656000,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "5432179104711-68",
+      "name": "International Medical Corps Croatia",
+      "country": "CROATIA",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 33441655,
+      "budgetEur": 47094193,
+      "grantCount": 2,
+      "exceedsBudget": false
+    },
+    {
+      "id": "802660516125-83",
+      "name": "Concern Worldwide",
+      "country": "IRELAND",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 29084000,
+      "budgetEur": 206830000,
+      "grantCount": 2,
+      "exceedsBudget": false
+    },
+    {
+      "id": "610816794887-34",
+      "name": "Malteser Hilfsdienst e.V.",
+      "country": "GERMANY",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 28974000,
+      "budgetEur": 211200000,
+      "grantCount": 6,
+      "exceedsBudget": false
+    },
+    {
+      "id": "2287345105605-07",
+      "name": "AFS Low Lands - Interculturele Programma's",
+      "country": "BELGIUM",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 27668204,
+      "budgetEur": 2190390,
+      "grantCount": 2,
+      "exceedsBudget": true
+    },
+    {
+      "id": "665380994905-44",
+      "name": "CENTER FOR INTERNATIONAL FORESTRY RESEARCH",
+      "country": "INDONESIA",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 27184400,
+      "budgetEur": 54426000,
+      "grantCount": 2,
+      "exceedsBudget": false
+    },
+    {
+      "id": "768931698309-48",
+      "name": "CGIAR System Organization",
+      "country": "FRANCE",
+      "fyEnd": "2024-12-01",
+      "grantsEur": 25000000,
+      "budgetEur": 322200000,
+      "grantCount": 1,
+      "exceedsBudget": false
+    }
+  ],
+  "top15ResearchAcademicByEuGrants": [
+    {
+      "id": "044986331039-07",
+      "name": "Univerza v Ljubljani",
+      "cat": "academic",
+      "country": "SLOVENIA",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 579278393,
+      "budgetEur": 579278395,
+      "grantCount": 4,
+      "exceedsBudget": false
+    },
+    {
+      "id": "569198415707-56",
+      "name": "Netherlands Aerospace Centre",
+      "cat": "think_tank",
+      "country": "NETHERLANDS",
+      "fyEnd": "2024-12-01",
+      "grantsEur": 239121200,
+      "budgetEur": null,
+      "grantCount": 2,
+      "exceedsBudget": false
+    },
+    {
+      "id": "661042540157-54",
+      "name": "Helsingin yliopisto",
+      "cat": "academic",
+      "country": "FINLAND",
+      "fyEnd": "2024-12-01",
+      "grantsEur": 227000000,
+      "budgetEur": 674000000,
+      "grantCount": 2,
+      "exceedsBudget": false
+    },
+    {
+      "id": "52774696782-43",
+      "name": "Commissariat à l'Energie atomique et aux énergies alternatives",
+      "cat": "think_tank",
+      "country": "FRANCE",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 218502000,
+      "budgetEur": 2706900000,
+      "grantCount": 5,
+      "exceedsBudget": false
+    },
+    {
+      "id": "787054318177-33",
+      "name": "Centre National de la Recherche Scientifique",
+      "cat": "think_tank",
+      "country": "FRANCE",
+      "fyEnd": "2024-12-01",
+      "grantsEur": 150000000,
+      "budgetEur": 4216000000,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "97921387213-35",
+      "name": "Interuniversitair Micro-Electronica Centrum vzw",
+      "cat": "think_tank",
+      "country": "BELGIUM",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 120695166,
+      "budgetEur": 1146902174,
+      "grantCount": 5,
+      "exceedsBudget": false
+    },
+    {
+      "id": "921611151686-18",
+      "name": "Agencia Estatal Consejo Superior de Investigaciones Científicas",
+      "cat": "think_tank",
+      "country": "SPAIN",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 95635042,
+      "budgetEur": 1230173119,
+      "grantCount": 3,
+      "exceedsBudget": false
+    },
+    {
+      "id": "173042412678-08",
+      "name": "Max-Planck-Gesellschaft zur Förderung der Wissenschaften",
+      "cat": "think_tank",
+      "country": "GERMANY",
+      "fyEnd": "2024-12-01",
+      "grantsEur": 89800000,
+      "budgetEur": 310300000,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "006043210924-49",
+      "name": "Ghent University",
+      "cat": "academic",
+      "country": "BELGIUM",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 73768905,
+      "budgetEur": 1014872288,
+      "grantCount": 3,
+      "exceedsBudget": false
+    },
+    {
+      "id": "21280626733-05",
+      "name": "Deutsches Zentrum für Luft- und Raumfahrt e.V.",
+      "cat": "think_tank",
+      "country": "GERMANY",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 73200000,
+      "budgetEur": 1601400000,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "056048443448-39",
+      "name": "Technische Universiteit Delft",
+      "cat": "academic",
+      "country": "NETHERLANDS",
+      "fyEnd": "2025-01-01",
+      "grantsEur": 72000000,
+      "budgetEur": 968800000,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "701189115301-43",
+      "name": "Eidgenössische Technische Hochschule Zürich",
+      "cat": "academic",
+      "country": "SWITZERLAND",
+      "fyEnd": "2025-12-01",
+      "grantsEur": 64000000,
+      "budgetEur": 2051000000,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "363805923029-87",
+      "name": "Københavns Universitet",
+      "cat": "academic",
+      "country": "DENMARK",
+      "fyEnd": "2024-12-01",
+      "grantsEur": 61905582,
+      "budgetEur": 1482000000,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "806205726728-39",
+      "name": "Radboud University",
+      "cat": "academic",
+      "country": "NETHERLANDS",
+      "fyEnd": "2024-12-01",
+      "grantsEur": 57795000,
+      "budgetEur": 822117000,
+      "grantCount": 1,
+      "exceedsBudget": false
+    },
+    {
+      "id": "480090715925-32",
+      "name": "European Cooperation in Science and Technology",
+      "cat": "think_tank",
+      "country": "BELGIUM",
+      "fyEnd": "2025-10-01",
+      "grantsEur": 54800437,
+      "budgetEur": 55014723,
+      "grantCount": 1,
+      "exceedsBudget": false
+    }
+  ],
+  "artifacts": {
+    "organizations": {
+      "path": "organizations.json.gz",
+      "bytes": 501041,
+      "sha256": "4d3ed4f269432737a6ac7a079b75218bac6533c17254d7d0c82eb253afef8c88",
+      "decodedBytes": 2340587,
+      "decodedSha256": "071346bf3cc95e9b794d75db8fa5abe82d17d3b40a462f4b874ea6f3e4972740"
+    },
+    "csv": {
+      "path": "eu-transparency-register-ngos.csv",
+      "bytes": 1988025,
+      "sha256": "3492b6e89289796240e033011a2589ad83706c28f34f2e8deaf92b7dbbe82510"
+    },
+    "anomalies": {
+      "path": "anomalies.json",
+      "bytes": 17495,
+      "sha256": "84d9ae663c0155782354cb8c28716521231ffa89654f87108370f64c8ee350c7"
+    }
+  }
+}

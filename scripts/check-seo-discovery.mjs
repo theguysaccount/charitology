@@ -73,6 +73,8 @@ for (const rel of [
   'record/charity-index/croatia/index.html',
   'record/funding-flows/italy-five-per-mille/index.html',
   'record/funding-flows/slovenia-dohodnina-1-percent/index.html',
+  'record/funding-flows/europe-tax-assignment-compare/index.html',
+  'record/funding-flows/eu-transparency-register-ngos/index.html',
   'record/funding-flows/ocha-fts-global-clusters/index.html',
 ]) {
   const ld = extractJsonLd(readDist(rel), rel);
