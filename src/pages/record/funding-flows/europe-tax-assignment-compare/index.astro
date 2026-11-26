@@ -1,0 +1,395 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import comparison from '../../../../../public/data/funding-flows/europe-tax-assignment-compare/comparison.json';
+import manifest from '../../../../../public/data/funding-flows/europe-tax-assignment-compare/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'European percentage tax-assignment observatory (5 countries)';
+const dataPath = '/data/funding-flows/europe-tax-assignment-compare/';
+const count = (value: number | null) => (value === null ? '—' : value.toLocaleString('en-US'));
+
+const sources = comparison.systems.map((s) => ({
+  title: `${s.country} — ${s.schemeName} (${s.latestPeriod})`,
+  publisher: s.sourcePublisher,
+  url: `https://charitology.com${s.fundingFlowRoute}`,
+}));
+
+const sortedByConc = [...comparison.systems].sort((a, b) => b.top10SharePct - a.top10SharePct);
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Funding Flows · Europe"
+  summary="Compare five national European income-tax assignment mechanisms side by side — Italy (5‰, EUR 603.10M), Poland (1.5%, PLN 2.61B), Slovakia (2%/3%, EUR 107.04M), Hungary (1%+1%, HUF 21.40B civil + HUF 23.95B church/budget), and Slovenia (1.0%, EUR 19.24M) — compiled reproducibly from SHA-256-pinned national manifests with native currencies preserved verbatim."
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Funding flows', href: '/record/funding-flows/' },
+    { label: 'European tax-assignment observatory' },
+  ]}
+  filePath="src/pages/record/funding-flows/europe-tax-assignment-compare/index.astro"
+  sources={sources}
+>
+  <p>
+    Five European states in Charitology’s Global Charity Index let taxpayers designate a statutory slice of their
+    income tax to eligible civil-society organizations at zero out-of-pocket cost:
+    <a href={url('/record/funding-flows/italy-five-per-mille/')}>Italy (<code>5‰</code>)</a>,
+    <a href={url('/record/funding-flows/poland-pit-1-5-percent/')}>Poland (<code>1.5%</code>)</a>,
+    <a href={url('/record/funding-flows/slovakia-pit-2-percent/')}>Slovakia (<code>2%/3%</code>)</a>,
+    <a href={url('/record/funding-flows/hungary-szja-1-percent/')}>Hungary (<code>1%+1%</code>)</a>, and
+    <a href={url('/record/funding-flows/slovenia-dohodnina-1-percent/')}>Slovenia (<code>1.0%</code>)</a>.
+    Comparing all five directly from their SHA-256-pinned official revenue-authority manifests shows how
+    <strong>mechanism design shapes charity funding concentration</strong> far more than the headline percentage rate alone.
+  </p>
+  <p>
+    <strong>No synthetic FX conversions:</strong> {comparison.currencyPolicy}
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-eu-tax-compare
+    data-comparison={JSON.stringify(comparison)}
+    aria-labelledby="compare-heading"
+  >
+    <h2 id="compare-heading">Interactive 5-country comparison</h2>
+    <p id="compare-hint">
+      Filter by mechanism feature or sort countries by Top-10 concentration, funded recipient count, or taxpayer choices.
+      Export the filtered comparison table as JSON or UTF-8 CSV.
+    </p>
+    <form aria-describedby="compare-hint">
+      <div class="finance-actions">
+        <span class="inline-field">
+          <label for="etc-feature">Mechanism feature</label>
+          <select id="etc-feature">
+            <option value="">All 5 countries</option>
+            <option value="corp">Corporations eligible (Slovakia)</option>
+            <option value="church">Separate church/state track (Italy, Hungary)</option>
+            <option value="sub">Individual sub-accounts allowed (Poland)</option>
+            <option value="multi">Multi-recipient per taxpayer (Slovakia, Slovenia)</option>
+            <option value="euro">Eurozone EUR native currency (Italy, Slovakia, Slovenia)</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="etc-sort">Sort by</label>
+          <select id="etc-sort">
+            <option value="top10-desc">Top-10 share (highest first)</option>
+            <option value="top10-asc">Top-10 share (lowest first)</option>
+            <option value="funded-desc">Funded recipients (highest first)</option>
+            <option value="choices-desc">Taxpayer choices (highest first)</option>
+            <option value="country">Country (A–Z)</option>
+          </select>
+        </span>
+        <button type="button" class="btn btn-ghost" data-clear>Reset</button>
+      </div>
+    </form>
+    <p role="status" data-status>Showing all 5 European tax-assignment systems sorted by Top-10 recipient concentration.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json>Export comparison as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv>Export comparison as CSV</button>
+    </div>
+
+    <div class="table-wrap" role="region" aria-label="Five-country European tax-assignment comparison" tabindex="0">
+      <table class="data etc-table">
+        <caption>Verified mechanism rules, latest native payouts, participation &amp; concentration across 5 European systems</caption>
+        <thead>
+          <tr>
+            <th scope="col">Country &amp; scheme</th>
+            <th scope="col">Statutory rate &amp; pool</th>
+            <th scope="col">Latest native total</th>
+            <th scope="col">Multi-year archive</th>
+            <th scope="col">Funded orgs</th>
+            <th scope="col">Taxpayer choices</th>
+            <th scope="col">Top-10 share</th>
+          </tr>
+        </thead>
+        <tbody data-tbody>
+          {
+            sortedByConc.map((s) => (
+              <tr>
+                <th scope="row">
+                  <a href={url(s.fundingFlowRoute)}><strong>{s.country}</strong></a><br />
+                  <span class="note">{s.schemeName}</span>
+                </th>
+                <td>
+                  {s.statutoryRate}<br />
+                  <span class="note">{s.taxpayerPool}</span>
+                </td>
+                <td>
+                  <strong>{s.latestTotalDisplay}</strong><br />
+                  <span class="note">{s.latestPeriod}</span>
+                </td>
+                <td>
+                  {s.multiYearTotalDisplay}<br />
+                  <span class="note">{s.multiYearSpan}</span>
+                </td>
+                <td>{count(s.latestFundedRecipients)}</td>
+                <td>{count(s.latestTaxpayerChoices)}</td>
+                <td><strong>{s.top10SharePct.toFixed(2)}%</strong></td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <h2 id="concentration">Why concentration ranges from 15.0% (Hungary) to 45.7% (Poland)</h2>
+  <p>
+    Across all five systems, the Top-10 recipient share spans more than a three-fold range — tightly linked to legal design:
+  </p>
+  <ul class="conc-bars" role="list">
+    {
+      sortedByConc.map((s) => (
+        <li class="conc-bar-item">
+          <div class="conc-bar-head">
+            <span><strong>{s.country}</strong> ({s.schemeName})</span>
+            <span><strong>{s.top10SharePct.toFixed(2)}%</strong> Top-10 share</span>
+          </div>
+          <div class="conc-track" aria-hidden="true">
+            <div class="conc-fill" style={`width: ${Math.min(100, s.top10SharePct * 2)}%`} />
+          </div>
+          <p class="note">{s.distinctiveFinding}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2 id="shocks">Documented statutory policy reforms &amp; natural experiments</h2>
+  <div class="table-wrap" role="region" aria-label="Documented statutory rate reforms" tabindex="0">
+    <table class="data etc-table">
+      <caption>Observed payout changes around statutory tax-assignment rate increases</caption>
+      <thead>
+        <tr>
+          <th scope="col">Country</th>
+          <th scope="col">Reform year</th>
+          <th scope="col">Statutory change</th>
+          <th scope="col">Before (native)</th>
+          <th scope="col">After (native)</th>
+          <th scope="col">Observed change</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          comparison.policyShocks.map((sh) => (
+            <tr>
+              <th scope="row">{sh.country}</th>
+              <td>{sh.year}</td>
+              <td>{sh.reform}</td>
+              <td>{sh.currency} {sh.beforeNative.toLocaleString('en-US')}</td>
+              <td>{sh.currency} {sh.afterNative.toLocaleString('en-US')}</td>
+              <td><strong>+{sh.changePct.toFixed(2)}%</strong></td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">National explorers, downloads &amp; provenance</h2>
+  <p>
+    Every figure in this observatory is computed reproducibly by <code>scripts/build-europe-tax-assignment-compare.mjs</code>
+    directly from the five committed national SHA-256 manifests. Dive into any country’s full organization-level search:
+  </p>
+  <ul>
+    {
+      comparison.systems.map((s) => (
+        <li>
+          <strong>{s.country}:</strong>{' '}
+          <a href={url(s.fundingFlowRoute)}>{s.schemeName} funding flow</a> ·{' '}
+          <a href={url(s.registryRoute)}>Organization registry search</a> ·{' '}
+          <a href={url(s.sourceManifest)} download>National manifest (JSON)</a>
+        </li>
+      ))
+    }
+  </ul>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + manifest.artifacts.comparison.path)} download>Download 5-country comparison (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(dataPath + manifest.artifacts.csv.path)} download>Download 5-country comparison (CSV)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Source hashes manifest (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .charity-financial-search .inline-field {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+  .charity-financial-search .inline-field select {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+  .etc-table {
+    min-inline-size: 46rem;
+  }
+  .conc-bars {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .conc-bar-item {
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 0.45rem;
+    background: var(--surface, var(--paper));
+  }
+  .conc-bar-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 0.75rem;
+    margin-bottom: 0.45rem;
+  }
+  .conc-track {
+    height: 0.55rem;
+    border-radius: 999px;
+    background: var(--rule);
+    overflow: hidden;
+    margin-bottom: 0.45rem;
+  }
+  .conc-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+  .conc-bar-item p {
+    margin: 0;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName } from '../../../../lib/client/financial-directory';
+
+  type SystemRow = {
+    id: string;
+    country: string;
+    schemeName: string;
+    statutoryRate: string;
+    taxpayerPool: string;
+    corporationsEligible: boolean;
+    separateChurchTrack: boolean;
+    subAccountsAllowed: boolean;
+    multiRecipientPerTaxpayer: boolean;
+    unexpressedPoolRedistributed: boolean;
+    latestPeriod: string;
+    currency: string;
+    latestTotalNative: number;
+    latestTotalDisplay: string;
+    multiYearSpan: string;
+    multiYearTotalNative: number;
+    multiYearTotalDisplay: string;
+    latestFundedRecipients: number;
+    latestEligibleOrTotalListed: number;
+    latestTaxpayerChoices: number | null;
+    avgNativePerChoice: number | null;
+    top10SharePct: number;
+    top50SharePct: number | null;
+    top100SharePct: number | null;
+    distinctiveFinding: string;
+    registryRoute: string;
+    fundingFlowRoute: string;
+    asOf: string;
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-eu-tax-compare]')) {
+    const data = JSON.parse(root.dataset.comparison!) as { asOf: string; systems: SystemRow[] };
+    const featureSel = $('#etc-feature', root) as HTMLSelectElement;
+    const sortSel = $('#etc-sort', root) as HTMLSelectElement;
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const statusEl = $('[data-status]', root);
+    const tbody = $('[data-tbody]', root);
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+
+    let current: SystemRow[] = [...data.systems].sort((a, b) => b.top10SharePct - a.top10SharePct);
+
+    const fmtCount = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-US'));
+
+    const apply = () => {
+      const f = featureSel.value;
+      const sort = sortSel.value;
+      let rows = data.systems.filter((s) => {
+        if (f === 'corp') return s.corporationsEligible;
+        if (f === 'church') return s.separateChurchTrack;
+        if (f === 'sub') return s.subAccountsAllowed;
+        if (f === 'multi') return s.multiRecipientPerTaxpayer;
+        if (f === 'euro') return s.currency === 'EUR';
+        return true;
+      });
+      rows = [...rows];
+      if (sort === 'top10-asc') rows.sort((a, b) => a.top10SharePct - b.top10SharePct);
+      else if (sort === 'funded-desc') rows.sort((a, b) => b.latestFundedRecipients - a.latestFundedRecipients);
+      else if (sort === 'choices-desc') rows.sort((a, b) => (b.latestTaxpayerChoices ?? -1) - (a.latestTaxpayerChoices ?? -1));
+      else if (sort === 'country') rows.sort((a, b) => a.country.localeCompare(b.country, 'en'));
+      else rows.sort((a, b) => b.top10SharePct - a.top10SharePct);
+
+      current = rows;
+      tbody.replaceChildren();
+      for (const s of rows) {
+        const tr = h(
+          'tr',
+          {},
+          h(
+            'th',
+            { scope: 'row' },
+            h('a', { href: s.fundingFlowRoute }, h('strong', {}, s.country)),
+            h('br', {}),
+            h('span', { class: 'note' }, s.schemeName),
+          ),
+          h('td', {}, s.statutoryRate, h('br', {}), h('span', { class: 'note' }, s.taxpayerPool)),
+          h('td', {}, h('strong', {}, s.latestTotalDisplay), h('br', {}), h('span', { class: 'note' }, s.latestPeriod)),
+          h('td', {}, s.multiYearTotalDisplay, h('br', {}), h('span', { class: 'note' }, s.multiYearSpan)),
+          h('td', {}, fmtCount(s.latestFundedRecipients)),
+          h('td', {}, fmtCount(s.latestTaxpayerChoices)),
+          h('td', {}, h('strong', {}, `${s.top10SharePct.toFixed(2)}%`)),
+        );
+        tbody.append(tr);
+      }
+      statusEl.textContent = `Showing ${rows.length} of ${data.systems.length} European tax-assignment systems.`;
+    };
+
+    featureSel.addEventListener('change', apply);
+    sortSel.addEventListener('change', apply);
+    clearBtn.addEventListener('click', () => {
+      featureSel.value = '';
+      sortSel.value = 'top10-desc';
+      apply();
+    });
+    jsonBtn.addEventListener('click', () => {
+      download(
+        'charitology-europe-tax-assignment-compare.json',
+        JSON.stringify({ asOf: data.asOf, systems: current }, null, 2),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      const csvText = toCsv(
+        current.map((s) => ({
+          country: financialCsvName(s.country),
+          scheme_name: financialCsvName(s.schemeName),
+          statutory_rate: financialCsvName(s.statutoryRate),
+          taxpayer_pool: financialCsvName(s.taxpayerPool),
+          latest_period: financialCsvName(s.latestPeriod),
+          currency: s.currency,
+          latest_total_native: s.latestTotalNative,
+          multi_year_span: financialCsvName(s.multiYearSpan),
+          multi_year_total_native: s.multiYearTotalNative,
+          latest_funded_recipients: s.latestFundedRecipients,
+          latest_taxpayer_choices: s.latestTaxpayerChoices ?? '',
+          top10_share_pct: s.top10SharePct,
+          top50_share_pct: s.top50SharePct ?? '',
+          top100_share_pct: s.top100SharePct ?? '',
+          as_of: s.asOf,
+        })),
+      );
+      download(
+        'charitology-europe-tax-assignment-compare.csv',
+        '\uFEFF' + csvText,
+        'text/csv;charset=utf-8',
+      );
+    });
+  }
+</script>

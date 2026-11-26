@@ -100,6 +100,8 @@ for (const rel of [
   'src/pages/record/funding-flows/hong-kong-fundraising-permits/index.astro',
   'src/pages/record/funding-flows/italy-five-per-mille/index.astro',
   'src/pages/record/funding-flows/slovenia-dohodnina-1-percent/index.astro',
+  'src/pages/record/funding-flows/europe-tax-assignment-compare/index.astro',
+  'src/pages/record/funding-flows/eu-transparency-register-ngos/index.astro',
   'src/pages/disasters/2024-2026-emergencies.astro',
 ]) {
   const src = fs.readFileSync(path.join(root, rel), 'utf8');

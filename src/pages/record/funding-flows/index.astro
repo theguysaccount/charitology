@@ -7,6 +7,7 @@ import { url } from '../../../lib/site';
 import { FUNDING_FLOW_GROUPS as groups } from '../../../lib/global-index-catalog';
 
 const TAX_SLUGS = new Set([
+  'europe-tax-assignment-compare',
   'hungary-szja-1-percent',
   'italy-five-per-mille',
   'poland-pit-1-5-percent',
@@ -18,11 +19,11 @@ function classifyTheme(slug: string, scope: string): string[] {
   const tags: string[] = [];
   const s = scope.toLowerCase();
   if (TAX_SLUGS.has(slug)) tags.push('tax-assignment');
-  if (slug.includes('eu-funds') || slug.includes('ocha-fts')) tags.push('eu-humanitarian');
-  if (s.includes('multiple') || s.includes('58 crisis') || s.includes('and ')) tags.push('multi-country');
+  if (slug.includes('eu-funds') || slug.includes('ocha-fts') || slug === 'eu-transparency-register-ngos') tags.push('eu-humanitarian');
+  if (s.includes('multiple') || s.includes('58 crisis') || s.includes('and ') || s.includes('106 hq') || s.includes('&')) tags.push('multi-country');
   if (['brazil', 'canada', 'chile', 'united states'].some((k) => s.includes(k))) tags.push('americas');
   if (
-    ['czechia', 'england', 'estonia', 'france', 'hungary', 'italy', 'latvia', 'netherlands', 'norway', 'poland', 'slovakia', 'slovenia', 'sweden', 'united kingdom'].some((k) =>
+    ['czechia', 'england', 'estonia', 'european union', 'france', 'hungary', 'italy', 'latvia', 'netherlands', 'norway', 'poland', 'slovakia', 'slovenia', 'sweden', 'united kingdom'].some((k) =>
       s.includes(k),
     )
   ) {

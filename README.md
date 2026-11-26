@@ -6,9 +6,9 @@ Giving USA estimates that [U.S. charitable giving reached $617.2 billion in 2025
 
 ## Visual tour
 
-| Global Charity Index (30 jurisdictions · 3.33M records) | Charity OS (`os.charitology.org`) |
+| Global Charity Index (31 jurisdictions · 3.34M records) | Charity OS (`os.charitology.org`) |
 | --- | --- |
-| [![Global Charity Index coverage across 30 jurisdictions](docs/screenshots/global-charity-index.png)](https://charitology.com/record/charity-index/coverage/) | [![Charity OS shared workspace at os.charitology.org](docs/screenshots/charity-os-workspace.png)](https://os.charitology.org/) |
+| [![Global Charity Index coverage across 31 jurisdictions](docs/screenshots/global-charity-index.png)](https://charitology.com/record/charity-index/coverage/) | [![Charity OS shared workspace at os.charitology.org](docs/screenshots/charity-os-workspace.png)](https://os.charitology.org/) |
 | **Austria BMF tax-deductible charities (`§ 4a EStG`, 8,577 records)** | **Italy 5 per mille IRPEF allocations (EUR 603.10M · 96,059 entities)** |
 | [![Austria BMF tax-deductible charity register](docs/screenshots/austria-charity-index.png)](https://charitology.com/record/charity-index/austria/) | [![Italy AF 2025 5 per mille funding flow explorer](docs/screenshots/italy-five-per-mille.png)](https://charitology.com/record/funding-flows/italy-five-per-mille/) |
 
@@ -16,8 +16,8 @@ Giving USA estimates that [U.S. charitable giving reached $617.2 billion in 2025
 
 |                                                |                                                                                                                                                                                                   |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **[Global Charity Index](https://charitology.com/record/charity-index/coverage/)** | **30 jurisdictions** (`3,333,225` dated official registry records across five continents) preserving original legal forms, native currencies, explicit `null` vs. `0`, and SHA-256 provenance manifests — no charity ratings or overhead scores. |
-| **[Funding Flows](https://charitology.com/record/funding-flows/)** | **46 public funding-flow lookups and case studies**, including Italy `5‰` / Poland `1.5%` / Slovakia `2%/3%` / Hungary `1%+1%` / Slovenia `1%` European tax-assignment datasets, UN OCHA FTS Global Humanitarian Funding Gaps (`2019–2026`), and OpenFEMA `2024–2026` disaster captures. |
+| **[Global Charity Index](https://charitology.com/record/charity-index/coverage/)** | **31 jurisdictions** (`3,338,544` dated official registry records across five continents, filterable by region and data type) preserving original legal forms, native currencies, explicit `null` vs. `0`, and SHA-256 provenance manifests — no charity ratings or overhead scores. |
+| **[Funding Flows](https://charitology.com/record/funding-flows/)** | **48 public funding-flow lookups and case studies**, including the **5-Country European Tax-Assignment Observatory** (Italy `5‰`, Poland `1.5%`, Slovakia `2%/3%`, Hungary `1%+1%`, Slovenia `1%`), the **EU Transparency Register Civil Society & EUR 7.80B EU Grants Explorer** (`6,317` orgs across `106` HQ countries), UN OCHA FTS Global Humanitarian Funding Gaps (`2019–2026`), and OpenFEMA `2024–2026` disaster captures. |
 | **[The Diagnosis](src/content/conditions/)**   | Fifteen conditions of the charity system, each labeled established, documented, debated or hypothesis. No judgment of the good being done; the system is the subject.                             |
 | **[The Method](src/pages/method.astro)**       | Nine instruments a charitologist uses, from the five-level depth scale (relief → repair → prevention → structure → source) to the Giver’s Checklist.                                              |
 | **[The Open Problems](src/content/problems/)** | Twenty-three unanswered questions, Hilbert-style, each with a test for what counts as progress.                                                                                                   |

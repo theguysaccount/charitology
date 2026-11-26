@@ -90,6 +90,8 @@ export const sections: Section[] = [
     'funding-flows/chile-coanil-agreements': 'agreement',
     'funding-flows/czechia-eu-funds': 'endowmentVault',
     'funding-flows/estonia-eu-funds': 'euGrant',
+    'funding-flows/eu-transparency-register-ngos': 'euStars',
+    'funding-flows/europe-tax-assignment-compare': 'euroCompare',
     'funding-flows/france-emmaus-solidarite': 'winterCoat',
     'funding-flows/hong-kong-fundraising-permits': 'permitStamp',
     'funding-flows/hungary-szja-1-percent': 'onePercent',
