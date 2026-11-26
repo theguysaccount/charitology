@@ -8,6 +8,7 @@ import type { SymbolName } from '../../lib/site-identities';
 import { catalogGroups, statusCounts, type CatalogEntry } from '../../lib/content';
 
 const title = 'Tools';
+const metaTitle = 'Charity OS, AI Agents & Donor Lookup Tools';
 const eyebrow = 'Charity OS · AI Agents · Quick Lookups';
 const lede =
   'Start with Charity OS if you run a nonprofit, connect your AI agent (Claude, ChatGPT, Codex, Cursor) via MCP and JSON API, or open one of the quick browser lookups below.';
@@ -39,7 +40,7 @@ const groupSymbols: Record<string, SymbolName> = {
 const groupId = (group: string) => `g-${group.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 ---
 
-<Base title={title} description={lede} crumbs={[{ label: title }]}>
+<Base title={metaTitle} description={lede} crumbs={[{ label: title }]}>
   <header class="page-head">
     <div class="wrap">
       <Crumbs items={[{ label: title }]} />

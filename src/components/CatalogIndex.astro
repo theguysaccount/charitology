@@ -11,11 +11,12 @@ import { catalogGroups, statusCounts } from '../lib/content';
 interface Props {
   collection: 'programs' | 'tools' | 'record';
   title: string;
+  metaTitle?: string;
   eyebrow: string;
   lede: string;
   description?: string;
 }
-const { collection, title, eyebrow, lede, description } = Astro.props;
+const { collection, title, metaTitle, eyebrow, lede, description } = Astro.props;
 const groups = await catalogGroups(collection);
 const counts = await statusCounts(collection);
 const total = Object.values(counts).reduce((a, b) => a + b, 0);
@@ -29,7 +30,7 @@ const groupSymbols: Record<string, SymbolName> = {
 const groupId = (group: string) => `g-${group.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 ---
 
-<Base title={title} description={description ?? lede}>
+<Base title={metaTitle ?? title} description={description ?? lede}>
   <header class="page-head">
     <div class="wrap">
       <Crumbs items={[{ label: title }]} />

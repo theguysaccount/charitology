@@ -31,6 +31,7 @@ const missing = countryMissingFacts(projection,country.id);
     { slug: "depth", text: "Where work may act", symbol: "layers" },
   ]}
   summary={`${country.region} · World Bank statistical snapshot. Local interpretation remains open for coauthors.`}
+  description={`${country.name} (${country.region.trim()}) · World Bank 2020–2025 national indicators snapshot. Local interpretation remains open for coauthors.`}
   crumbs={[
     { label: "Record", href: "/record/" },
     { label: "Country profiles", href: "/record/country-profiles/" },
