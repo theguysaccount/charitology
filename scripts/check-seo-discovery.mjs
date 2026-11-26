@@ -68,6 +68,7 @@ for (const rel of [
   'record/charity-index/northern-ireland/index.html',
   'record/charity-index/slovenia/index.html',
   'record/charity-index/colombia/index.html',
+  'record/charity-index/finland/index.html',
   'record/charity-index/italy/index.html',
   'record/charity-index/croatia/index.html',
   'record/funding-flows/italy-five-per-mille/index.html',

@@ -1,4 +1,4 @@
-// Single source of truth for the Global Charity Index (30 jurisdictions) and
+// Single source of truth for the Global Charity Index (31 jurisdictions) and
 // published Funding Flows lookups and case studies. Powers /record/charity-index/coverage/,
 // /record/funding-flows/, /tools/charity-lookup/, /record/open-datasets/, and
 // /api/v1/charity-index.json + /api/v1/funding-flows.json.
@@ -18,6 +18,7 @@ import croatia from '../../public/data/charity-registry/croatia/manifest.json';
 import czechia from '../../public/data/charity-registry/czechia/manifest.json';
 import denmark from '../../public/data/charity-registry/denmark/manifest.json';
 import estonia from '../../public/data/charity-registry/estonia/manifest.json';
+import finland from '../../public/data/charity-registry/finland/manifest.json';
 import hongKong from '../../public/data/charity-registry/hong-kong/manifest.json';
 import hkPermits from '../../public/data/funding-flows/hong-kong-fundraising-permits/manifest.json';
 import hungary from '../../public/data/charity-registry/hungary/manifest.json';
@@ -212,6 +213,20 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     manifest: '/data/charity-registry/estonia/manifest.json',
     fundingFlowRoute: '/record/funding-flows/estonia-eu-funds/',
     fundingFlowLabel: 'EU/EEA & Recovery projects',
+  },
+  {
+    id: 'finland',
+    name: 'Finland',
+    source: 'Finnish Patent and Registration Office (PRH) — YTJ Open Data API v3 (AYH & SÄÄ)',
+    route: '/record/charity-index/finland/',
+    label: 'Search Finnish trade-registered nonprofits & foundations',
+    date: finland.capturedOn,
+    recordCount: finland.counts.includedOrganizations,
+    recordUnit: 'Y-tunnus organizations',
+    coverage: `${number(finland.counts.includedOrganizations)} Finnish trade- and tax-registered non-profit associations (${number(finland.counts.byForm.association)} AYH) and foundations (${number(finland.counts.byForm.foundation)} SÄÄ) with 100% modulo-11 verified Y-tunnus IDs (${number(finland.counts.activeOrganizations)} active, ${number(finland.counts.endedOrganizations)} ended as of ${finland.asOf}).`,
+    history: `Completes the continental Nordic quartet alongside Norway, Denmark, and Sweden, spanning active Tax Administration (${number(finland.counts.activeStatutoryRegisters['4'].count)}), Prepayment (${number(finland.counts.activeStatutoryRegisters['5'].count)}), Trade (${number(finland.counts.activeStatutoryRegisters['1'].count)}), and VAT (${number(finland.counts.activeStatutoryRegisters['6'].count)}) registrations back to 1915.`,
+    boundary: 'PRH CC BY 4.0 YTJ v3 covers trade/employer/VAT-registered nonprofits rather than the separate ~108,000-entity Register of Associations (Yhdistysrekisteri) or Poliisihallitus fundraising permits. Financial statements remain unpublished (null); 56 unnamed entries, 3 legacy 1900-01-01 dates, and 9 stripped malformed website strings stay documented in anomalies.json.',
+    manifest: '/data/charity-registry/finland/manifest.json',
   },
   {
     id: 'france',
@@ -575,6 +590,7 @@ export const COVERAGE_SOURCES = [
   { title: 'e-Business Register Open Data (RIK) & 2023–2025 annual report XBRL elements', publisher: 'Centre of Registers and Information Systems (RIK)', url: estonia.catalogues.rik },
   { title: 'List of associations benefiting from income tax incentives (TMNSN)', publisher: 'Estonian Tax and Customs Board (EMTA)', url: estonia.catalogues.emtaTmnsn },
   { title: 'EU Structural Funds, JTF, RRF & EEA/Norway Funded Projects', publisher: 'State Shared Service Centre of Estonia (RTK)', url: estonia.catalogues.rtk },
+  { title: 'YTJ Open Data API v3 — Trade-registered Non-profit Associations (AYH) & Foundations (SÄÄ), CC BY 4.0', publisher: finland.publisher, url: finland.catalogues.prhYtjApi },
   { title: 'French association accounts dataset', publisher: france.source.publisher, url: france.source.dataset },
   { title: 'List of charitable institutions and trusts of a public character exempt from tax under Section 88 (CSV)', publisher: hongKong.publisher, url: hongKong.catalogues.irdCsv },
   { title: 'Approved Charitable Fund-Raising Activities (SWD Public Subscription Permits & HAD Lottery Licences PSI JSON)', publisher: hkPermits.publisher, url: hkPermits.catalogue },

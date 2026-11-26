@@ -1,0 +1,176 @@
+{
+  "format": "charitology-finland-anomalies-v1",
+  "asOf": "2026-11-25",
+  "summary": {
+    "totalRecords": 5319,
+    "invalidMod11BusinessIdsCount": 0,
+    "unnamedRecordsCount": 56,
+    "missingRegistrationDateCount": 7,
+    "legalFormTransitionCount": 1,
+    "strippedMalformedWebsitesCount": 9,
+    "insolvencyOrRestructuringCount": 13,
+    "missingMunicipalityCount": 840,
+    "sentinel1900DateCount": 3
+  },
+  "coverageBoundary": "PRH's CC BY 4.0 opendata-ytj-api/v3 covers the 5,319 non-profit associations (AYH, 4,948) and foundations (SÄÄ, 371) registered in Finland's Trade Register / YTJ business register (nonprofits with commercial, VAT, or employer filings). Finland's separate Register of Associations (Yhdistysrekisteri, ~108,000 non-trading associations) and Register of Foundations (Säätiörekisteri, ~2,700 foundations) are not yet published by PRH as bulk open data, and public fundraising permits (Rahankeräysluvat) are regulated separately by Poliisihallitus. Financial statements are not included in this API (null).",
+  "unnamedSampleIds": [
+    "0555291-2",
+    "1736814-3",
+    "1800556-3",
+    "1873256-8",
+    "2019486-9",
+    "2035584-5",
+    "2040770-5",
+    "2060347-4",
+    "2071466-8",
+    "2160778-4",
+    "2174540-7",
+    "2183827-5",
+    "2189936-9",
+    "2242583-5",
+    "2275566-6",
+    "2286426-4",
+    "2288952-5",
+    "2353302-9",
+    "2354650-8",
+    "2373435-7",
+    "2388051-4",
+    "2391730-5",
+    "2414687-2",
+    "2421631-6",
+    "2422925-6"
+  ],
+  "missingRegistrationDateIds": [
+    "0282796-8",
+    "0289059-6",
+    "0702633-4",
+    "1078548-9",
+    "1469185-0",
+    "1469421-8",
+    "9905144-8"
+  ],
+  "sentinel1900DateIds": [
+    "0200070-9",
+    "0223167-0",
+    "0943814-8"
+  ],
+  "legalFormTransitions": [
+    {
+      "businessId": "2951327-2",
+      "forms": [
+        {
+          "type": "71",
+          "endDate": "2022-08-04"
+        },
+        {
+          "type": "6",
+          "endDate": null
+        }
+      ]
+    }
+  ],
+  "insolvencyOrRestructuringRecords": [
+    {
+      "businessId": "0116577-1",
+      "name": "Kalliolan Setlementti ry",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "0181346-8",
+      "name": "Martens Trädgårdsstiftelse sr",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "0207332-6",
+      "name": "Punkaharjun kuntoutussairaalasäätiö sr",
+      "situations": [
+        "SANE"
+      ]
+    },
+    {
+      "businessId": "0488981-2",
+      "name": "Puustellin Tuki ry",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "0696313-1",
+      "name": "Harjavallan Palvelusäätiö sr",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "0939677-7",
+      "name": "Domus Lappi Säätiö",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "1038072-1",
+      "name": "Suonenjoen Palvelukotisäätiö sr",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "1109095-3",
+      "name": "The English Playschool of Asikkala- kannatusyhdistys ry",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "1756671-3",
+      "name": "Monipalvelukeskus Tsemppi ry",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "1786351-5",
+      "name": "Kokkotyö-säätiö sr",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "2625548-2",
+      "name": "Kuhmolaiset hyvän ruoan ystävät ry",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "2865968-3",
+      "name": "Kulttuuritila Nuijamies ry",
+      "situations": [
+        "KONK"
+      ]
+    },
+    {
+      "businessId": "2906366-2",
+      "name": "Kris-Itä-Suomi ry",
+      "situations": [
+        "KONK"
+      ]
+    }
+  ],
+  "strippedWebsiteBusinessIds": [
+    "0133977-8",
+    "0807916-3",
+    "1057125-3",
+    "1569007-5",
+    "1778075-2",
+    "1810870-6",
+    "1952881-7",
+    "2094890-7",
+    "2176665-4"
+  ]
+}

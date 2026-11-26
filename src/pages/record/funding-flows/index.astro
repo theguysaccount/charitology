@@ -5,26 +5,97 @@ import Crumbs from '../../../components/Crumbs.astro';
 import SiteSymbol from '../../../components/SiteSymbol.astro';
 import { url } from '../../../lib/site';
 import { FUNDING_FLOW_GROUPS as groups } from '../../../lib/global-index-catalog';
+
+const TAX_SLUGS = new Set([
+  'hungary-szja-1-percent',
+  'italy-five-per-mille',
+  'poland-pit-1-5-percent',
+  'slovakia-pit-2-percent',
+  'slovenia-dohodnina-1-percent',
+]);
+
+function classifyTheme(slug: string, scope: string): string[] {
+  const tags: string[] = [];
+  const s = scope.toLowerCase();
+  if (TAX_SLUGS.has(slug)) tags.push('tax-assignment');
+  if (slug.includes('eu-funds') || slug.includes('ocha-fts')) tags.push('eu-humanitarian');
+  if (s.includes('multiple') || s.includes('58 crisis') || s.includes('and ')) tags.push('multi-country');
+  if (['brazil', 'canada', 'chile', 'united states'].some((k) => s.includes(k))) tags.push('americas');
+  if (
+    ['czechia', 'england', 'estonia', 'france', 'hungary', 'italy', 'latvia', 'netherlands', 'norway', 'poland', 'slovakia', 'slovenia', 'sweden', 'united kingdom'].some((k) =>
+      s.includes(k),
+    )
+  ) {
+    tags.push('europe');
+  }
+  if (['hong kong', 'israel', 'japan', 'kenya', 'nepal', 'south africa', 'taiwan'].some((k) => s.includes(k))) {
+    tags.push('apac-mea');
+  }
+  return tags;
+}
+
+const enrichedGroups = groups.map((group) => ({
+  ...group,
+  items: group.items.map((item) => ({
+    ...item,
+    tags: classifyTheme(item.slug, item.scope).join(' '),
+    searchText: `${item.title} ${item.scope} ${item.summary}`.toLowerCase(),
+  })),
+}));
+
+const allItems = enrichedGroups.flatMap((g) => g.items);
+const totalEntries = allItems.length;
+const themeCounts = {
+  'tax-assignment': allItems.filter((i) => i.tags.includes('tax-assignment')).length,
+  'eu-humanitarian': allItems.filter((i) => i.tags.includes('eu-humanitarian')).length,
+  europe: allItems.filter((i) => i.tags.includes('europe')).length,
+  americas: allItems.filter((i) => i.tags.includes('americas')).length,
+  'apac-mea': allItems.filter((i) => i.tags.includes('apac-mea')).length,
+};
 ---
 
-<Base title="Funding flows" description="Follow reported awards, transfers and spending through original records and published case studies.">
+<Base title="Funding flows" description={`Follow reported awards, transfers and spending through ${totalEntries} original public funding-flow lookups and case studies.`}>
   <header class="page-head">
     <div class="wrap">
       <Crumbs items={[{ label: 'Record', href: '/record/' }, { label: 'Funding flows' }]} />
       <h1>Funding flows</h1>
-      <p class="lede">Find a grant or follow money from one reported stage to the next. Read what each source records, where records connect and where the trail ends.</p>
+      <p class="lede">Find a grant or follow money from one reported stage to the next across <strong>{totalEntries}</strong> public funding-flow datasets and case studies. Read what each source records, where records connect and where the trail ends.</p>
       <nav class="catalog-jump" aria-label="Browse funding flows">
-        {groups.map(group => <a href={`#${group.id}`}><SiteSymbol name={group.symbol} />{group.title}</a>)}
+        {groups.map(group => <a href={`#${group.id}`}><SiteSymbol name={group.symbol} />{group.title} ({group.items.length})</a>)}
       </nav>
     </div>
   </header>
 
-  {groups.map(group => (
-    <section class="wrap section-tight" aria-labelledby={group.id}>
+  <section class="wrap section-tight" aria-label="Filter funding flows">
+    <div class="ff-filter" data-ff-filter>
+      <div class="ff-filter-row">
+        <div class="ff-field ff-field-search">
+          <label for="ff-q">Filter funding flows</label>
+          <input id="ff-q" type="search" placeholder="Country, tax assignment, EU funds, OCHA, grantmaker…" autocomplete="off" />
+        </div>
+        <div class="ff-field">
+          <label for="ff-theme">Theme or region</label>
+          <select id="ff-theme">
+            <option value="">All funding flows ({totalEntries})</option>
+            <option value="tax-assignment">European tax-assignment ({themeCounts['tax-assignment']})</option>
+            <option value="eu-humanitarian">EU funds &amp; UN humanitarian ({themeCounts['eu-humanitarian']})</option>
+            <option value="europe">Europe ({themeCounts.europe})</option>
+            <option value="americas">Americas ({themeCounts.americas})</option>
+            <option value="apac-mea">Asia-Pacific, Middle East &amp; Africa ({themeCounts['apac-mea']})</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-ghost ff-clear" data-ff-clear>Reset</button>
+      </div>
+      <p class="note ff-status" role="status" data-ff-status>Showing {totalEntries} of {totalEntries} funding flows.</p>
+    </div>
+  </section>
+
+  {enrichedGroups.map(group => (
+    <section class="wrap section-tight" aria-labelledby={group.id} data-ff-group>
       <h2 id={group.id} class="identity-label"><SiteSymbol name={group.symbol} />{group.title}</h2>
       <ul class="grid funding-links" role="list">
         {group.items.map(item => (
-          <li><a class="card" href={url(`/record/funding-flows/${item.slug}/`)}>
+          <li data-ff-item data-tags={item.tags} data-search={item.searchText}><a class="card" href={url(`/record/funding-flows/${item.slug}/`)}>
             <span class="eyebrow">{item.scope}</span>
             <h3>{item.title}</h3>
             <p>{item.summary}</p>
@@ -45,14 +116,109 @@ import { FUNDING_FLOW_GROUPS as groups } from '../../../lib/global-index-catalog
 </Base>
 
 <style>
+  .ff-filter {
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 0.5rem;
+    background: var(--surface, var(--paper));
+  }
+  .ff-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-end;
+  }
+  .ff-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1 1 13rem;
+    min-width: 0;
+  }
+  .ff-field-search {
+    flex: 2 1 16rem;
+  }
+  .ff-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .ff-field input,
+  .ff-field select {
+    min-height: 2.75rem;
+    width: 100%;
+    max-width: 100%;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--rule);
+    border-radius: 0.35rem;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+  }
+  .ff-clear {
+    min-height: 2.75rem;
+  }
+  .ff-status {
+    margin: 0.65rem 0 0;
+  }
   .funding-links {
     list-style: none;
     padding: 0;
     margin: 1rem 0 0;
   }
-
+  .funding-links > li[hidden],
+  section[data-ff-group][hidden] {
+    display: none;
+  }
   .funding-links .card {
     display: block;
     height: 100%;
   }
 </style>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-ff-filter]')) {
+    const qInput = box.querySelector<HTMLInputElement>('#ff-q');
+    const themeSel = box.querySelector<HTMLSelectElement>('#ff-theme');
+    const clearBtn = box.querySelector<HTMLButtonElement>('[data-ff-clear]');
+    const statusEl = box.querySelector<HTMLElement>('[data-ff-status]');
+    const groupEls = Array.from(document.querySelectorAll<HTMLElement>('section[data-ff-group]'));
+    if (!qInput || !themeSel || !clearBtn || !statusEl || !groupEls.length) continue;
+
+    const total = groupEls.reduce((acc, g) => acc + g.querySelectorAll<HTMLElement>('[data-ff-item]').length, 0);
+
+    const apply = () => {
+      const q = qInput.value.trim().toLowerCase();
+      const theme = themeSel.value;
+      let visible = 0;
+      for (const group of groupEls) {
+        let groupVisible = 0;
+        for (const item of group.querySelectorAll<HTMLElement>('[data-ff-item]')) {
+          const matchTheme = !theme || (item.dataset.tags ?? '').split(' ').includes(theme);
+          const matchQ = !q || (item.dataset.search ?? '').includes(q);
+          const show = matchTheme && matchQ;
+          item.hidden = !show;
+          if (show) {
+            visible++;
+            groupVisible++;
+          }
+        }
+        group.hidden = groupVisible === 0;
+      }
+      statusEl.textContent =
+        visible === total
+          ? `Showing ${total} of ${total} funding flows.`
+          : visible === 0
+            ? 'No funding flows matched those filters. Clear a filter to see all entries.'
+            : `Showing ${visible} of ${total} funding flows.`;
+    };
+
+    qInput.addEventListener('input', apply);
+    themeSel.addEventListener('change', apply);
+    clearBtn.addEventListener('click', () => {
+      qInput.value = '';
+      themeSel.value = '';
+      apply();
+      qInput.focus();
+    });
+  }
+</script>

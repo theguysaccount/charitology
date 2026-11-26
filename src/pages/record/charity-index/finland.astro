@@ -1,0 +1,525 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/finland/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Finland trade-registered nonprofits & foundations (PRH YTJ)';
+const dataPath = '/data/charity-registry/finland/';
+const count = (value: number) => value.toLocaleString('en-US');
+
+const sources = [
+  {
+    title: 'Finnish Patent and Registration Office (PRH) — YTJ Open Data API v3 (AYH & SÄÄ, CC BY 4.0)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.prhYtjApi,
+  },
+  {
+    title: 'PRH YTJ Open Data API v3 OpenAPI Schema',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.prhYtjSchema,
+  },
+  {
+    title: 'YTJ — Finnish Business Information System Public Search',
+    publisher: 'PRH & Finnish Tax Administration (Verohallinto)',
+    url: manifest.catalogues.ytjSearch,
+  },
+  {
+    title: 'PRH — Information Service of the Register of Associations (Yhdistysrekisteri)',
+    publisher: 'Patentti- ja rekisterihallitus (PRH)',
+    url: manifest.catalogues.prhAssociations,
+  },
+];
+
+const decades = Object.entries(manifest.counts.byRegistrationDecade).map(([decade, n]) => ({
+  decade,
+  count: n as number,
+}));
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Global Charity Index · Finland"
+  summary="Search 5,319 Finnish trade- and tax-registered non-profit associations (AYH, 4,948) and foundations (SÄÄ, 371) from PRH’s CC BY 4.0 YTJ Open Data API (100% modulo-11 verified Y-tunnus Business IDs, 4,253 active and 1,066 ended as of 2026-11-25), completing the continental Nordic quartet alongside Norway, Denmark, and Sweden."
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Global Charity Index', href: '/record/charity-index/' },
+    { label: 'Finland' },
+  ]}
+  filePath="src/pages/record/charity-index/finland.astro"
+  sources={sources}
+>
+  <p>
+    This edition indexes all <strong>{count(manifest.counts.includedOrganizations)}</strong> Finnish non-profit
+    associations (<code>AYH</code> / <em>Aatteellinen yhdistys</em> / <em>Ideell förening</em>:
+    <strong>{count(manifest.counts.byForm.association)}</strong>) and foundations (<code>SÄÄ</code> / <em>Säätiö</em> /
+    <em>Stiftelse</em>: <strong>{count(manifest.counts.byForm.foundation)}</strong>) published through the
+    <strong>{manifest.publisher}</strong> CC BY 4.0 Open Data API v3 (captured
+    <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>), completing the continental Nordic quartet alongside
+    <a href={url('/record/charity-index/norway/')}>Norway</a>,
+    <a href={url('/record/charity-index/denmark/')}>Denmark</a>, and
+    <a href={url('/record/charity-index/sweden/')}>Sweden</a>.
+  </p>
+  <p>
+    Every single record carries a 100% modulo-11 verified Finnish Business ID (<code>Y-tunnus</code>):
+    <strong>{count(manifest.counts.activeOrganizations)}</strong> currently active organizations
+    (<strong>{count(manifest.counts.byFormActive.association)}</strong> associations and
+    <strong>{count(manifest.counts.byFormActive.foundation)}</strong> foundations) plus
+    <strong>{count(manifest.counts.endedOrganizations)}</strong> ended/ceased entries retained for historical checks.
+    Among active entries, <strong>{count(manifest.counts.activeStatutoryRegisters['4'].count)}</strong> hold active
+    Tax Administration registrations, <strong>{count(manifest.counts.activeStatutoryRegisters['5'].count)}</strong> are
+    on the Prepayment Register, <strong>{count(manifest.counts.activeStatutoryRegisters['1'].count)}</strong> are actively
+    entered in the Trade Register, and <strong>{count(manifest.counts.activeStatutoryRegisters['6'].count)}</strong> are
+    registered for VAT.
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-fi-registry
+    data-base={url(dataPath)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="fi-search-heading"
+  >
+    <h2 id="fi-search-heading">Search Finnish trade-registered nonprofits &amp; foundations</h2>
+    <p id="fi-search-hint">
+      Search by Finnish or Swedish organization name, municipality, TOL 2008 sector, or <code>Y-tunnus</code> Business ID
+      (e.g., <code>säätiö</code>, <code>stiftelse</code>, <code>helsinki</code>, <code>0184433-6</code>, <code>2425295-8</code>).
+      Search runs locally in your browser after loading the verified snapshot.
+    </p>
+    <form aria-describedby="fi-search-hint">
+      <label for="fi-query">Organization name, municipality, sector or Y-tunnus</label>
+      <div class="finance-actions">
+        <input type="search" id="fi-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="fi-form">Legal form</label>
+          <select id="fi-form" disabled>
+            <option value="">All forms ({count(manifest.counts.includedOrganizations)})</option>
+            <option value="association">Non-profit association — AYH ({count(manifest.counts.byForm.association)})</option>
+            <option value="foundation">Foundation — SÄÄ ({count(manifest.counts.byForm.foundation)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="fi-status">Status</label>
+          <select id="fi-status" disabled>
+            <option value="">All ({count(manifest.counts.includedOrganizations)})</option>
+            <option value="active">Active ({count(manifest.counts.activeOrganizations)})</option>
+            <option value="ended">Ended / ceased ({count(manifest.counts.endedOrganizations)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="fi-reg">Active register</label>
+          <select id="fi-reg" disabled>
+            <option value="">Any register</option>
+            <option value="1">Trade Register ({count(manifest.counts.activeStatutoryRegisters['1'].count)})</option>
+            <option value="4">Tax Administration ({count(manifest.counts.activeStatutoryRegisters['4'].count)})</option>
+            <option value="5">Prepayment Register ({count(manifest.counts.activeStatutoryRegisters['5'].count)})</option>
+            <option value="6">VAT Register ({count(manifest.counts.activeStatutoryRegisters['6'].count)})</option>
+          </select>
+        </span>
+        <button type="submit" class="btn" disabled>Search organizations</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>
+      Search when you are ready to load Finland’s verified PRH YTJ snapshot ({(manifest.artifacts.organizations.bytes / 1024).toFixed(1)} KB compressed).
+    </p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="nordicBirch" aria-label="Finland PRH YTJ nonprofit results" data-results></ol>
+    <noscript>
+      <p>
+        Without JavaScript, download the
+        <a href={url(dataPath + manifest.artifacts.csv.path)} download>
+          Finland PRH YTJ nonprofits CSV ({count(manifest.counts.includedOrganizations)} rows)
+        </a>
+        or consult <a href={manifest.catalogues.ytjSearch}>YTJ’s public search</a> directly.
+      </p>
+    </noscript>
+  </section>
+
+  <h2 id="sectors">Top Statistics Finland TOL 2008 sectors &amp; municipalities</h2>
+  <p>
+    Because PRH’s open YTJ v3 feed covers nonprofits with Trade Register, VAT, or employer entries, membership bodies,
+    sports clubs, social-work providers, performing-arts groups, early-childhood education associations, and savings-bank
+    foundations account for the largest cohorts.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Top 12 TOL 2008 sectors in Finland PRH nonprofits" tabindex="0">
+    <table class="data fi-table">
+      <caption>Top 12 Statistics Finland TOL 2008 activity lines across trade-registered nonprofits (captured 2026-11-25)</caption>
+      <thead>
+        <tr>
+          <th scope="col">TOL code</th>
+          <th scope="col">Primary business line (English)</th>
+          <th scope="col">Organizations</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.topSectors.map((s) => (
+            <tr>
+              <th scope="row"><code>{s.code}</code></th>
+              <td>{s.description}</td>
+              <td>{count(s.count)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" role="region" aria-label="Finland PRH nonprofit registrations by decade" tabindex="0">
+    <table class="data fi-wave-table">
+      <caption>Registrations by decade (note: 3 pre-computerized 1900-01-01 sentinel dates and 7 undated entries documented in anomalies.json)</caption>
+      <thead>
+        <tr>
+          {decades.map((d) => <th scope="col">{d.decade}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {decades.map((d) => <td>{count(d.count)}</td>)}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="oldest">Oldest active Finnish trade-registered associations &amp; foundations</h2>
+  <p>
+    Several savings-bank foundations (<em>Säästöpankkisäätiö sr</em> / <em>Sparbanksstiftelse sr</em>) registered in
+    1915–1919 remain active over a century later alongside three early-twentieth-century associations carrying PRH’s
+    <code>1900-01-01</code> legacy sentinel date.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Oldest active Finnish nonprofits and foundations" tabindex="0">
+    <table class="data fi-table">
+      <caption>Earliest registration dates among active PRH YTJ nonprofits &amp; foundations</caption>
+      <thead>
+        <tr>
+          <th scope="col">Y-tunnus</th>
+          <th scope="col">Organization</th>
+          <th scope="col">Form</th>
+          <th scope="col">Registered</th>
+          <th scope="col">Municipality</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.oldestActiveOrganizations.map((org) => (
+            <tr>
+              <th scope="row">
+                <a href={`https://tietopalvelu.ytj.fi/yritys/${org.id}`}>
+                  <code>{org.id}</code>
+                </a>
+              </th>
+              <td>{org.name}</td>
+              <td><code>{org.formCode}</code></td>
+              <td>{org.regDate}</td>
+              <td>{org.city ?? '—'}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="coverage">Scope, coverage boundaries, anomalies &amp; Nordic cross-links</h2>
+  <p>
+    <strong>Explicit Trade-Register coverage boundary:</strong> PRH’s CC BY 4.0 <code>opendata-ytj-api/v3</code> publishes
+    the <strong>{count(manifest.counts.includedOrganizations)}</strong> non-profit associations (<code>AYH</code>) and
+    foundations (<code>SÄÄ</code>) entered in Finland’s Trade Register / YTJ business register (nonprofits with commercial,
+    employer, or VAT activity). Finland’s separate <a href={manifest.catalogues.prhAssociations}>Register of Associations
+    (<em>Yhdistysrekisteri</em>)</a> holds roughly 108,000 additional non-trading associations and the separate Register of
+    Foundations (<em>Säätiörekisteri</em>) holds ~2,700 foundations that PRH does not currently publish as bulk open data.
+    Public charity fundraising permits (<em>Rahankeräysluvat</em>) are regulated separately by the National Police Board
+    (<em>Poliisihallitus</em>). Financial statements remain unpublished (<code>null</code>) in this API.
+  </p>
+  <p>
+    <strong>Verbatim source anomalies &amp; privacy hygiene:</strong> All <strong>{count(manifest.counts.mod11ValidBusinessIds)}</strong>
+    Finnish Business IDs pass modulo-11 check-digit validation (<code>0</code> invalid, <code>0</code> overlaps).
+    Exactly <strong>{count(manifest.counts.unnamedRecords)}</strong> YTJ entries carry an empty <code>names: []</code> array
+    in PRH’s API; they are preserved as <code>name: null</code> and remain searchable by <code>Y-tunnus</code>.
+    Seven records omit a registration date, three carry PRH’s legacy <code>1900-01-01</code> sentinel date, one entity
+    (<code>2951327-2</code>) transitioned from local community (code <code>71</code>) to <code>AYH</code> in 2022,
+    thirteen carry bankruptcy/restructuring flags (<code>12 KONK</code>, <code>1 SANE</code>), and nine malformed
+    website strings (including accidental email addresses or street strings) were stripped cleanly — all documented in{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'anomalies.json')} download>anomalies.json</a>.
+    Street addresses and postal codes are never republished; only municipality names (<em>Kotipaikka</em>) and validated
+    organization websites are retained.
+  </p>
+  <p>
+    <strong>Nordic comparison:</strong> Compare Finland’s PRH YTJ register with
+    <a href={url('/record/charity-index/norway/')}>Norway’s Frivillighetsregisteret</a>,
+    <a href={url('/record/charity-index/denmark/')}>Denmark’s Skattestyrelsen tax-approved charities</a>, and
+    <a href={url('/record/charity-index/sweden/')}>Sweden’s 90-konto fundraising charities</a>.{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(dataPath + manifest.artifacts.csv.path)} download>Download full CSV ({count(manifest.counts.includedOrganizations)} rows)</a> ·{' '}
+    <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.
+  </p>
+</Entry>
+
+<style>
+  .charity-financial-search .inline-field {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+  .charity-financial-search .inline-field select {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+  .fi-table {
+    min-inline-size: 42rem;
+  }
+  .fi-wave-table {
+    min-inline-size: 38rem;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName } from '../../../lib/client/financial-directory';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../../../lib/client/verified-json';
+
+  type FiRow = {
+    id: string;
+    name: string | null;
+    alt: string[];
+    form: 'association' | 'foundation';
+    formCode: 'AYH' | 'SÄÄ';
+    formFi: string;
+    formSv: string;
+    formEn: string;
+    active: boolean;
+    regDate: string | null;
+    endDate: string | null;
+    trStatus: string;
+    regs: string[];
+    tol: string | null;
+    sector: string | null;
+    city: string | null;
+    sit: string[];
+    web: string | null;
+  };
+
+  type FiManifest = {
+    publisher: string;
+    asOf: string;
+    capturedOn: string;
+    counts: {
+      includedOrganizations: number;
+      activeStatutoryRegisters: Record<string, { label: string; count: number }>;
+    };
+    artifacts: {
+      organizations: VerifiedJsonAsset & { path: string };
+    };
+  };
+
+  const REG_LABELS: Record<string, string> = {
+    '1': 'Trade Register',
+    '4': 'Tax Admin',
+    '5': 'Prepayment',
+    '6': 'VAT',
+  };
+
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  const limit = 40;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-fi-registry]')) {
+    const manifest: FiManifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#fi-query', root) as HTMLInputElement;
+    const formSelect = $('#fi-form', root) as HTMLSelectElement;
+    const statusSelect = $('#fi-status', root) as HTMLSelectElement;
+    const regSelect = $('#fi-reg', root) as HTMLSelectElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    for (const el of [queryEl, formSelect, statusSelect, regSelect, submitBtn, clearBtn]) {
+      el.disabled = false;
+    }
+
+    let cache: Promise<FiRow[]> | null = null;
+    let shown: FiRow[] = [];
+
+    const loadAll = () => {
+      if (!cache) {
+        const asset = manifest.artifacts.organizations;
+        cache = loadVerifiedJson(base + asset.path, asset).then((data) => {
+          if (!Array.isArray(data) || data.length !== manifest.counts.includedOrganizations) {
+            throw new Error('Unexpected Finland PRH organization count.');
+          }
+          return data as FiRow[];
+        });
+      }
+      return cache;
+    };
+
+    const render = (rows: FiRow[], total: number, q: string) => {
+      shown = rows;
+      listEl.replaceChildren();
+      jsonBtn.disabled = rows.length === 0;
+      csvBtn.disabled = rows.length === 0;
+      if (!rows.length) {
+        statusEl.textContent = q
+          ? `No Finnish organizations matched “${q}” under the selected filters.`
+          : 'No organizations matched the selected filters.';
+        return;
+      }
+      statusEl.textContent =
+        total > rows.length
+          ? `Showing the first ${rows.length} of ${total.toLocaleString('en-US')} matching organizations.`
+          : `Showing ${total.toLocaleString('en-US')} matching organization${total === 1 ? '' : 's'}.`;
+
+      for (const r of rows) {
+        const ytjUrl = `https://tietopalvelu.ytj.fi/yritys/${r.id}`;
+        const displayName = r.name ?? `(Unnamed in PRH YTJ extract · ${r.id})`;
+        const meta: string[] = [
+          `${r.formEn} (${r.formCode})`,
+          r.active ? 'Active' : `Ended${r.endDate ? ` ${r.endDate}` : ''}`,
+        ];
+        if (r.regDate) meta.push(`Registered ${r.regDate}`);
+        if (r.city) meta.push(r.city);
+        if (r.regs.length) {
+          meta.push(`Registers: ${r.regs.map((c) => REG_LABELS[c] ?? c).join(', ')}`);
+        }
+        if (r.sit.length) {
+          meta.push(`Status flag: ${r.sit.join(', ')}`);
+        }
+
+        const children: (Node | string)[] = [
+          h('strong', {}, displayName),
+          ' ',
+          h('code', {}, r.id),
+          ' ',
+          h('a', { href: ytjUrl, rel: 'noopener' }, 'YTJ profile ↗'),
+        ];
+        if (r.web) {
+          children.push(' · ', h('a', { href: r.web, rel: 'noopener' }, 'Website ↗'));
+        }
+        if (r.alt.length) {
+          children.push(h('div', { class: 'note' }, `Parallel name: ${r.alt.join(' · ')}`));
+        }
+        children.push(h('div', { class: 'note' }, meta.join(' · ')));
+        if (r.sector) {
+          children.push(h('div', { class: 'note' }, `TOL ${r.tol ?? ''}: ${r.sector}`));
+        }
+        listEl.append(h('li', {}, ...children));
+      }
+    };
+
+    const runSearch = async () => {
+      const rawQ = queryEl.value.trim();
+      const normQ = normalize(rawQ);
+      const compactId = rawQ.replace(/[^0-9-]/g, '');
+      const fVal = formSelect.value;
+      const stVal = statusSelect.value;
+      const regVal = regSelect.value;
+
+      statusEl.textContent = 'Loading verified Finland PRH YTJ snapshot…';
+      try {
+        const all = await loadAll();
+        const filtered = all.filter((r) => {
+          if (fVal && r.form !== fVal) return false;
+          if (stVal === 'active' && !r.active) return false;
+          if (stVal === 'ended' && r.active) return false;
+          if (regVal && !r.regs.includes(regVal)) return false;
+          if (!rawQ) return true;
+          if (compactId && r.id.includes(compactId)) return true;
+          const lowerQ = rawQ.toLowerCase();
+          if (r.name && r.name.toLowerCase().includes(lowerQ)) return true;
+          if (r.alt.some((a) => a.toLowerCase().includes(lowerQ))) return true;
+          if (r.city && r.city.toLowerCase().includes(lowerQ)) return true;
+          if (r.sector && r.sector.toLowerCase().includes(lowerQ)) return true;
+          if (r.tol && r.tol.includes(lowerQ)) return true;
+          if (normQ) {
+            if (r.name && normalize(r.name).includes(normQ)) return true;
+            if (r.alt.some((a) => normalize(a).includes(normQ))) return true;
+            if (r.city && normalize(r.city).includes(normQ)) return true;
+          }
+          return false;
+        });
+        render(filtered.slice(0, limit), filtered.length, rawQ);
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load Finland PRH snapshot.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void runSearch();
+    });
+    for (const sel of [formSelect, statusSelect, regSelect]) {
+      sel.addEventListener('change', () => {
+        void runSearch();
+      });
+    }
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      formSelect.value = '';
+      statusSelect.value = '';
+      regSelect.value = '';
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Search cleared.';
+      queryEl.focus();
+    });
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-finland-prh-nonprofits.json',
+        JSON.stringify(
+          {
+            source: manifest.publisher,
+            asOf: manifest.asOf,
+            capturedOn: manifest.capturedOn,
+            rows: shown,
+          },
+          null,
+          2,
+        ),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      const csvText = toCsv(
+        shown.map((r) => ({
+          business_id: r.id,
+          name: financialCsvName(r.name ?? ''),
+          parallel_names: financialCsvName(r.alt.join(' | ')),
+          legal_form_code: r.formCode,
+          legal_form_en: r.formEn,
+          active: r.active ? 'true' : 'false',
+          registration_date: r.regDate ?? '',
+          end_date: r.endDate ?? '',
+          active_registers: r.regs.join(','),
+          tol_2008_code: r.tol ?? '',
+          sector_en: financialCsvName(r.sector ?? ''),
+          municipality: financialCsvName(r.city ?? ''),
+          website: r.web ?? '',
+          ytj_profile_url: `https://tietopalvelu.ytj.fi/yritys/${r.id}`,
+        })),
+      );
+      download(
+        'charitology-finland-prh-nonprofits.csv',
+        '\uFEFF' + csvText,
+        'text/csv;charset=utf-8',
+      );
+    });
+  }
+</script>

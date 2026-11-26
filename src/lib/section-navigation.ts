@@ -251,6 +251,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['funding', 'Follow EU Cohesion, Recovery & EEA/Norway grants', 'euGrant'],
     ['coverage', 'Housing associations, XBRL filings and cross-register boundaries', 'archive'],
   ],
+  '/record/charity-index/finland/': [
+    ['fi-search-heading', 'Search Finnish trade-registered nonprofits & foundations', 'lens'],
+    ['sectors', 'Top Statistics Finland TOL 2008 sectors & decades', 'table'],
+    ['oldest', 'Oldest active Finnish associations & foundations', 'history'],
+    ['coverage', 'Scope, anomalies & Nordic cross-links', 'archive'],
+  ],
   '/record/charity-index/hong-kong/': [
     ['hk-search-heading', 'Search Hong Kong Section 88 charities', 'lens'],
     ['networks', 'Largest Section 88 parent charity networks by subsidiary count', 'network'],
