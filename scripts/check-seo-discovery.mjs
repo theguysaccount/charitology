@@ -89,14 +89,50 @@ const lookupLd = extractJsonLd(readDist('tools/charity-lookup/index.html'), 'too
 assert.ok(lookupLd.some((n) => n['@type'] === 'WebApplication' && n.offers?.price === '0'), 'tools/charity-lookup missing free WebApplication JSON-LD');
 assert.ok(lookupLd.some((n) => n['@type'] === 'BreadcrumbList'), 'tools/charity-lookup missing BreadcrumbList JSON-LD');
 
-// 3. Validate /llms.txt agent entrypoint
+const toolsHubLd = extractJsonLd(readDist('tools/index.html'), 'tools');
+assert.ok(
+  toolsHubLd.some((n) => n['@type'] === 'SoftwareApplication' && n.offers?.price === '0' && n.url === 'https://os.charitology.org/'),
+  'tools/index.html missing Charity OS SoftwareApplication JSON-LD',
+);
+assert.ok(toolsHubLd.some((n) => n['@type'] === 'ItemList' && n.itemListElement?.length >= 6), 'tools/index.html missing ItemList JSON-LD');
+assert.ok(toolsHubLd.some((n) => n['@type'] === 'BreadcrumbList'), 'tools/index.html missing BreadcrumbList JSON-LD');
+
+const freeLd = extractJsonLd(readDist('for-charities/free/index.html'), 'for-charities/free');
+assert.ok(
+  freeLd.some((n) => n['@type'] === 'CollectionPage' && n.mainEntity?.['@type'] === 'ItemList' && n.mainEntity.numberOfItems >= 60),
+  'for-charities/free missing CollectionPage/ItemList JSON-LD',
+);
+assert.ok(
+  freeLd.some((n) => n['@type'] === 'Dataset' && n.isAccessibleForFree === true && n.distribution?.[0]?.contentUrl?.endsWith('/data/free-charity-resources.json')),
+  'for-charities/free missing Dataset JSON-LD',
+);
+assert.ok(
+  freeLd.some((n) => n['@type'] === 'FAQPage' && Array.isArray(n.mainEntity) && n.mainEntity.length >= 4),
+  'for-charities/free missing FAQPage JSON-LD',
+);
+
+for (const hubRel of ['record/charity-index/coverage/index.html', 'record/funding-flows/index.html']) {
+  const hubLd = extractJsonLd(readDist(hubRel), hubRel);
+  assert.ok(
+    hubLd.some((n) => n['@type'] === 'Dataset' && n.isAccessibleForFree === true && n.distribution?.[0]?.contentUrl),
+    `${hubRel}: missing hub Dataset JSON-LD`,
+  );
+}
+
+// 3. Validate /llms.txt agent entrypoint and Glama MCP backlink
 const llmsTxt = readDist('llms.txt');
 assert.ok(llmsTxt.includes('https://os.charitology.org/mcp'), 'llms.txt missing MCP endpoint');
+assert.ok(llmsTxt.includes('https://glama.ai/mcp/connectors/io.github.theguysaccount/charitology'), 'llms.txt missing Glama connector link');
 assert.ok(llmsTxt.includes('/api/v1/index.json'), 'llms.txt missing Public API index');
 assert.ok(llmsTxt.includes(`${charityIndexApi.jurisdictionCount} Jurisdictions`), 'llms.txt missing jurisdiction count');
 for (const j of charityIndexApi.jurisdictions) {
   assert.ok(llmsTxt.includes(j.route), `llms.txt missing jurisdiction route ${j.route}`);
 }
+const readmeMd = readFileSync(join(root, 'README.md'), 'utf8');
+assert.ok(
+  readmeMd.includes('https://glama.ai/mcp/connectors/io.github.theguysaccount/charitology'),
+  'README.md missing Glama MCP backlink',
+);
 
 // 4. Validate Charity OS public robots.txt & sitemap.xml
 const osRobots = readFileSync(join(root, 'services/charity-os/public/robots.txt'), 'utf8');

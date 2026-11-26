@@ -2,14 +2,40 @@ import { SITE, absolute } from './site';
 import {
   FUNDING_FLOW_GROUPS,
   GLOBAL_CHARITY_INDEX_PANELS,
+  GLOBAL_CHARITY_INDEX_TOTAL_RECORDS,
   type FundingFlowCatalogItem,
   type JurisdictionPanel,
 } from './global-index-catalog';
+import freeCharityData from '../data/free-charity-resources.json';
 
 export interface BreadcrumbInput {
   label: string;
   href?: string;
 }
+
+export interface FaqEntry {
+  question: string;
+  answer: string;
+}
+
+export const FREE_CHARITY_FAQS: readonly FaqEntry[] = [
+  {
+    question: 'Are the programs listed on Charitology free to use, or are some discounted?',
+    answer: `Every listing states its exact cost tier up front: ${freeCharityData.items.filter((i) => i.tier === 'free').length} programs are 100% free or donated to eligible charities, ${freeCharityData.items.filter((i) => i.tier === 'grant').length} provide cloud credits, ad grants, or donated goods, and ${freeCharityData.items.filter((i) => i.tier === 'discount').length} offer verified nonprofit discounts. Charitology accepts no affiliate fees or sponsorships.`,
+  },
+  {
+    question: 'What is the fastest way for a charity to unlock most of these offers?',
+    answer: 'Register once with TechSoup and once with Goodstack (often triggered through Google for Nonprofits, Canva for Nonprofits, or OpenAI for Nonprofits). Completing those two free nonprofit verifications satisfies the eligibility check for most major cloud, productivity, design, and AI programs.',
+  },
+  {
+    question: 'Is Charitology Charity OS really free and open source?',
+    answer: 'Yes. Charity OS (https://os.charitology.org/) is MIT-licensed open-source software with 26 back-office modules for volunteers, programs, grant periods, and public participation forms, plus full JSON backup export so charities never face vendor lock-in.',
+  },
+  {
+    question: 'Can nonprofit directories, journalists, or AI agents reuse this directory data?',
+    answer: 'Yes. The full verified list is published as an open CC BY 4.0 JSON file at /data/free-charity-resources.json and can also be exported as CSV directly from this page or queried alongside our 31-country Global Charity Index via /llms.txt and our read-only MCP server at https://os.charitology.org/mcp.',
+  },
+];
 
 const normalizePath = (value: string) => {
   const clean = value.split(/[?#]/, 1)[0] || '/';
@@ -38,6 +64,7 @@ function organizationNode(site: URL | undefined) {
     sameAs: [
       'https://github.com/theguysaccount/charitology',
       'https://os.charitology.org/',
+      'https://glama.ai/mcp/connectors/io.github.theguysaccount/charitology',
     ],
   };
 }
@@ -170,6 +197,155 @@ export function buildStructuredData({
       ];
     }
     nodes.push(dataset);
+    return nodes;
+  }
+
+  if (normalized === '/for-charities/free/') {
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: title ?? 'Free things, credits & grants for charities',
+      description,
+      url: canonical,
+      isPartOf: { '@id': `${origin}#website` },
+      mainEntity: {
+        '@type': 'ItemList',
+        name: 'Verified free software, credits, grants & discounts for charities',
+        numberOfItems: freeCharityData.items.length,
+        itemListElement: freeCharityData.items.map((item, idx) => ({
+          '@type': 'ListItem',
+          position: idx + 1,
+          name: item.name,
+          url: item.url,
+          description: item.offer,
+        })),
+      },
+    });
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'Dataset',
+      name: 'Charitology Free Things, Credits & Grants for Charities Directory',
+      description,
+      url: canonical,
+      isAccessibleForFree: true,
+      license: 'https://creativecommons.org/licenses/by/4.0/',
+      dateModified: freeCharityData.checkedOn,
+      creator: {
+        '@type': 'Organization',
+        name: SITE.name,
+        url: origin,
+      },
+      distribution: [
+        {
+          '@type': 'DataDownload',
+          encodingFormat: 'application/json',
+          contentUrl: absolute('/data/free-charity-resources.json', site),
+        },
+      ],
+    });
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: FREE_CHARITY_FAQS.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
+      })),
+    });
+    return nodes;
+  }
+
+  if (normalized === '/tools/') {
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Charitology Charity OS',
+      description:
+        'Free MIT open-source charity back-office workspace with 26 modules for volunteers, programs, grant-period reporting, public participation forms, full JSON backup export, and a read-only public MCP server.',
+      url: 'https://os.charitology.org/',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web browser',
+      isAccessibleForFree: true,
+      license: 'https://opensource.org/licenses/MIT',
+      softwareHelp: 'https://os.charitology.org/mcp.html',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: SITE.name,
+        url: origin,
+      },
+    });
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Charitology Charity OS, MCP Server & Everyday Browser Tools',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Charity OS (Free Open-Source Workspace)', url: 'https://os.charitology.org/' },
+        { '@type': 'ListItem', position: 2, name: 'Charitology Public MCP Server & Agent Guide', url: 'https://os.charitology.org/mcp.html' },
+        { '@type': 'ListItem', position: 3, name: 'Charity Lookup', url: absolute('/tools/charity-lookup/', site) },
+        { '@type': 'ListItem', position: 4, name: 'Due Diligence Checklist', url: absolute('/tools/due-diligence-checklist/', site) },
+        { '@type': 'ListItem', position: 5, name: 'Compare Tool', url: absolute('/tools/compare-tool/', site) },
+        { '@type': 'ListItem', position: 6, name: 'Giving Dashboard', url: absolute('/tools/giving-dashboard/', site) },
+      ],
+    });
+    return nodes;
+  }
+
+  if (normalized === '/record/charity-index/coverage/') {
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'Dataset',
+      name: 'Charitology Global Charity Index',
+      description: `Open-source index spanning ${GLOBAL_CHARITY_INDEX_PANELS.length} official charity and nonprofit jurisdictions (${GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US')} dated records across five continents) preserving original legal forms, native currencies, explicit nulls, and SHA-256 manifests.`,
+      url: canonical,
+      isAccessibleForFree: true,
+      license: 'https://creativecommons.org/licenses/by/4.0/',
+      creator: {
+        '@type': 'Organization',
+        name: SITE.name,
+        url: origin,
+      },
+      distribution: [
+        {
+          '@type': 'DataDownload',
+          encodingFormat: 'application/json',
+          contentUrl: absolute('/api/v1/charity-index.json', site),
+        },
+      ],
+    });
+    return nodes;
+  }
+
+  if (normalized === '/record/funding-flows/') {
+    const totalFlows = FUNDING_FLOW_GROUPS.reduce((sum, g) => sum + g.items.length, 0);
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'Dataset',
+      name: 'Charitology Public Funding Flows',
+      description: `${totalFlows} public funding-flow lookups and case studies tracking government grants, percentage tax-assignment designations across Europe, EU Transparency Register civil-society grants, and humanitarian funding gaps.`,
+      url: canonical,
+      isAccessibleForFree: true,
+      license: 'https://creativecommons.org/licenses/by/4.0/',
+      creator: {
+        '@type': 'Organization',
+        name: SITE.name,
+        url: origin,
+      },
+      distribution: [
+        {
+          '@type': 'DataDownload',
+          encodingFormat: 'application/json',
+          contentUrl: absolute('/api/v1/funding-flows.json', site),
+        },
+      ],
+    });
     return nodes;
   }
 
