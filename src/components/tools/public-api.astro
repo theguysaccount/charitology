@@ -1,6 +1,8 @@
 ---
 import { availableEndpoints } from '../../lib/api';
 import { absolute, url } from '../../lib/site';
+import { PUBLIC_API_FAQS } from '../../lib/structured-data';
+import PartnershipInquiry from '../PartnershipInquiry.astro';
 const site = Astro.site;
 const example = absolute('/api/v1/conditions.json', site);
 const endpoints = await availableEndpoints();
@@ -56,9 +58,71 @@ console.log(data.map((c) => c.title));`}</code></pre>
     third-party material. The observations endpoints retain exact source dates,
     definitions and missing coverage. A build date does not establish freshness.
   </p>
+  <PartnershipInquiry context="public-api" />
+  <section class="api-faq" aria-labelledby="api-faq-heading">
+    <h3 id="api-faq-heading">Public API &amp; dataset questions</h3>
+    <div class="api-faq-list">
+      {
+        PUBLIC_API_FAQS.map((faq) => (
+          <details class="api-faq-item">
+            <summary>{faq.question}</summary>
+            <p>{faq.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
 </section>
 
 <style>
+  .api-faq {
+    margin-top: 2rem;
+    max-width: 56rem;
+  }
+  .api-faq h3 {
+    margin-bottom: 0.75rem;
+  }
+  .api-faq-list {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .api-faq-item {
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .api-faq-item > summary {
+    padding: 0.85rem 1rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.94rem;
+    list-style: none;
+  }
+  .api-faq-item > summary::-webkit-details-marker {
+    display: none;
+  }
+  .api-faq-item > summary::before {
+    content: '▸';
+    margin-inline-end: 0.55rem;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+  .api-faq-item[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  .api-faq-item > p {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-2);
+    font-size: 0.94rem;
+    line-height: 1.55;
+  }
   .api-out {
     margin: 0;
     padding: 0.9rem 1rem;

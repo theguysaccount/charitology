@@ -1,0 +1,260 @@
+---
+interface Props {
+  context: 'public-api' | 'for-charities-free';
+  heading?: string;
+  intro?: string;
+}
+
+const {
+  context,
+  heading = 'Institutional, Nonprofit & Data Partnership Inquiry',
+  intro = 'All 42 public JSON API endpoints, the 31-jurisdiction Global Charity Index, and Charity OS remain free and open (CC BY 4.0 / MIT) with zero affiliate fees. Use this form if your foundation, nonprofit, research team, or giving platform wants help with institutional onboarding, bulk dataset ingestion, custom registry coverage, or research collaboration.',
+} = Astro.props;
+
+const defaultTopic =
+  context === 'public-api' ? 'Institutional Data / API Integration' : 'Nonprofit Charity OS & Stack Onboarding';
+---
+
+<section
+  id="partnership-inquiry"
+  class="pi-box"
+  aria-labelledby="pi-heading"
+  data-partnership-inquiry
+  data-context={context}
+>
+  <span class="eyebrow">Open Collaboration · No Paywalls or Affiliate Fees</span>
+  <h2 id="pi-heading">{heading}</h2>
+  <p class="pi-intro">{intro}</p>
+
+  <form class="pi-form" data-pi-form novalidate>
+    <div class="pi-grid">
+      <div class="pi-field">
+        <label for={`pi-name-${context}`}>Your name</label>
+        <input id={`pi-name-${context}`} name="name" type="text" required maxlength="120" autocomplete="name" placeholder="Jane Doe" />
+      </div>
+      <div class="pi-field">
+        <label for={`pi-email-${context}`}>Work or institutional email</label>
+        <input id={`pi-email-${context}`} name="email" type="email" required maxlength="180" autocomplete="email" placeholder="name@organization.org" />
+      </div>
+      <div class="pi-field">
+        <label for={`pi-org-${context}`}>Organization &amp; role</label>
+        <input id={`pi-org-${context}`} name="organization" type="text" required maxlength="160" autocomplete="organization" placeholder="Foundation, charity, university, or platform" />
+      </div>
+      <div class="pi-field">
+        <label for={`pi-type-${context}`}>Inquiry focus</label>
+        <select id={`pi-type-${context}`} name="topic">
+          <option value="Institutional Data / API Integration" selected={defaultTopic === 'Institutional Data / API Integration'}>
+            Institutional Data / API &amp; MCP Integration
+          </option>
+          <option value="Nonprofit Charity OS & Stack Onboarding" selected={defaultTopic === 'Nonprofit Charity OS & Stack Onboarding'}>
+            Nonprofit Charity OS &amp; Free Stack Onboarding
+          </option>
+          <option value="New Jurisdiction Registry Coverage">
+            Add or Update a Jurisdiction Registry
+          </option>
+          <option value="Research or Journalism Collaboration">
+            Research, Evaluation, or Journalism Collaboration
+          </option>
+          <option value="Verified Nonprofit Resource Addition">
+            Submit a Verified Free Nonprofit Program
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="pi-field">
+      <label for={`pi-msg-${context}`}>How can Charitology help?</label>
+      <textarea
+        id={`pi-msg-${context}`}
+        name="message"
+        rows="4"
+        required
+        maxlength="2000"
+        placeholder="Describe the jurisdictions, endpoints, datasets, or nonprofit workflows you are working on."
+      ></textarea>
+    </div>
+
+    <div class="pi-actions">
+      <button
+        type="submit"
+        class="btn"
+        data-vital-event="offer_clicked"
+        data-vital-label={`charitology_${context}_partnership_submit`}
+        data-pi-submit
+      >
+        Send partnership inquiry
+      </button>
+      <span class="note pi-privacy">
+        Sent directly to the Charitology team via cookieless intake. Public datasets remain free without registration.
+      </span>
+    </div>
+
+    <p class="pi-status" role="status" aria-live="polite" data-pi-status></p>
+  </form>
+</section>
+
+<style>
+  .pi-box {
+    margin-top: 2.25rem;
+    padding: clamp(1.25rem, 3vw, 1.85rem);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--accent);
+    border-radius: var(--radius);
+    max-width: 56rem;
+  }
+  .pi-box h2 {
+    margin-top: 0;
+    margin-bottom: 0.55rem;
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  }
+  .pi-intro {
+    margin: 0 0 1.25rem;
+    color: var(--ink-2);
+    font-size: 0.96rem;
+    line-height: 1.55;
+    max-width: 66ch;
+  }
+  .pi-form {
+    display: grid;
+    gap: 0.95rem;
+    font-family: var(--font-sans);
+  }
+  .pi-grid {
+    display: grid;
+    gap: 0.85rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  }
+  .pi-field {
+    display: grid;
+    gap: 0.3rem;
+    min-width: 0;
+  }
+  .pi-field label {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .pi-field input,
+  .pi-field select,
+  .pi-field textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.94rem;
+  }
+  .pi-field textarea {
+    resize: vertical;
+    min-height: 6.5rem;
+  }
+  .pi-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-top: 0.25rem;
+  }
+  .pi-actions .btn {
+    min-height: 44px;
+  }
+  .pi-privacy {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--ink-3);
+    max-width: 48ch;
+  }
+  .pi-status {
+    margin: 0;
+    min-height: 1.4em;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--good-text);
+  }
+  .pi-status[data-state='error'] {
+    color: var(--critical);
+  }
+</style>
+
+<script>
+  declare global {
+    interface Window {
+      rsioConnect?: {
+        submit?: (payload: Record<string, unknown>) => Promise<Response>;
+      };
+    }
+  }
+
+  for (const box of document.querySelectorAll<HTMLElement>('[data-partnership-inquiry]')) {
+    const form = box.querySelector<HTMLFormElement>('[data-pi-form]');
+    const status = box.querySelector<HTMLElement>('[data-pi-status]');
+    const submitBtn = box.querySelector<HTMLButtonElement>('[data-pi-submit]');
+    const context = box.dataset.context ?? 'public-api';
+    if (!form || !status || !submitBtn) continue;
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const fd = new FormData(form);
+      const name = String(fd.get('name') ?? '').trim();
+      const email = String(fd.get('email') ?? '').trim();
+      const organization = String(fd.get('organization') ?? '').trim();
+      const topic = String(fd.get('topic') ?? '').trim();
+      const message = String(fd.get('message') ?? '').trim();
+
+      if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !organization || !message) {
+        status.dataset.state = 'error';
+        status.textContent = 'Please complete your name, valid email address, organization, and inquiry details.';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      status.dataset.state = 'pending';
+      status.textContent = 'Sending inquiry…';
+
+      const payload = {
+        name,
+        email,
+        organization,
+        topic: `[Charitology ${context}] ${topic}`,
+        message: `Organization: ${organization}\nInquiry focus: ${topic}\nPage: ${window.location.pathname}\n\n${message}`,
+        captureMethod: 'partnership_inquiry_form',
+      };
+
+      try {
+        let res: Response;
+        if (typeof window.rsioConnect?.submit === 'function') {
+          res = await window.rsioConnect.submit(payload);
+        } else {
+          res = await fetch('https://rsio.org/api/intake', {
+            method: 'POST',
+            credentials: 'omit',
+            keepalive: true,
+            headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+            body: JSON.stringify({
+              sourceDomain: 'charitology.com',
+              sourcePath: window.location.pathname,
+              sourceUrl: window.location.href,
+              pageTitle: document.title,
+              ...payload,
+            }),
+          });
+        }
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        status.dataset.state = 'ok';
+        status.textContent = 'Inquiry received. Thank you — our team reviews institutional and nonprofit requests directly.';
+        form.reset();
+      } catch {
+        status.dataset.state = 'error';
+        status.textContent = 'Could not send right now. Please try again or open an issue on github.com/theguysaccount/charitology.';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  }
+</script>

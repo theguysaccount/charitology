@@ -9,7 +9,7 @@ const modes = [
 ] as const satisfies ReadonlyArray<{ value: string; label: string; symbol: SymbolName }>;
 ---
 
-<details class="theme-control" data-header-menu hidden>
+<details class="theme-control" data-header-menu>
   <summary class="icon-btn" title="Choose a color theme">
     {modes.map(({ value, label, symbol }) => (
       <span class="theme-current" data-theme-mode={value}>
@@ -185,7 +185,6 @@ const modes = [
     }
 
     apply(root.dataset.theme);
-    disclosure.hidden = false;
     field.addEventListener('change', (event) => {
       const option = event.target;
       if (!(option instanceof HTMLInputElement) || !option.checked) return;

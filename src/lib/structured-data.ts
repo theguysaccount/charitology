@@ -18,6 +18,40 @@ export interface FaqEntry {
   answer: string;
 }
 
+export const HOME_FAQS: readonly FaqEntry[] = [
+  {
+    question: 'What is Charitology and what open datasets does it publish?',
+    answer: `Charitology is an open-source field and public reference project studying charity as a system. It publishes the Global Charity Index (${GLOBAL_CHARITY_INDEX_PANELS.length} official jurisdictions and ${GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US')} dated records), 48 public funding-flow lookups and case studies, 42 static JSON API endpoints, a read-only MCP server (https://os.charitology.org/mcp), and 65 verified free software and grant programs for nonprofits.`,
+  },
+  {
+    question: 'Does Charitology publish charity ratings or overhead scores?',
+    answer: 'No. Charitology deliberately avoids charity star ratings and overhead ratios. Its five-level source-depth scale (relief, repair, prevention, structure, source) classifies where work acts on a problem as a falsifiable hypothesis, never a quality grade.',
+  },
+  {
+    question: 'How does the Diagnosis explain the Missing Feedback Loop in philanthropy?',
+    answer: 'In donor-funded services, the person paying is often not the person using the service—what legal scholar Henry Hansmann called contract failure. Charitology maps 15 system conditions, starting with Condition C01 (The Missing Feedback Loop), alongside open research problems and testable interventions.',
+  },
+  {
+    question: 'Can nonprofits, foundations, and AI agents use Charitology data and Charity OS for free?',
+    answer: 'Yes. Charitology schema and editorial datasets are licensed under CC BY 4.0 with no API key required, Charity OS (https://os.charitology.org/) is MIT-licensed open-source software with full JSON backup export, and institutions can reach the team via /tools/public-api/#partnership-inquiry for onboarding or jurisdiction registry collaboration.',
+  },
+];
+
+export const PUBLIC_API_FAQS: readonly FaqEntry[] = [
+  {
+    question: 'Do I need an API key or account to query Charitology JSON endpoints?',
+    answer: 'No. All 42 static JSON endpoints under /api/v1/ (indexed at /api/v1/index.json) and the read-only MCP server at https://os.charitology.org/mcp are openly accessible with no API key or registration.',
+  },
+  {
+    question: 'What license applies to Charitology Public API datasets?',
+    answer: 'Charitology schemas and editorial content use CC BY 4.0 with attribution to Charitology (charitology.com). Underlying government registries and third-party filings retain their own source dates, attribution, and reuse terms documented in each dataset manifest.',
+  },
+  {
+    question: 'How can institutions or nonprofits request custom registry coverage or integration help?',
+    answer: 'Foundations, nonprofits, researchers, and donation platforms can submit an institutional data or Charity OS partnership inquiry directly on /tools/public-api/#partnership-inquiry or open a public issue on GitHub.',
+  },
+];
+
 export const FREE_CHARITY_FAQS: readonly FaqEntry[] = [
   {
     question: 'Are the programs listed on Charitology free to use, or are some discounted?',
@@ -61,6 +95,17 @@ function organizationNode(site: URL | undefined) {
     url: origin,
     description: SITE.description,
     logo: absolute('/apple-touch-icon.png', site),
+    knowsAbout: [
+      'Charity registries and public nonprofit filings',
+      'Philanthropy systems analysis and feedback loops',
+      'Open nonprofit datasets and public JSON APIs',
+      'Free software, cloud credits, and grants for charities',
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'Institutional Data & Nonprofit Partnerships',
+      url: absolute('/tools/public-api/#partnership-inquiry', site),
+    },
     sameAs: [
       'https://github.com/theguysaccount/charitology',
       'https://os.charitology.org/',
@@ -106,6 +151,40 @@ export function buildStructuredData({
         target: `${absolute('/search/', site)}?q={search_term_string}`,
         'query-input': 'required name=search_term_string',
       },
+    });
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'Dataset',
+      name: 'Charitology Global Charity Index & Open Funding-Flow Datasets',
+      description: `Open-source index spanning ${GLOBAL_CHARITY_INDEX_PANELS.length} official charity and nonprofit jurisdictions (${GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US')} dated records) plus 42 static JSON API endpoints preserving native currencies, source dates, legal forms, and explicit missingness.`,
+      url: absolute('/record/charity-index/coverage/', site),
+      isAccessibleForFree: true,
+      license: 'https://creativecommons.org/licenses/by/4.0/',
+      creator: { '@id': `${origin}#organization` },
+      distribution: [
+        {
+          '@type': 'DataDownload',
+          encodingFormat: 'application/json',
+          contentUrl: absolute('/api/v1/index.json', site),
+        },
+        {
+          '@type': 'DataDownload',
+          encodingFormat: 'application/json',
+          contentUrl: absolute('/api/v1/charity-index.json', site),
+        },
+      ],
+    });
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: HOME_FAQS.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
+      })),
     });
     return nodes;
   }
@@ -347,6 +426,42 @@ export function buildStructuredData({
       ],
     });
     return nodes;
+  }
+
+  if (normalized === '/tools/public-api/') {
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'Dataset',
+      name: 'Charitology Public JSON API',
+      description,
+      url: canonical,
+      isAccessibleForFree: true,
+      license: 'https://creativecommons.org/licenses/by/4.0/',
+      creator: {
+        '@type': 'Organization',
+        name: SITE.name,
+        url: origin,
+      },
+      distribution: [
+        {
+          '@type': 'DataDownload',
+          encodingFormat: 'application/json',
+          contentUrl: absolute('/api/v1/index.json', site),
+        },
+      ],
+    });
+    nodes.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: PUBLIC_API_FAQS.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
+      })),
+    });
   }
 
   if (normalized.startsWith('/tools/') && normalized !== '/tools/') {

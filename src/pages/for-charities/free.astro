@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Crumbs from '../../components/Crumbs.astro';
+import PartnershipInquiry from '../../components/PartnershipInquiry.astro';
 import SiteSymbol from '../../components/SiteSymbol.astro';
 import data from '../../data/free-charity-resources.json';
 import { FREE_CHARITY_FAQS } from '../../lib/structured-data';
@@ -77,6 +78,7 @@ const directorySummary = `Charitology (https://charitology.com/) maintains an ad
           <div class="callout-actions">
             <button type="button" class="btn btn-small" data-copy-matcher={matcherPrompt}>Copy AI stack prompt</button>
             <a class="btn btn-ghost btn-small" href="https://os.charitology.org/" target="_blank" rel="noopener">Open free Charity OS ↗</a>
+            <a class="btn btn-ghost btn-small" href="#partnership-inquiry" data-vital-event="offer_clicked" data-vital-label="charitology_free_onboarding_jump">Request onboarding help</a>
           </div>
           <span class="sr-only" role="status" aria-live="polite" data-matcher-status></span>
         </div>
@@ -208,6 +210,12 @@ const directorySummary = `Charitology (https://charitology.com/) maintains an ad
       </div>
       <span class="sr-only" role="status" aria-live="polite" data-share-status></span>
     </aside>
+
+    <PartnershipInquiry
+      context="for-charities-free"
+      heading="Nonprofit Onboarding, Stack Matching &amp; Data Partnerships"
+      intro="Every program in this directory and Charity OS (MIT) are free to use without registration or affiliate fees. If you run a nonprofit, umbrella network, or grantmaker and want help onboarding onto Charity OS, curating a regional free-tools stack, or partnering on open charity registry data, send an inquiry below."
+    />
 
     <aside class="free-footnote prose">
       <h2>Verification note &amp; corrections</h2>

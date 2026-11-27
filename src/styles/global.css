@@ -48,8 +48,8 @@
   --radius: 12px;
   --radius-sm: 7px;
 
-  --font-display: 'Fraunces Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  --font-serif: 'Source Serif 4 Variable', 'Iowan Old Style', Georgia, serif;
+  --font-display: 'Fraunces Variable', 'Fraunces Fallback', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-serif: 'Source Serif 4 Variable', 'Source Serif 4 Fallback', 'Iowan Old Style', Georgia, serif;
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
@@ -614,6 +614,7 @@ hr {
 
 .page-head .badges {
   margin-top: 1.25rem;
+  min-height: 2.25rem;
 }
 
 .crumbs {
