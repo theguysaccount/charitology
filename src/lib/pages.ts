@@ -14,6 +14,7 @@ import {
   GLOBAL_CHARITY_INDEX_PANELS,
   US_ADDITIONAL_EDITIONS,
 } from "./global-index-catalog";
+import { wave1Pages } from "./registry-wave1";
 
 export interface PageInfo {
   path: string;
@@ -193,6 +194,9 @@ export async function allPages(): Promise<PageInfo[]> {
   for (const [path, title, section] of additionalRoutes) {
     pages.push({ path, title, section });
   }
+
+  // Wave 1 verified charity dossiers and registry hubs (own sitemap partition).
+  for (const page of wave1Pages()) pages.push(page);
 
   return pages;
 }

@@ -1,0 +1,99 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import Faq from '../../../components/registry/Faq.astro';
+import '../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../lib/site';
+import { wave1, faqNode, hubNodes, count, dayLabel, usStatePath, US_BASE, EW_BASE, WAVE1_DATA_PATH } from '../../../lib/registry-wave1';
+
+const w = wave1();
+const faqs = w.wave1IndexFaqs();
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const title = 'Verified charity dossiers';
+const description = `Wave 1: ${count(w.us.length)} U.S. Form 990 and ${count(w.ew.length)} England and Wales Charity Commission dossiers, with state, NTEE and purpose hubs. Official registry figures as published, never rated.`;
+const files = Object.values(w.manifest.outputs) as { path: string; bytes: number; sha256: string }[];
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin,
+    items: [
+      { name: 'United States charity dossiers', url: absolute(US_BASE, Astro.site) },
+      { name: 'England and Wales charity dossiers', url: absolute(EW_BASE, Astro.site) },
+    ],
+    spatialCoverage: 'United States; England and Wales',
+    dataFiles: [absolute(`${WAVE1_DATA_PATH}manifest.json`, Astro.site), ...files.map((f) => absolute(`${WAVE1_DATA_PATH}${f.path}`, Astro.site))],
+    isBasedOn: [w.bmf.page, w.soi.page, w.register.page],
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    creditText: 'Internal Revenue Service public records and Charity Commission for England and Wales information under the Open Government Licence v3.0, selected and formatted by Charitology.',
+  }),
+  faqNode(faqs),
+];
+const sources = [
+  { title: 'Exempt Organizations Business Master File Extract (EO BMF)', publisher: 'Internal Revenue Service', url: w.bmf.page },
+  { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service, Statistics of Income', url: w.soi.page },
+  { title: 'Register of charities: full register download and data definitions', publisher: 'Charity Commission for England and Wales', url: w.register.page },
+  { title: 'Open Government Licence v3.0', publisher: 'The National Archives', url: w.register.licence },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Global Charity Index"
+  summary="One page per organization, built only from official registry records and published financial figures, each with its source file, date, record number and fingerprint."
+  description={description}
+  crumbs={[{ label: 'The Record', href: '/record/' }, { label: 'Charity dossiers' }]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'registers', text: 'Registers in Wave 1', symbol: 'archive' },
+    { slug: 'hubs', text: 'Browse the hubs', symbol: 'map' },
+    { slug: 'files', text: 'Dataset files', symbol: 'download' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+  ]}
+>
+  <p>A verified charity dossier reproduces what an official register publishes about one organization: its identifier, registry codes, classifications and financial figures, each cited to the exact source file and record. Charitology adds no rating, score, overhead ratio, estimate or effectiveness claim. Dossiers are listed alphabetically.</p>
+
+  <h2 id="registers">Registers in Wave 1</h2>
+  <div class="table-wrap">
+    <table class="data rw-table">
+      <caption>Wave 1 coverage. Each threshold uses one published figure from the latest period.</caption>
+      <thead><tr><th scope="col">Register</th><th scope="col">Inclusion threshold</th><th scope="col" class="num">Dossiers</th><th scope="col">Source dates</th></tr></thead>
+      <tbody>
+        <tr>
+          <th scope="row"><a href={url(US_BASE)}>United States</a><span class="rw-sub">IRS EO BMF and Form 990 extracts</span></th>
+          <td>Total revenue of at least {w.usThreshold}</td>
+          <td class="num">{count(w.us.length)}</td>
+          <td>EO BMF last modified {w.bmfPosted}; Form 990 extracts for calendar years {w.extractYears(w.us).join(' and ')}</td>
+        </tr>
+        <tr>
+          <th scope="row"><a href={url(EW_BASE)}>England and Wales</a><span class="rw-sub">Charity Commission register</span></th>
+          <td>Gross income of at least {w.ewThreshold}</td>
+          <td class="num">{count(w.ew.length)}</td>
+          <td>Register extract dated {w.registerDate}; annual return edition of {dayLabel(w.manifest.sources.ccewAnnualReturns.edition)}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="hubs">Browse the hubs</h2>
+  <p><strong>U.S. states and territories.</strong> {count(w.stateHubs.length)} hubs by IRS mailing-address state.</p>
+  <ul class="rw-hub-grid">
+    {w.stateHubs.map((st) => <li><a href={url(usStatePath(st))}>{w.stateName(st)}</a> ({count(w.byState.get(st)!.length)})</li>)}
+  </ul>
+  <p><strong>NTEE major groups.</strong> {count(w.groupHubs.length)} hubs by the IRS classification of primary exempt activity, plus {count(w.stateGroupHubs.length)} state and group hubs.</p>
+  <ul class="rw-hub-grid">
+    {w.groupHubs.map((g) => <li><a href={url(w.groupPath(g))}>{w.groupLabel(g)}</a> ({count(w.byGroup.get(g)!.length)})</li>)}
+  </ul>
+  <p><strong>England and Wales purposes.</strong> {count(w.purposeHubs.length)} hubs by the register’s “What” classification.</p>
+  <ul class="rw-hub-grid">
+    {w.purposeHubs.map((c) => <li><a href={url(w.purposePath(c))}>{w.ewHubs.purposes[c].description}</a> ({count(w.byPurpose.get(c)!.length)})</li>)}
+  </ul>
+
+  <h2 id="files">Dataset files</h2>
+  <p>The builder, <code>scripts/build-registry-wave1.py</code>, refuses any input whose SHA-256 fingerprint differs from the recorded one, and <code>scripts/check-registry-wave1.mjs</code> re-verifies every figure against the committed editions on each build.</p>
+  <ul>
+    <li><a href={url(`${WAVE1_DATA_PATH}manifest.json`)} download="charitology-registry-wave1-manifest.json">manifest.json</a>: selection rules, source URLs, retrieval times and fingerprints.</li>
+    {files.map((f) => <li><a href={url(`${WAVE1_DATA_PATH}${f.path}`)} download={`charitology-${f.path}`}>{f.path}</a>: {count(f.bytes)} bytes, SHA-256 <code>{f.sha256}</code>.</li>)}
+  </ul>
+
+  <Faq faqs={faqs} />
+</Entry>

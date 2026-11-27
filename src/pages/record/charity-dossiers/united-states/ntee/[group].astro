@@ -1,0 +1,112 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import Faq from '../../../../../components/registry/Faq.astro';
+import UsDossierTable from '../../../../../components/registry/UsDossierTable.astro';
+import '../../../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../../../lib/site';
+import { wave1, faqNode, hubNodes, count, usDossierPath, usStatePath, US_BASE, WAVE1_BASE, WAVE1_DATA_PATH } from '../../../../../lib/registry-wave1';
+
+export function getStaticPaths() {
+  const w = wave1();
+  return w.groupHubs.map((group) => ({ params: { group: w.groupSlug(group) }, props: { group } }));
+}
+
+const { group } = Astro.props as { group: string };
+const w = wave1();
+const label = w.groupLabel(group);
+const items = w.byGroup.get(group)!;
+const g = w.usHubs.groups[group];
+const faqs = w.usHubFaqs(items, { label: `NTEE ${group}`, group });
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const title = `${label} charity dossiers`;
+const description = `${count(items.length)} Wave 1 Form 990 dossiers and ${count(g.records)} IRS EO BMF 501(c)(3) records with NTEE major group ${group}, ${w.groupName(group)}, with state counts. Figures as published by the IRS.`;
+const dossierStates = w.tally(items, (d) => d.state);
+const states = Object.entries(g.states).filter(([st]) => st).sort((a, b) => w.stateName(a[0]).localeCompare(w.stateName(b[0])));
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin,
+    items: items.map((d) => ({ name: d.name, url: absolute(usDossierPath(d.ein), Astro.site) })),
+    spatialCoverage: 'United States',
+    dataFiles: [absolute(`${WAVE1_DATA_PATH}us-form-990-dossiers.json`, Astro.site), absolute(`${WAVE1_DATA_PATH}us-hubs.json`, Astro.site)],
+    isBasedOn: [...w.bmf.files.map((f: { url: string }) => f.url), ...Object.values(w.soi.files).map((f: any) => f.url)],
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    creditText: 'Internal Revenue Service public records, selected and formatted by Charitology.',
+  }),
+  faqNode(faqs),
+];
+const sources = [
+  { title: 'Exempt Organizations Business Master File Extract (EO BMF)', publisher: 'Internal Revenue Service', url: w.bmf.page },
+  { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service, Statistics of Income', url: w.soi.page },
+  { title: w.codes.source.title, publisher: 'Internal Revenue Service', url: w.codes.source.url },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified registry hub · NTEE major group"
+  identityCode={`NTEE ${group}`}
+  summary={`U.S. 501(c)(3) records the IRS classifies under NTEE major group ${group}, ${w.groupName(group)}, and the ${count(items.length)} Wave 1 Form 990 dossiers among them, listed alphabetically.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'United States', href: US_BASE },
+    { label: label },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'registry-counts', text: 'EO BMF counts', symbol: 'bars' },
+    { slug: 'by-state', text: 'By mailing-address state', symbol: 'map' },
+    { slug: 'dossiers', text: 'Wave 1 dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>The National Taxonomy of Exempt Entities (NTEE) code is the IRS classification of an organization’s primary exempt activity. This hub groups records by the first letter of that code. It does not rank, rate or endorse any organization.</p>
+
+  <h2 id="registry-counts">EO BMF counts</h2>
+  <dl class="rw-facts">
+    <dt>Subsection 03 records in group {group}</dt><dd>{count(g.records)}</dd>
+    <dt>Distinct three-character core codes</dt><dd>{count(g.distinctCoreCodes)}</dd>
+    <dt>EO BMF posting</dt><dd>Four regional files, last modified {w.bmfPosted}</dd>
+  </dl>
+  <div class="table-wrap">
+    <table class="data rw-table">
+      <caption>The five most frequent core codes in group {group}, with the IRS description.</caption>
+      <thead><tr><th scope="col">Core code</th><th scope="col">IRS description</th><th scope="col" class="num">EO BMF records</th></tr></thead>
+      <tbody>
+        {g.coreCodes.map(([code, n]) => <tr><th scope="row">{code}</th><td>{w.codes.coreCodes[code] ?? 'Not described in the IRS code table'}</td><td class="num">{count(n)}</td></tr>)}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="by-state">By mailing-address state</h2>
+  <div class="table-wrap">
+    <table class="data rw-table">
+      <caption>Group {group} records and Wave 1 dossiers by EO BMF mailing-address state.</caption>
+      <thead><tr><th scope="col">State or territory</th><th scope="col" class="num">EO BMF records</th><th scope="col" class="num">Wave 1 dossiers</th></tr></thead>
+      <tbody>
+        {states.map(([st, n]) => (
+          <tr>
+            <th scope="row">{w.stateGroupSet.has(`${st}|${group}`) ? <a href={url(w.stateGroupPath(st, group))}>{w.stateName(st)}</a> : w.byState.has(st) ? <a href={url(usStatePath(st))}>{w.stateName(st)}</a> : w.stateName(st)}</th>
+            <td class="num">{count(n)}</td>
+            <td class="num">{count(dossierStates.get(st) ?? 0)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  {g.states[''] ? <p class="note">{count(g.states[''])} group {group} records have no state in the EO BMF.</p> : null}
+
+  <h2 id="dossiers">Wave 1 dossiers</h2>
+  <p>{count(items.length)} organizations, in alphabetical order by IRS primary name. Each row shows the latest selected tax period.</p>
+  <UsDossierTable items={items} caption={`Wave 1 dossiers, NTEE major group ${group}. U.S. dollars as published in the IRS Form 990 extract.`} />
+
+  <Faq faqs={faqs} />
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Only standard NTEE values, a letter followed by digits or letters, are grouped. {count(w.usHubs.posting.subsection03 - w.usHubs.posting.subsection03WithNtee)} subsection 03 records carry no standard NTEE code and appear in no group. Dossiers include subsection 03 Form 990 filers whose latest selected tax period reports total revenue of at least {w.usThreshold}. Totals are not added across organizations because related entities can report overlapping amounts.</p>
+  <p><a href={url(`${WAVE1_DATA_PATH}us-hubs.json`)} download="charitology-us-registry-hubs.json">Download the hub counts</a> or the <a href={url(`${WAVE1_DATA_PATH}irs-eo-bmf-codes.json`)} download="charitology-irs-eo-bmf-codes.json">IRS code table transcription</a>. <a href={url(US_BASE)}>Browse every state and NTEE group</a>.</p>
+</Entry>

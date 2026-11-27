@@ -1,21 +1,13 @@
 import type { APIRoute } from 'astro';
-import { allPages } from '../lib/pages';
+import { SITEMAP_CHILDREN } from '../lib/sitemaps';
 import { absolute } from '../lib/site';
 
-const EXCLUDED_FROM_SITEMAP = new Set(['/search/', '/404/', '/browser-data/']);
-
+// Sitemap index. Core pages and the Wave 1 registry dossiers are separate children.
 export const GET: APIRoute = async ({ site }) => {
-  const paths = [
-    ...new Set(
-      (await allPages())
-        .map((p) => p.path)
-        .filter((p) => !p.includes('#') && !EXCLUDED_FROM_SITEMAP.has(p)),
-    ),
-  ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${paths.map((p) => `  <url><loc>${absolute(p, site)}</loc></url>`).join('\n')}
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${SITEMAP_CHILDREN.map((name) => `  <sitemap><loc>${absolute(`/${name}`, site)}</loc></sitemap>`).join('\n')}
+</sitemapindex>
 `;
   return new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8' } });
 };

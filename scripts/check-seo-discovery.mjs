@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { readBuiltSitemapSet } from './sitemap-set.mjs';
 
 const root = process.cwd();
 const dist = join(root, 'dist');
@@ -19,11 +20,21 @@ function extractJsonLd(html, label) {
   });
 }
 
-// 1. Sitemap completeness, zero duplicates, excludes utility pages, and resolves to real dist files
-const sitemapXml = readDist('sitemap.xml');
-const locs = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+// 1. Sitemap completeness, zero duplicates, excludes utility pages, and resolves to real dist files.
+// /sitemap.xml is a sitemap index once the site passes 2,000 URLs; every rule below applies to
+// the union of its child urlsets, and the core child alone must still hold the original >= 580.
+const sitemapSet = readBuiltSitemapSet(dist);
+const locs = sitemapSet.locs;
 assert.equal(new Set(locs).size, locs.length, 'sitemap.xml contains duplicate <loc> entries');
 assert.ok(locs.length >= 580, `Expected expanded sitemap with >= 580 URLs, got ${locs.length}`);
+if (sitemapSet.index) {
+  assert.deepEqual(sitemapSet.children.map((c) => c.file), ['sitemap-core.xml', 'sitemap-registries-wave1.xml'], 'Unexpected child sitemaps');
+  const core = sitemapSet.children[0].locs;
+  assert.ok(core.length >= 580, `Expected core sitemap with >= 580 URLs, got ${core.length}`);
+  assert.ok(locs.length > 2000, 'A sitemap index is only used once the site exceeds 2,000 URLs');
+  const robots = readDist('robots.txt');
+  assert.ok(robots.includes(`Sitemap: ${new URL('sitemap.xml', sitemapSet.children[0].loc).href}`), 'robots.txt must point to the sitemap index');
+}
 
 for (const excluded of ['/search/', '/404/', '/browser-data/']) {
   assert.ok(!locs.some((u) => u.endsWith(excluded)), `sitemap.xml should exclude utility route ${excluded}`);

@@ -1,0 +1,82 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import Faq from '../../../../../components/registry/Faq.astro';
+import EwDossierTable from '../../../../../components/registry/EwDossierTable.astro';
+import '../../../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../../../lib/site';
+import { wave1, faqNode, hubNodes, count, ewDossierPath, EW_BASE, WAVE1_BASE, WAVE1_DATA_PATH } from '../../../../../lib/registry-wave1';
+
+export function getStaticPaths() {
+  const w = wave1();
+  return w.purposeHubs.map((code) => ({ params: { purpose: w.purposeSlug(code) }, props: { code } }));
+}
+
+const { code } = Astro.props as { code: string };
+const w = wave1();
+const purpose = w.ewHubs.purposes[code];
+const items = w.byPurpose.get(code)!;
+const faqs = w.ewPurposeFaqs(code, items);
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const title = `${purpose.description}: England and Wales charity dossiers`;
+const description = `${count(items.length)} Wave 1 dossiers and ${count(purpose.charities)} registered charities listing the Charity Commission purpose “${purpose.description}” (${code}). Figures as published by the Commission.`;
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin,
+    items: items.map((d) => ({ name: d.name, url: absolute(ewDossierPath(d.number), Astro.site) })),
+    spatialCoverage: 'England and Wales',
+    dataFiles: [absolute(`${WAVE1_DATA_PATH}england-wales-dossiers.json`, Astro.site), absolute(`${WAVE1_DATA_PATH}england-wales-hubs.json`, Astro.site)],
+    isBasedOn: [w.register.files.register.url, w.register.files.classification.url, w.manifest.sources.ccewAnnualReturns.url],
+    license: w.register.licence,
+    creditText: w.register.attribution,
+  }),
+  faqNode(faqs),
+];
+const sources = [
+  { title: 'Register of charities: full register download and data definitions', publisher: 'Charity Commission for England and Wales', url: w.register.page },
+  { title: 'Classification extract (publicextract.charity_classification.zip)', publisher: 'Charity Commission for England and Wales', url: w.register.files.classification.url, note: `extract dated ${w.registerDate}` },
+  { title: 'Open Government Licence v3.0', publisher: 'The National Archives', url: w.register.licence },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified registry hub · England and Wales"
+  identityCode={`What ${code}`}
+  summary={`Registered charities in England and Wales that list the purpose “${purpose.description}”, and the ${count(items.length)} Wave 1 dossiers among them, listed alphabetically.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'England and Wales', href: EW_BASE },
+    { label: purpose.description },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'register-counts', text: 'Register counts', symbol: 'bars' },
+    { slug: 'dossiers', text: 'Wave 1 dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>The Charity Commission register records classifications of three types: “What”, “Who” and “How”. This hub groups dossiers by the “What” classification {code}. It does not rank, rate or endorse any charity.</p>
+
+  <h2 id="register-counts">Register counts</h2>
+  <dl class="rw-facts">
+    <dt>Registered main charities listing {code}</dt><dd>{count(purpose.charities)}</dd>
+    <dt>All registered main charities</dt><dd>{count(w.ewHubs.registeredMain)}</dd>
+    <dt>Wave 1 dossiers listing {code}</dt><dd>{count(items.length)}</dd>
+    <dt>Register extract</dt><dd>Dated {w.registerDate}</dd>
+  </dl>
+  <p>A charity can list several purposes, so counts across purposes overlap. Other purposes: {w.purposeHubs.filter((c) => c !== code).map((c, i) => <>{i > 0 && ' · '}<a href={url(w.purposePath(c))}>{w.ewHubs.purposes[c].description}</a></>)}.</p>
+
+  <h2 id="dossiers">Wave 1 dossiers</h2>
+  <EwDossierTable items={items} caption={`Wave 1 dossiers listing “${purpose.description}”. Pounds sterling as published in the annual return history.`} />
+
+  <Faq faqs={faqs} />
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Counts include main charities (linked charity number 0) with the status Registered in the register extract dated {w.registerDate}. Dossiers include those whose latest financial year in the committed annual-return edition reports gross income of at least {w.ewThreshold}. Totals are not added across charities because group accounts can overlap.</p>
+  <p>Contains public sector information from the Charity Commission for England and Wales, licensed under the Open Government Licence v3.0. <a href={url(`${WAVE1_DATA_PATH}england-wales-hubs.json`)} download="charitology-england-wales-registry-hubs.json">Download the hub counts</a> or the <a href={url(`${WAVE1_DATA_PATH}manifest.json`)} download="charitology-registry-wave1-manifest.json">Wave 1 manifest</a>.</p>
+</Entry>

@@ -1,0 +1,133 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import Faq from '../../../../../components/registry/Faq.astro';
+import '../../../../../styles/registry-wave1.css';
+import { url } from '../../../../../lib/site';
+import {
+  wave1, faqNode, einLabel, monthLabel, yyyymmLabel, usd, count, usStatePath, SOI_LINES,
+  US_BASE, WAVE1_BASE, WAVE1_DATA_PATH, type UsDossier,
+} from '../../../../../lib/registry-wave1';
+
+export function getStaticPaths() {
+  return wave1().us.map((d) => ({ params: { ein: d.ein }, props: { d } }));
+}
+
+const { d } = Astro.props as { d: UsDossier };
+const w = wave1();
+const ein = einLabel(d.ein);
+const latest = d.periods[0];
+const place = [d.city, d.state].filter(Boolean).join(', ');
+const ntee = w.nteeText(d.ntee);
+const group = w.groupOf(d);
+const stateHub = d.state && w.byState.has(d.state) ? d.state : null;
+const stateGroupHub = d.state && group && w.stateGroupSet.has(`${d.state}|${group}`);
+const faqs = w.usDossierFaqs(d);
+const bmfFile = w.bmfFile(d.bmfRegion);
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const title = `${d.name}: IRS Form 990 dossier (EIN ${ein})`;
+const description = `EIN ${ein}${place ? ` · ${place}` : ''}. IRS EO BMF entry and Form 990 extract figures for the tax period ending ${monthLabel(latest.taxPeriod)}${latest.totalRevenue !== null ? `: total revenue ${usd(latest.totalRevenue)}` : ''}${latest.functionalExpenses !== null ? `, total functional expenses ${usd(latest.functionalExpenses)}` : ''}.`;
+const years = [...new Set(d.periods.map((p) => p.extractYear))].sort();
+const sources = [
+  { title: 'Exempt Organizations Business Master File Extract (EO BMF)', publisher: 'Internal Revenue Service', url: w.bmf.page },
+  { title: `EO BMF regional file eo${d.bmfRegion}.csv`, publisher: 'Internal Revenue Service', url: bmfFile.url, note: `last modified ${w.bmfPosted}; SHA-256 ${bmfFile.sha256}` },
+  ...years.map((y) => ({ title: `Calendar-year ${y} Form 990 financial extract`, publisher: 'Internal Revenue Service, Statistics of Income', url: w.soiFile(y).url, note: `SHA-256 ${w.soiFile(y).sha256}` })),
+  ...years.map((y) => ({ title: `Calendar-year ${y} extract field definitions`, publisher: 'Internal Revenue Service, Statistics of Income', url: w.soiFile(y).documentation })),
+  { title: w.codes.source.title, publisher: 'Internal Revenue Service', url: w.codes.source.url },
+];
+const crumbs = [
+  { label: 'The Record', href: '/record/' },
+  { label: 'Charity dossiers', href: WAVE1_BASE },
+  { label: 'United States', href: US_BASE },
+  ...(stateHub ? [{ label: w.stateName(stateHub), href: usStatePath(stateHub) }] : []),
+  { label: d.name },
+];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${canonical}#organization`,
+    name: d.name,
+    taxID: ein,
+    identifier: [{ '@type': 'PropertyValue', propertyID: 'US Employer Identification Number (EIN)', value: ein }],
+    nonprofitStatus: 'https://schema.org/Nonprofit501c3',
+    ...(d.city || d.state
+      ? { address: { '@type': 'PostalAddress', ...(d.city ? { addressLocality: d.city } : {}), ...(d.state ? { addressRegion: d.state, addressCountry: 'US' } : {}) } }
+      : {}),
+    mainEntityOfPage: canonical,
+  },
+  faqNode(faqs),
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified charity dossier · United States"
+  identityCode={ein}
+  summary={`IRS registry entry and Form 990 extract figures for EIN ${ein}${place ? `, mailing address ${place}` : ''}. Figures are copied as published, with their source file and record number.`}
+  description={description}
+  crumbs={crumbs}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'registry-record', text: 'IRS registry record', symbol: 'fileSearch' },
+    { slug: 'form-990', text: 'Form 990 extract figures', symbol: 'table' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'related', text: 'Where this record appears', symbol: 'network' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>This dossier reproduces what two official IRS files say about EIN {ein}. It is not a rating, ranking, endorsement or effectiveness claim, and Charitology computes no ratio from these figures. A value the IRS did not supply is shown as “Not supplied”, never as zero.</p>
+
+  <h2 id="registry-record">IRS registry record</h2>
+  <dl class="rw-facts">
+    <dt>EIN</dt><dd>{ein}</dd>
+    <dt>IRS primary name</dt><dd>{d.name}</dd>
+    <dt>Mailing address</dt><dd>{place || 'Not supplied'}</dd>
+    <dt>Subsection</dt><dd>03, section 501(c)(3)</dd>
+    <dt>Foundation code</dt><dd>{d.foundation ? `${d.foundation}: ${w.codes.foundationCodes[d.foundation] ?? 'not described in the IRS code table'}` : 'Not supplied'}</dd>
+    <dt>Deductibility code</dt><dd>{d.deductibility ? `${d.deductibility}: ${w.codes.deductibilityCodes[d.deductibility] ?? 'not described in the IRS code table'}` : 'Not supplied'}</dd>
+    <dt>Exemption status code</dt><dd>{d.status ? `${d.status}: ${w.codes.statusCodes[d.status] ?? 'not described in the IRS code table'}` : 'Not supplied'}</dd>
+    <dt>Ruling month</dt><dd>{yyyymmLabel(d.ruling) ?? (d.ruling ? `${d.ruling} (no month given)` : 'Not supplied')}</dd>
+    <dt>NTEE code</dt><dd>{ntee ? <>{ntee.code}: {ntee.coreDescription ?? `core code ${ntee.core} is not described in the IRS code table`} · major group <a href={url(w.groupPath(ntee.group))}>{w.groupLabel(ntee.group)}</a></> : (d.ntee ? `${d.ntee} (not a standard NTEE code)` : 'Not supplied')}</dd>
+    <dt>Latest return on the EO BMF</dt><dd>{yyyymmLabel(d.bmfTaxPeriod) ?? 'Not supplied'}</dd>
+  </dl>
+  <p class="note">Source row: EO BMF regional file eo{d.bmfRegion}.csv, last modified {w.bmfPosted}, retrieved {bmfFile.retrievedAt}. Street, ZIP code, in-care-of name and the EO BMF amount fields are omitted.</p>
+
+  <h2 id="form-990">Form 990 extract figures</h2>
+  <p>{d.periods.length === 1 ? 'One tax period' : `${count(d.periods.length)} tax periods`} from the IRS Statistics of Income annual extracts. Each column names its extract year and the record number, which is the data row after the header in the IRS CSV.</p>
+  <div class="table-wrap">
+    <table class="data rw-table">
+      <caption>U.S. dollars, as published in the IRS Form 990 extract. Line references are to Form 990.</caption>
+      <thead>
+        <tr>
+          <th scope="col">Form 990 line</th>
+          {d.periods.map((p) => <th scope="col" class="num">Tax period ending {monthLabel(p.taxPeriod)}<span class="rw-sub">{p.extractYear} extract, record {count(p.record)}</span></th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {SOI_LINES.map(([key, label, line]) => (
+          <tr>
+            <th scope="row">{label}<span class="rw-sub">{line}</span></th>
+            {d.periods.map((p) => <td class="num">{p[key] === null ? 'Not supplied' : usd(String(p[key]))}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="note">The IRS notes that extract values can differ from the original return because of adjustments and transcription. Revenue, expenses and grants can overlap across related organizations. Consult the original return for reporting scope.</p>
+
+  <Faq faqs={faqs} />
+
+  <h2 id="related">Where this record appears</h2>
+  <ul>
+    {stateHub && <li><a href={url(usStatePath(stateHub))}>{w.stateName(stateHub)} charity dossiers</a>: every Wave 1 dossier with this mailing-address state.</li>}
+    {group && <li><a href={url(w.groupPath(group))}>{w.groupLabel(group)} charity dossiers</a>: every Wave 1 dossier in this NTEE major group.</li>}
+    {stateGroupHub && d.state && group && <li><a href={url(w.stateGroupPath(d.state, group))}>{w.groupLabel(group)} dossiers in {w.stateName(d.state)}</a>.</li>}
+    <li><a href={url(US_BASE)}>All United States charity dossiers</a>, with state and NTEE counts from the EO BMF.</li>
+    <li><a href={url('/record/charity-financials/united-states/')}>Search every U.S. Form 990 filer</a> in the full IRS extract edition.</li>
+  </ul>
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Inclusion follows one rule: this EIN is a subsection 03 Form 990 filer whose latest selected tax period reports total revenue of at least {w.usThreshold}, and the current EO BMF posting lists it. The rule is a coverage boundary for Wave 1, not a judgment of the organization. The EO BMF excludes some churches and other organizations that are not required to apply for recognition, and a mailing address does not show where services are delivered.</p>
+  <p>Public IRS records are United States Government works (17 U.S.C. 105) and carry no IRS endorsement. <a href={url(`${WAVE1_DATA_PATH}manifest.json`)} download="charitology-registry-wave1-manifest.json">Download the Wave 1 manifest</a> for every source URL, retrieval time and SHA-256 fingerprint, or the <a href={url(`${WAVE1_DATA_PATH}us-form-990-dossiers.json`)} download="charitology-us-form-990-dossiers.json">U.S. dossier dataset</a>.</p>
+</Entry>

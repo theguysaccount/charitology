@@ -5,11 +5,13 @@ import {
   GLOBAL_CHARITY_INDEX_TOTAL_RECORDS,
 } from '../lib/global-index-catalog';
 import { absolute } from '../lib/site';
+import { wave1, usStatePath, US_BASE, EW_BASE, WAVE1_BASE, WAVE1_DATA_PATH } from '../lib/registry-wave1';
 
 export const GET: APIRoute = ({ site }) => {
   const lookupCount = FUNDING_FLOW_GROUPS[0].items.length;
   const caseCount = FUNDING_FLOW_GROUPS[1].items.length;
   const totalFlows = lookupCount + caseCount;
+  const w = wave1();
 
   const lines: string[] = [
     '# Charitology',
@@ -47,6 +49,16 @@ export const GET: APIRoute = ({ site }) => {
         `- [${p.name} (${p.recordCount.toLocaleString('en-US')} ${p.recordUnit})](${absolute(p.route, site)}): ${p.source}${p.manifest ? ` | manifest: ${absolute(p.manifest, site)}` : ''}`,
     ),
     '',
+    `## Verified Charity Dossiers, Wave 1 (${(w.us.length + w.ew.length).toLocaleString('en-US')} Organizations | Official Registry Figures, No Ratings)`,
+    '',
+    `- [Wave 1 index](${absolute(WAVE1_BASE, site)}): one page per organization with source file, record number and SHA-256 fingerprint | manifest: ${absolute(`${WAVE1_DATA_PATH}manifest.json`, site)}`,
+    `- [United States (${w.us.length.toLocaleString('en-US')} IRS Form 990 dossiers)](${absolute(US_BASE, site)}): IRS EO BMF + IRS SOI Form 990 extracts | data: ${absolute(`${WAVE1_DATA_PATH}us-form-990-dossiers.json`, site)}`,
+    `- [England and Wales (${w.ew.length.toLocaleString('en-US')} Charity Commission dossiers)](${absolute(EW_BASE, site)}): register, classification and annual return history | data: ${absolute(`${WAVE1_DATA_PATH}england-wales-dossiers.json`, site)}`,
+    `- U.S. state hubs (${w.stateHubs.length}): ${w.stateHubs.map((st) => absolute(usStatePath(st), site)).join(' | ')}`,
+    `- NTEE major-group hubs (${w.groupHubs.length}): ${w.groupHubs.map((g) => `[${w.groupLabel(g)}](${absolute(w.groupPath(g), site)})`).join(' | ')}`,
+    `- U.S. state x NTEE group hubs (${w.stateGroupHubs.length}, each with >= ${w.stateMin} dossiers): listed in ${absolute('/sitemap-registries-wave1.xml', site)}`,
+    `- England and Wales purpose hubs (${w.purposeHubs.length}): ${w.purposeHubs.map((c) => `[${w.ewHubs.purposes[c].description}](${absolute(w.purposePath(c), site)})`).join(' | ')}`,
+    '',
     `## Key Funding-Flow Datasets (${lookupCount} Lookups, ${caseCount} Case Studies)`,
     '',
     `- [Browse all ${totalFlows} funding flows](${absolute('/record/funding-flows/', site)})`,
@@ -71,7 +83,7 @@ export const GET: APIRoute = ({ site }) => {
     `- ${absolute('/api/v1/conditions.json', site)}`,
     `- ${absolute('/api/v1/open-problems.json', site)}`,
     `- ${absolute('/api/v1/checklist.json', site)}`,
-    `- ${absolute('/sitemap.xml', site)}`,
+    `- ${absolute('/sitemap.xml', site)} (sitemap index: ${absolute('/sitemap-core.xml', site)} | ${absolute('/sitemap-registries-wave1.xml', site)})`,
     '',
   ];
 

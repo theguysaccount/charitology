@@ -1,0 +1,21 @@
+---
+// Six record-derived questions. The same entries feed the page's FAQPage
+// JSON-LD, so the visible text and the structured data cannot drift apart.
+import type { FaqEntry } from '../../lib/structured-data';
+
+interface Props {
+  faqs: readonly FaqEntry[];
+}
+const { faqs } = Astro.props;
+if (faqs.length !== 6) throw new Error(`Expected six record-derived questions, got ${faqs.length}.`);
+---
+
+<h2 id="questions">Questions answered from the record</h2>
+<div class="rw-faq-list">
+  {faqs.map((faq) => (
+    <details class="rw-faq">
+      <summary>{faq.question}</summary>
+      <p>{faq.answer}</p>
+    </details>
+  ))}
+</div>

@@ -1,0 +1,251 @@
+{
+ "format": "charitology-registry-wave1-v1",
+ "edition": "2026-11-27",
+ "builder": "scripts/build-registry-wave1.py",
+ "checker": "scripts/check-registry-wave1.mjs",
+ "policy": "Figures are copied as published. Inclusion follows one published-figure threshold per register and is a coverage boundary, not a rating, ranking or endorsement. Null means not supplied; it is never zero.",
+ "selection": {
+  "us": {
+   "rule": "IRS subsection 03 Form 990 filers in the committed U.S. Form 990 edition whose latest selected tax period reports total revenue (Part VIII, line 12) of at least the threshold, and whose EIN appears with subsection 03 in the EO BMF posting below.",
+   "thresholdUSD": 150000000,
+   "editionOrganizations": 277047,
+   "candidates": 2596,
+   "dossiers": 2586,
+   "excluded": {
+    "notInBmfPosting": [
+     "111704595",
+     "132607374",
+     "141782466",
+     "251716306",
+     "361000540",
+     "454394739",
+     "474914917",
+     "571201170",
+     "581728803",
+     "871006981"
+    ],
+    "notSubsection03InBmfPosting": []
+   }
+  },
+  "ew": {
+   "rule": "Registered main charities in the committed England and Wales annual-return edition whose latest financial year reports gross income of at least the threshold, and which the register extract below still lists as Registered under the same organisation number.",
+   "thresholdGBP": 25000000,
+   "editionOrganizations": 157367,
+   "candidates": 663,
+   "dossiers": 663,
+   "excluded": {
+    "notInRegisterExtract": [],
+    "notRegisteredInRegisterExtract": []
+   }
+  },
+  "stateGroupHubMinimumDossiers": 5
+ },
+ "pinnedEditions": {
+  "us": {
+   "path": "public/data/charity-financials/us/manifest.json",
+   "sha256": "ee9d0b2aee1f2bae3715e14ed14575b936f2b88e485daa5fc37164804db42a6e"
+  },
+  "ew": {
+   "path": "public/data/charity-financials/ew/manifest.json",
+   "sha256": "ab5ed15e344c79ff197f6c10e03ca1eef929c80adb614d9212249fe872102056"
+  }
+ },
+ "sources": {
+  "irsEoBmf": {
+   "publisher": "Internal Revenue Service",
+   "title": "Exempt Organizations Business Master File Extract (EO BMF)",
+   "page": "https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf",
+   "reuse": "Public IRS records; United States Government work, 17 USC 105. No IRS endorsement.",
+   "files": [
+    {
+     "region": 1,
+     "lastModified": "Mon, 09 Nov 2026 05:10:54 GMT",
+     "retrievedAt": "2026-11-27T21:25:00Z",
+     "bytes": 49166596,
+     "sha256": "5d1047c15cb6109b73ed244da97961b92a3ec122ac4419f354d248dc059df4e6",
+     "url": "https://www.irs.gov/pub/irs-soi/eo1.csv",
+     "rows": 281266
+    },
+    {
+     "region": 2,
+     "lastModified": "Mon, 09 Nov 2026 05:10:56 GMT",
+     "retrievedAt": "2026-11-27T21:25:03Z",
+     "bytes": 127286751,
+     "sha256": "46db809791e9cfe785c74fd6028ed18612f8a639edf763142c017cce3446ccfa",
+     "url": "https://www.irs.gov/pub/irs-soi/eo2.csv",
+     "rows": 728633
+    },
+    {
+     "region": 3,
+     "lastModified": "Mon, 09 Nov 2026 05:10:59 GMT",
+     "retrievedAt": "2026-11-27T21:25:09Z",
+     "bytes": 167027760,
+     "sha256": "4902eab594c4be7312192bb03ee5082580ca208bd4f6b9b5a6bcfc009c8f27f4",
+     "url": "https://www.irs.gov/pub/irs-soi/eo3.csv",
+     "rows": 969932
+    },
+    {
+     "region": 4,
+     "lastModified": "Mon, 09 Nov 2026 05:11:02 GMT",
+     "retrievedAt": "2026-11-27T21:25:19Z",
+     "bytes": 886271,
+     "sha256": "3c161b91056ea9291723aa608e40fe093a605238866e4ef8de8d6d9e26ce325c",
+     "url": "https://www.irs.gov/pub/irs-soi/eo4.csv",
+     "rows": 5060
+    }
+   ]
+  },
+  "irsSoiForm990": {
+   "publisher": "Internal Revenue Service, Statistics of Income",
+   "title": "Annual extract of tax-exempt organization financial data (Form 990)",
+   "page": "https://www.irs.gov/statistics/soi-tax-stats-annual-extract-of-tax-exempt-organization-financial-data",
+   "reuse": "Public IRS records; United States Government work, 17 USC 105. No IRS endorsement.",
+   "fields": [
+    {
+     "column": "totrevenue",
+     "key": "totalRevenue",
+     "form990": "Part VIII, line 12, column (A)"
+    },
+    {
+     "column": "totcntrbgfts",
+     "key": "contributions",
+     "form990": "Part VIII, line 1h, column (A)"
+    },
+    {
+     "column": "totprgmrevnue",
+     "key": "programServiceRevenue",
+     "form990": "Part VIII, line 2g, column (A)"
+    },
+    {
+     "column": "invstmntinc",
+     "key": "investmentIncome",
+     "form990": "Part VIII, line 3, column (A)"
+    },
+    {
+     "column": "totfuncexpns",
+     "key": "functionalExpenses",
+     "form990": "Part IX, line 25, column (A)"
+    },
+    {
+     "column": "grntstogovt",
+     "key": "grantsUSOrganizations",
+     "form990": "Part IX, line 1, column (A)"
+    },
+    {
+     "column": "grnsttoindiv",
+     "key": "grantsUSIndividuals",
+     "form990": "Part IX, line 2, column (A)"
+    },
+    {
+     "column": "grntstofrgngovt",
+     "key": "grantsOutsideUS",
+     "form990": "Part IX, line 3, column (A)"
+    },
+    {
+     "column": "totassetsend",
+     "key": "assetsEndOfYear",
+     "form990": "Part X, line 16, column (B)"
+    },
+    {
+     "column": "totliabend",
+     "key": "liabilitiesEndOfYear",
+     "form990": "Part X, line 26, column (B)"
+    },
+    {
+     "column": "totnetassetend",
+     "key": "netAssetsEndOfYear",
+     "form990": "Part X, line 33, column (B)"
+    }
+   ],
+   "files": {
+    "2023": {
+     "url": "https://www.irs.gov/pub/irs-soi/23eoextract990.zip",
+     "lastModified": "Fri, 11 Jul 2025 18:10:38 GMT",
+     "retrievedAt": "2026-11-27T21:25:19Z",
+     "bytes": 55260607,
+     "sha256": "a32f2744b6d7b1456579cd668eff5dd51f7f79f6e13e21a832c3654353dcd99f",
+     "documentation": "https://www.irs.gov/pub/irs-soi/23eofinextractdoc.xlsx",
+     "documentationSha256": "5cd4d5bc7b63d85479f5986c84e468cb14666c6bb4c58cc3f9c3c392dd100426"
+    },
+    "2024": {
+     "url": "https://www.irs.gov/pub/irs-soi/24eoextract990.zip",
+     "lastModified": "Fri, 01 Aug 2025 02:10:14 GMT",
+     "retrievedAt": "2026-11-27T21:25:22Z",
+     "bytes": 56682054,
+     "sha256": "dc3898cad2007fdb194d73281c3eb625773ea90626c22ca167e842d205a49d10",
+     "documentation": "https://www.irs.gov/pub/irs-soi/24eofinextractdoc.xlsx",
+     "documentationSha256": "80319c89b3a80c28f09a941fad8433d487e60594c606d8a49a13349485c7e5ba"
+    }
+   }
+  },
+  "ccewRegister": {
+   "publisher": "Charity Commission for England and Wales",
+   "title": "Register of charities: full register download",
+   "page": "https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download",
+   "licence": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+   "extractDate": "2026-11-27",
+   "attribution": "Contains public sector information licensed under the Open Government Licence v3.0.",
+   "files": {
+    "register": {
+     "url": "https://ccewuksprdoneregsadata1.blob.core.windows.net/data/txt/publicextract.charity.zip",
+     "member": "publicextract.charity.txt",
+     "lastModified": "Fri, 27 Nov 2026 01:07:59 GMT",
+     "retrievedAt": "2026-11-27T21:25:15Z",
+     "bytes": 44331134,
+     "sha256": "662b9764896545b4aa035bc024da1fa1b297486ebdf119cb432671e6394a0a47"
+    },
+    "classification": {
+     "url": "https://ccewuksprdoneregsadata1.blob.core.windows.net/data/txt/publicextract.charity_classification.zip",
+     "member": "publicextract.charity_classification.txt",
+     "lastModified": "Fri, 27 Nov 2026 01:07:47 GMT",
+     "retrievedAt": "2026-11-27T21:25:25Z",
+     "bytes": 7695734,
+     "sha256": "c4fe7dc01ef33305849ff3bf5ed06d4d016363aa6c1a08f1f02f5a863cbeefeb"
+    }
+   }
+  },
+  "ccewAnnualReturns": {
+   "publisher": "Charity Commission for England and Wales",
+   "edition": "2026-11-10",
+   "url": "https://ccewuksprdoneregsadata1.blob.core.windows.net/data/txt/publicextract.charity_annual_return_history.zip",
+   "sha256": "d251fdea46a3603cf363b2bad83487bb8dcf44772c59ad282a9521379974aa56",
+   "note": "Read from the committed England and Wales annual-return edition; not downloaded again."
+  },
+  "irsCodes": {
+   "title": "Exempt Organizations Business Master File Extract (EO BMF): field definitions and code tables",
+   "publisher": "Internal Revenue Service",
+   "url": "https://www.irs.gov/pub/foia/ig/tege/eo-info.pdf",
+   "lastModified": "Wed, 08 Apr 2026 17:36:32 GMT",
+   "retrievedAt": "2026-11-27T21:25:25Z",
+   "bytes": 425457,
+   "sha256": "1ebe7a2752b81d3a2f14a0c452a2e5c4d728b42f5226ae374b3f10d3350eeae4"
+  }
+ },
+ "outputs": {
+  "us": {
+   "path": "us-form-990-dossiers.json",
+   "bytes": 2670022,
+   "sha256": "68e0134662a799de93a000595eb7abd268f507f3b3156e3bf77e2cb8de5a175f"
+  },
+  "usHubs": {
+   "path": "us-hubs.json",
+   "bytes": 34290,
+   "sha256": "d67c769d1975cae7399678ab9d9a117bb893da0644e2dda64b827fbc2c637270"
+  },
+  "ew": {
+   "path": "england-wales-dossiers.json",
+   "bytes": 738892,
+   "sha256": "658bca46236e1258d0aacc5e3635e031ea43eabbc7d7a0e624dcd9864fffd1c5"
+  },
+  "ewHubs": {
+   "path": "england-wales-hubs.json",
+   "bytes": 1226,
+   "sha256": "bab0494e8f9b4b5f13841a6163fddf1b6ce7ce4e926dc15d8b6fdd0da0b6a00a"
+  },
+  "codes": {
+   "path": "irs-eo-bmf-codes.json",
+   "bytes": 29854,
+   "sha256": "82f3ffc9ec847a1b155fe771afbef64f1de945df47d14d203359fcbabd9a364a"
+  }
+ }
+}

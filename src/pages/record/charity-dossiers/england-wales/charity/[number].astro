@@ -1,0 +1,123 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import Faq from '../../../../../components/registry/Faq.astro';
+import '../../../../../styles/registry-wave1.css';
+import { url } from '../../../../../lib/site';
+import { wave1, faqNode, dayLabel, gbp, count, EW_BASE, WAVE1_BASE, WAVE1_DATA_PATH, type EwDossier } from '../../../../../lib/registry-wave1';
+
+export function getStaticPaths() {
+  return wave1().ew.map((d) => ({ params: { number: d.number }, props: { d } }));
+}
+
+const { d } = Astro.props as { d: EwDossier };
+const w = wave1();
+const latest = d.periods[0];
+const faqs = w.ewDossierFaqs(d);
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const registerEntry = `https://register-of-charities.charitycommission.gov.uk/en/charity-search/-/charity-details/${d.number}`;
+const returns = w.manifest.sources.ccewAnnualReturns;
+const title = `${d.name}: Charity Commission dossier (charity ${d.number})`;
+const description = `Registered charity ${d.number} in England and Wales. Register details and annual return figures for the financial year ending ${dayLabel(latest.end)}${latest.grossIncome !== null ? `: gross income ${gbp(latest.grossIncome)}` : ''}${latest.grossExpenditure !== null ? `, gross expenditure ${gbp(latest.grossExpenditure)}` : ''}.`;
+const sources = [
+  { title: 'Register of charities: full register download and data definitions', publisher: 'Charity Commission for England and Wales', url: w.register.page },
+  { title: 'Register extract (publicextract.charity.zip)', publisher: 'Charity Commission for England and Wales', url: w.register.files.register.url, note: `extract dated ${w.registerDate}; SHA-256 ${w.register.files.register.sha256}` },
+  { title: 'Classification extract (publicextract.charity_classification.zip)', publisher: 'Charity Commission for England and Wales', url: w.register.files.classification.url, note: `extract dated ${w.registerDate}; SHA-256 ${w.register.files.classification.sha256}` },
+  { title: 'Annual return history extract', publisher: 'Charity Commission for England and Wales', url: returns.url, note: `committed edition of ${dayLabel(returns.edition)}; SHA-256 ${returns.sha256}` },
+  { title: `Register entry for charity ${d.number}`, publisher: 'Charity Commission for England and Wales', url: registerEntry },
+  { title: 'Open Government Licence v3.0', publisher: 'The National Archives', url: w.register.licence },
+];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${canonical}#organization`,
+    name: d.name,
+    identifier: [
+      { '@type': 'PropertyValue', propertyID: 'Charity Commission for England and Wales registered charity number', value: d.number },
+      ...(d.companyNumber ? [{ '@type': 'PropertyValue', propertyID: 'Companies House company registration number', value: d.companyNumber }] : []),
+    ],
+    sameAs: [registerEntry],
+    mainEntityOfPage: canonical,
+  },
+  faqNode(faqs),
+];
+const classification = (items: [string, string][]) => (items.length ? items.map(([code, text]) => `${text} (${code})`).join('; ') : 'None listed');
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified charity dossier · England and Wales"
+  identityCode={d.number}
+  summary={`Charity Commission register details and annual return figures for registered charity ${d.number}. Figures are copied as published, with their source file and record number.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'England and Wales', href: EW_BASE },
+    { label: d.name },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'register-record', text: 'Register record', symbol: 'fileSearch' },
+    { slug: 'annual-returns', text: 'Annual return figures', symbol: 'table' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'related', text: 'Where this record appears', symbol: 'network' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>This dossier reproduces what the Charity Commission for England and Wales publishes about registered charity {d.number}. It is not a rating, ranking, endorsement or effectiveness claim, and Charitology computes no ratio from these figures. A value the Commission did not supply is shown as “Not supplied”, never as zero.</p>
+
+  <h2 id="register-record">Register record</h2>
+  <dl class="rw-facts">
+    <dt>Registered charity number</dt><dd>{d.number}</dd>
+    <dt>Organisation number</dt><dd>{d.organisationNumber}</dd>
+    <dt>Register name</dt><dd>{d.name}</dd>
+    {d.editionName !== d.name && <><dt>Name in the annual return edition</dt><dd>{d.editionName}</dd></>}
+    <dt>Registration status</dt><dd>{d.registrationStatus}</dd>
+    <dt>Date of registration</dt><dd>{d.registered ? dayLabel(d.registered) : 'Not supplied'}</dd>
+    <dt>Charity type</dt><dd>{d.charityType ?? 'Not supplied'}</dd>
+    <dt>Company registration number</dt><dd>{d.companyNumber ?? 'Not supplied'}</dd>
+    <dt>Charitable incorporated organisation</dt><dd>{d.cio === null ? 'Not supplied' : d.cio ? 'Yes' : 'No'}</dd>
+    <dt>Reporting status</dt><dd>{d.reportingStatus ?? 'Not supplied'}</dd>
+    <dt>Insolvent or in administration</dt><dd>{d.insolvent || d.inAdministration ? [d.insolvent && 'Insolvent', d.inAdministration && 'In administration'].filter(Boolean).join(', ') : 'Neither is recorded'}</dd>
+    <dt>What (purposes)</dt><dd>{d.what.length ? d.what.map(([code, text], i) => <>{i > 0 && '; '}<a href={url(w.purposePath(code))}>{text}</a> ({code})</>) : 'None listed'}</dd>
+    <dt>Who (beneficiaries)</dt><dd>{classification(d.who)}</dd>
+    <dt>How (methods)</dt><dd>{classification(d.how)}</dd>
+  </dl>
+  <p class="note">Source rows: register and classification extracts dated {w.registerDate}, main charity rows only (linked charity number 0). Contact details, addresses, trustees and the charity’s own activity description are omitted.</p>
+
+  <h2 id="annual-returns">Annual return figures</h2>
+  <p>{d.periods.length === 1 ? 'One financial year' : `${count(d.periods.length)} financial years`} from the Commission’s annual return history. Each row cites its record number in that extract.</p>
+  <div class="table-wrap">
+    <table class="data rw-table">
+      <caption>Pounds sterling, as published in the annual return history. Part A gross income and gross expenditure.</caption>
+      <thead><tr><th scope="col">Financial year</th><th scope="col">Return received</th><th scope="col" class="num">Gross income</th><th scope="col" class="num">Gross expenditure</th></tr></thead>
+      <tbody>
+        {d.periods.map((p) => (
+          <tr>
+            <th scope="row">{dayLabel(p.start)} to {dayLabel(p.end)}<span class="rw-sub">Record {count(p.record)}</span></th>
+            <td>{p.received ? dayLabel(p.received) : 'Not supplied'}</td>
+            <td class="num">{p.grossIncome === null ? 'Not supplied' : gbp(p.grossIncome)}</td>
+            <td class="num">{p.grossExpenditure === null ? 'Not supplied' : gbp(p.grossExpenditure)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="note">The selected fields do not establish the boundaries of consolidated accounts. Use the charity’s published accounts before comparing or adding figures.</p>
+
+  <Faq faqs={faqs} />
+
+  <h2 id="related">Where this record appears</h2>
+  <ul>
+    {d.what.map(([code, text]) => <li><a href={url(w.purposePath(code))}>{text}: England and Wales charity dossiers</a>.</li>)}
+    <li><a href={url(EW_BASE)}>All England and Wales charity dossiers</a>.</li>
+    <li><a href={url('/record/charity-financials/england-wales/')}>Search every England and Wales annual return</a> in the committed edition.</li>
+    <li><a href={registerEntry}>Current Commission register entry</a> for later amendments, accounts and status.</li>
+  </ul>
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Inclusion follows one rule: this is a registered main charity whose latest financial year in the committed annual-return edition reports gross income of at least {w.ewThreshold}, and the register extract dated {w.registerDate} still lists it as Registered. The rule is a coverage boundary for Wave 1, not a judgment of the charity.</p>
+  <p>Contains public sector information from the Charity Commission for England and Wales, licensed under the Open Government Licence v3.0. Charitology selected and reformatted the records. <a href={url(`${WAVE1_DATA_PATH}manifest.json`)} download="charitology-registry-wave1-manifest.json">Download the Wave 1 manifest</a> for every source URL, retrieval time and SHA-256 fingerprint, or the <a href={url(`${WAVE1_DATA_PATH}england-wales-dossiers.json`)} download="charitology-england-wales-dossiers.json">England and Wales dossier dataset</a>.</p>
+</Entry>
