@@ -1,0 +1,100 @@
+---
+import Entry from '../../../../../../layouts/Entry.astro';
+import Faq from '../../../../../../components/registry/Faq.astro';
+import UsDossierTable from '../../../../../../components/registry/UsDossierTable.astro';
+import '../../../../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../../../../lib/site';
+import { wave1, faqNode, hubNodes, count, usDossierPath, US_BASE, WAVE1_BASE, WAVE1_DATA_PATH } from '../../../../../../lib/registry-wave1';
+
+export function getStaticPaths() {
+  return wave1().stateHubs.map((state) => ({ params: { state: state.toLowerCase() }, props: { state } }));
+}
+
+const { state } = Astro.props as { state: string };
+const w = wave1();
+const name = w.stateName(state);
+const items = w.byState.get(state)!;
+const s = w.usHubs.states[state];
+const faqs = w.usHubFaqs(items, { label: name, state });
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const title = `${name} charity dossiers`;
+const description = `${count(items.length)} Wave 1 Form 990 dossiers and ${count(s.records)} IRS EO BMF 501(c)(3) records with a ${name} mailing address, with NTEE major-group counts. Figures as published by the IRS.`;
+const groups = Object.entries(s.groups).sort((a, b) => a[0].localeCompare(b[0]));
+const dossierGroups = w.tally(items, (d) => w.groupOf(d));
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin,
+    items: items.map((d) => ({ name: d.name, url: absolute(usDossierPath(d.ein), Astro.site) })),
+    spatialCoverage: `${name}, United States`,
+    dataFiles: [absolute(`${WAVE1_DATA_PATH}us-form-990-dossiers.json`, Astro.site), absolute(`${WAVE1_DATA_PATH}us-hubs.json`, Astro.site)],
+    isBasedOn: [...w.bmf.files.map((f: { url: string }) => f.url), ...Object.values(w.soi.files).map((f: any) => f.url)],
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    creditText: 'Internal Revenue Service public records, selected and formatted by Charitology.',
+  }),
+  faqNode(faqs),
+];
+const sources = [
+  { title: 'Exempt Organizations Business Master File Extract (EO BMF)', publisher: 'Internal Revenue Service', url: w.bmf.page },
+  { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service, Statistics of Income', url: w.soi.page },
+  { title: w.codes.source.title, publisher: 'Internal Revenue Service', url: w.codes.source.url },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified registry hub · United States"
+  identityCode={state}
+  summary={`IRS 501(c)(3) records with a ${name} mailing address, and the ${count(items.length)} Wave 1 Form 990 dossiers among them, listed alphabetically.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'United States', href: US_BASE },
+    { label: name },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'registry-counts', text: 'EO BMF counts', symbol: 'bars' },
+    { slug: 'dossiers', text: 'Wave 1 dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>This hub counts what the IRS Exempt Organizations Business Master File lists for mailing-address state {state} and links every Wave 1 dossier with that address. It does not rank, rate or endorse any organization.</p>
+
+  <h2 id="registry-counts">EO BMF counts</h2>
+  <dl class="rw-facts">
+    <dt>Subsection 03 records</dt><dd>{count(s.records)}</dd>
+    <dt>With a standard NTEE code</dt><dd>{count(s.withNtee)}</dd>
+    <dt>With a nonstandard NTEE value</dt><dd>{count(s.nonstandardNtee)}</dd>
+    <dt>Private-foundation codes 02, 03 or 04</dt><dd>{count(s.privateFoundations)}</dd>
+    <dt>EO BMF posting</dt><dd>Four regional files, last modified {w.bmfPosted}</dd>
+  </dl>
+  <div class="table-wrap">
+    <table class="data rw-table">
+      <caption>Subsection 03 records by NTEE major group, mailing-address state {state}.</caption>
+      <thead><tr><th scope="col">NTEE major group</th><th scope="col" class="num">EO BMF records</th><th scope="col" class="num">Wave 1 dossiers</th></tr></thead>
+      <tbody>
+        {groups.map(([g, n]) => (
+          <tr>
+            <th scope="row">{w.stateGroupSet.has(`${state}|${g}`) ? <a href={url(w.stateGroupPath(state, g))}>{w.groupLabel(g)}</a> : w.byGroup.has(g) ? <a href={url(w.groupPath(g))}>{w.groupLabel(g)}</a> : w.groupLabel(g)}</th>
+            <td class="num">{count(n)}</td>
+            <td class="num">{count(dossierGroups.get(g) ?? 0)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="dossiers">Wave 1 dossiers</h2>
+  <p>{count(items.length)} organizations, in alphabetical order by IRS primary name. Each row shows the latest selected tax period.</p>
+  <UsDossierTable items={items} caption={`Wave 1 dossiers with mailing-address state ${state}. U.S. dollars as published in the IRS Form 990 extract.`} showState={false} />
+
+  <Faq faqs={faqs} />
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Counts include every subsection 03 row in the four regional EO BMF files whose STATE field is {state}. The state is the IRS mailing address, which does not show where services are delivered. Dossiers include subsection 03 Form 990 filers whose latest selected tax period reports total revenue of at least {w.usThreshold}. Totals are not added across organizations because related entities can report overlapping amounts.</p>
+  <p><a href={url(`${WAVE1_DATA_PATH}us-hubs.json`)} download="charitology-us-registry-hubs.json">Download the hub counts</a> or the <a href={url(`${WAVE1_DATA_PATH}manifest.json`)} download="charitology-registry-wave1-manifest.json">Wave 1 manifest</a> with source fingerprints. <a href={url(US_BASE)}>Browse every state and NTEE group</a>.</p>
+</Entry>

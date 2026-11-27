@@ -1,0 +1,44 @@
+---
+// Alphabetical list of U.S. dossiers. Ordering is by IRS primary name, never by amount.
+import { url } from '../../lib/site';
+import { einLabel, monthLabel, usd, usDossierPath, type UsDossier } from '../../lib/registry-wave1';
+
+interface Props {
+  items: UsDossier[];
+  caption: string;
+  showState?: boolean;
+  showNtee?: boolean;
+}
+const { items, caption, showState = true, showNtee = true } = Astro.props;
+---
+
+<div class="table-wrap">
+  <table class="data rw-table">
+    <caption>{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Organization (IRS primary name)</th>
+        <th scope="col">{showState ? 'City, state' : 'City'}</th>
+        {showNtee && <th scope="col">NTEE</th>}
+        <th scope="col">Latest tax period ending</th>
+        <th scope="col" class="num">Total revenue</th>
+        <th scope="col" class="num">Total functional expenses</th>
+      </tr>
+    </thead>
+    <tbody>
+      {items.map((d) => {
+        const p = d.periods[0];
+        return (
+          <tr>
+            <th scope="row"><a href={url(usDossierPath(d.ein))}>{d.name}</a><span class="rw-sub">EIN {einLabel(d.ein)}</span></th>
+            <td>{showState ? [d.city, d.state].filter(Boolean).join(', ') || 'Not supplied' : d.city ?? 'Not supplied'}</td>
+            {showNtee && <td>{d.ntee ?? 'None'}</td>}
+            <td>{monthLabel(p.taxPeriod)}</td>
+            <td class="num">{p.totalRevenue === null ? 'Not supplied' : usd(p.totalRevenue)}</td>
+            <td class="num">{p.functionalExpenses === null ? 'Not supplied' : usd(p.functionalExpenses)}</td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>

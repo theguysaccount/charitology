@@ -25,6 +25,7 @@ import {
   PUBLICATION_LIMITS,
 } from "../src/lib/publication-editions-model.mjs";
 import { renderPublicationMarkdown } from "../src/lib/publication-editions-view.ts";
+import { readBuiltSitemapSet } from "./sitemap-set.mjs";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), ".."),
   dist = join(root, "dist");
 const base = (process.env.BASE_PATH || "/").replace(/\/$/, ""),
@@ -644,11 +645,10 @@ check(
         includes(notice, "Its facts stay fixed");
       }
     }
+    const sitemapLocs = new Set(readBuiltSitemapSet(dist).locs);
     for (const e of input.editions)
       assert.ok(
-        raw("/sitemap.xml").includes(
-          new URL(href(editionPath(e.core.id)), site).href,
-        ),
+        sitemapLocs.has(new URL(href(editionPath(e.core.id)), site).href),
       );
   },
 );

@@ -1,0 +1,89 @@
+---
+import Entry from '../../../../../../layouts/Entry.astro';
+import Faq from '../../../../../../components/registry/Faq.astro';
+import UsDossierTable from '../../../../../../components/registry/UsDossierTable.astro';
+import '../../../../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../../../../lib/site';
+import { wave1, faqNode, hubNodes, count, usDossierPath, usStatePath, US_BASE, WAVE1_BASE, WAVE1_DATA_PATH } from '../../../../../../lib/registry-wave1';
+
+export function getStaticPaths() {
+  const w = wave1();
+  return w.stateGroupHubs.map(([state, group]) => ({
+    params: { state: state.toLowerCase(), group: w.groupSlug(group) },
+    props: { state, group },
+  }));
+}
+
+const { state, group } = Astro.props as { state: string; group: string };
+const w = wave1();
+const stateName = w.stateName(state);
+const label = w.groupLabel(group);
+const items = w.byStateGroup.get(`${state}|${group}`)!;
+const records = w.usHubs.states[state].groups[group] ?? 0;
+const faqs = w.usHubFaqs(items, { label: `${stateName} NTEE ${group}`, state, group });
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const title = `${label} charity dossiers in ${stateName}`;
+const description = `${count(items.length)} Wave 1 Form 990 dossiers and ${count(records)} IRS EO BMF 501(c)(3) records with NTEE major group ${group} and a ${stateName} mailing address. Figures as published by the IRS.`;
+const cores = [...w.tally(items, (d) => d.ntee?.slice(0, 3) ?? null).entries()].sort((a, b) => a[0].localeCompare(b[0]));
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin,
+    items: items.map((d) => ({ name: d.name, url: absolute(usDossierPath(d.ein), Astro.site) })),
+    spatialCoverage: `${stateName}, United States`,
+    dataFiles: [absolute(`${WAVE1_DATA_PATH}us-form-990-dossiers.json`, Astro.site), absolute(`${WAVE1_DATA_PATH}us-hubs.json`, Astro.site)],
+    isBasedOn: [...w.bmf.files.map((f: { url: string }) => f.url), ...Object.values(w.soi.files).map((f: any) => f.url)],
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    creditText: 'Internal Revenue Service public records, selected and formatted by Charitology.',
+  }),
+  faqNode(faqs),
+];
+const sources = [
+  { title: 'Exempt Organizations Business Master File Extract (EO BMF)', publisher: 'Internal Revenue Service', url: w.bmf.page },
+  { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service, Statistics of Income', url: w.soi.page },
+  { title: w.codes.source.title, publisher: 'Internal Revenue Service', url: w.codes.source.url },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow={`Verified registry hub · ${stateName}`}
+  identityCode={`${state} · ${group}`}
+  summary={`Wave 1 Form 990 dossiers with an NTEE ${group} code and a ${stateName} mailing address, listed alphabetically, with the EO BMF count for the same group and state.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'United States', href: US_BASE },
+    { label: stateName, href: usStatePath(state) },
+    { label: label },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'registry-counts', text: 'EO BMF counts', symbol: 'bars' },
+    { slug: 'dossiers', text: 'Wave 1 dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>This hub is published because at least {w.stateMin} Wave 1 dossiers share NTEE major group {group} and mailing-address state {state}. It does not rank, rate or endorse any organization.</p>
+
+  <h2 id="registry-counts">EO BMF counts</h2>
+  <dl class="rw-facts">
+    <dt>Subsection 03 records, NTEE {group}, state {state}</dt><dd>{count(records)}</dd>
+    <dt>Wave 1 dossiers</dt><dd>{count(items.length)}</dd>
+    <dt>Core codes among the dossiers</dt><dd>{cores.map(([code, n], i) => <>{i > 0 && '; '}{code}{w.codes.coreCodes[code] ? ` (${w.codes.coreCodes[code]})` : ''}: {count(n)}</>)}</dd>
+    <dt>EO BMF posting</dt><dd>Four regional files, last modified {w.bmfPosted}</dd>
+  </dl>
+  <p>See every <a href={url(usStatePath(state))}>{stateName} dossier</a> or every <a href={url(w.groupPath(group))}>{label} dossier</a> nationwide.</p>
+
+  <h2 id="dossiers">Wave 1 dossiers</h2>
+  <UsDossierTable items={items} caption={`Wave 1 dossiers, NTEE ${group}, mailing-address state ${state}. U.S. dollars as published in the IRS Form 990 extract.`} showState={false} />
+
+  <Faq faqs={faqs} />
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>The NTEE code is the IRS classification on the EO BMF, not Charitology’s. The state is the IRS mailing address, which does not show where services are delivered. Dossiers include subsection 03 Form 990 filers whose latest selected tax period reports total revenue of at least {w.usThreshold}. Totals are not added across organizations because related entities can report overlapping amounts.</p>
+  <p><a href={url(`${WAVE1_DATA_PATH}manifest.json`)} download="charitology-registry-wave1-manifest.json">Download the Wave 1 manifest</a> with every source fingerprint.</p>
+</Entry>

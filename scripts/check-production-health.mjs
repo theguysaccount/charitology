@@ -99,13 +99,30 @@ const checks = [
       const smRes = await fetchWithTimeout('https://charitology.com/sitemap.xml', { redirect: 'follow' });
       assert.equal(smRes.status, 200, `Expected 200, got ${smRes.status}`);
       const smXml = await smRes.text();
-      const locs = smXml.match(/<loc>/g)?.length ?? 0;
+      // A sitemap index lists child urlsets; count the page URLs across every child.
+      let locs = 0;
+      let children = 0;
+      if (smXml.includes('<sitemapindex')) {
+        const childUrls = [...smXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+        assert.ok(childUrls.length >= 2, `Expected >=2 child sitemaps, got ${childUrls.length}`);
+        for (const childUrl of childUrls) {
+          assert.equal(new URL(childUrl).origin, 'https://charitology.com', `Child sitemap off-origin: ${childUrl}`);
+          const childRes = await fetchWithTimeout(childUrl, { redirect: 'follow' });
+          assert.equal(childRes.status, 200, `Expected 200 for ${childUrl}, got ${childRes.status}`);
+          const childXml = await childRes.text();
+          assert.ok(childXml.includes('<urlset'), `${childUrl} is not a urlset`);
+          locs += childXml.match(/<loc>/g)?.length ?? 0;
+          children++;
+        }
+      } else {
+        locs = smXml.match(/<loc>/g)?.length ?? 0;
+      }
       assert.ok(locs >= 590, `Expected >=590 sitemap URLs, got ${locs}`);
       const llmsRes = await fetchWithTimeout('https://charitology.com/llms.txt', { redirect: 'follow' });
       assert.equal(llmsRes.status, 200, `Expected 200, got ${llmsRes.status}`);
       const llmsTxt = await llmsRes.text();
       assert.ok(llmsTxt.includes('https://os.charitology.org/mcp'), 'Missing MCP endpoint in /llms.txt');
-      return `${locs} sitemap URLs, /llms.txt ${llmsTxt.length} bytes`;
+      return `${locs} sitemap URLs${children ? ` in ${children} child sitemaps` : ''}, /llms.txt ${llmsTxt.length} bytes`;
     },
   },
   {

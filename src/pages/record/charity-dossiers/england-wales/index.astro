@@ -1,0 +1,90 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import Faq from '../../../../components/registry/Faq.astro';
+import EwDossierTable from '../../../../components/registry/EwDossierTable.astro';
+import '../../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../../lib/site';
+import { wave1, faqNode, hubNodes, count, dayLabel, ewDossierPath, WAVE1_BASE, WAVE1_DATA_PATH } from '../../../../lib/registry-wave1';
+
+const w = wave1();
+const faqs = w.ewIndexFaqs();
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const sel = w.manifest.selection.ew;
+const returns = w.manifest.sources.ccewAnnualReturns;
+const title = 'England and Wales charity dossiers';
+const description = `${count(w.ew.length)} verified Charity Commission dossiers and ${count(w.purposeHubs.length)} purpose hubs built from the register, classification and annual return history extracts. Figures as published.`;
+const dossierPurposes = w.tally(w.ew.flatMap((d) => d.what), ([c]) => c);
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin,
+    items: w.ew.map((d) => ({ name: d.name, url: absolute(ewDossierPath(d.number), Astro.site) })),
+    spatialCoverage: 'England and Wales',
+    dataFiles: [absolute(`${WAVE1_DATA_PATH}england-wales-dossiers.json`, Astro.site), absolute(`${WAVE1_DATA_PATH}england-wales-hubs.json`, Astro.site), absolute(`${WAVE1_DATA_PATH}manifest.json`, Astro.site)],
+    isBasedOn: [w.register.files.register.url, w.register.files.classification.url, returns.url],
+    license: w.register.licence,
+    creditText: w.register.attribution,
+  }),
+  faqNode(faqs),
+];
+const sources = [
+  { title: 'Register of charities: full register download and data definitions', publisher: 'Charity Commission for England and Wales', url: w.register.page },
+  { title: 'Register extract (publicextract.charity.zip)', publisher: 'Charity Commission for England and Wales', url: w.register.files.register.url, note: `extract dated ${w.registerDate}; SHA-256 ${w.register.files.register.sha256}` },
+  { title: 'Classification extract (publicextract.charity_classification.zip)', publisher: 'Charity Commission for England and Wales', url: w.register.files.classification.url, note: `extract dated ${w.registerDate}; SHA-256 ${w.register.files.classification.sha256}` },
+  { title: 'Annual return history extract', publisher: 'Charity Commission for England and Wales', url: returns.url, note: `committed edition of ${dayLabel(returns.edition)}; SHA-256 ${returns.sha256}` },
+  { title: 'Open Government Licence v3.0', publisher: 'The National Archives', url: w.register.licence },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified charity dossiers · Wave 1"
+  identityCode="E&W"
+  summary={`${count(w.ew.length)} Charity Commission dossiers, grouped by the register’s “What” classifications, listed alphabetically.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'England and Wales' },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'selection', text: 'Who is included', symbol: 'filter' },
+    { slug: 'by-purpose', text: 'By charitable purpose', symbol: 'bookmark' },
+    { slug: 'dossiers', text: 'All Wave 1 dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>Each dossier reproduces one registered charity’s Charity Commission register details, classifications and annual return figures, with the source extract and record number. Nothing here is a rating, ranking or endorsement.</p>
+
+  <h2 id="selection">Who is included</h2>
+  <p>Wave 1 takes the {count(sel.editionOrganizations)} registered main charities in the committed annual-return edition of {dayLabel(returns.edition)} and keeps the {count(sel.candidates)} whose latest financial year reports gross income of at least {w.ewThreshold}. All {count(w.ew.length)} are still listed as Registered under the same organisation number in the register extract dated {w.registerDate}. The threshold is a coverage boundary, not a judgment of any charity.</p>
+
+  <h2 id="by-purpose">By charitable purpose</h2>
+  <div class="table-wrap">
+    <table class="data rw-table">
+      <caption>Registered main charities and Wave 1 dossiers by “What” classification, register extract dated {w.registerDate}. A charity can list several.</caption>
+      <thead><tr><th scope="col">Purpose (“What” classification)</th><th scope="col" class="num">Registered charities</th><th scope="col" class="num">Wave 1 dossiers</th></tr></thead>
+      <tbody>
+        {Object.entries(w.ewHubs.purposes).map(([c, p]) => (
+          <tr>
+            <th scope="row">{w.byPurpose.has(c) ? <a href={url(w.purposePath(c))}>{p.description}</a> : p.description}<span class="rw-sub">Code {c}</span></th>
+            <td class="num">{count(p.charities)}</td>
+            <td class="num">{count(dossierPurposes.get(c) ?? 0)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="dossiers">All Wave 1 dossiers</h2>
+  <EwDossierTable items={w.ew} caption="Every England and Wales Wave 1 dossier, in alphabetical order. Pounds sterling as published in the annual return history." />
+
+  <Faq faqs={faqs} />
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Register details and classifications come from the extracts dated {w.registerDate}. Gross income and gross expenditure come from the annual return history in the committed edition of {dayLabel(returns.edition)}, which is not downloaded again. The selected fields do not establish the boundaries of consolidated accounts, so totals are not added across charities.</p>
+  <p>Contains public sector information from the Charity Commission for England and Wales, licensed under the Open Government Licence v3.0. Downloads: <a href={url(`${WAVE1_DATA_PATH}england-wales-dossiers.json`)} download="charitology-england-wales-dossiers.json">dossier records</a> · <a href={url(`${WAVE1_DATA_PATH}england-wales-hubs.json`)} download="charitology-england-wales-registry-hubs.json">hub counts</a> · <a href={url(`${WAVE1_DATA_PATH}manifest.json`)} download="charitology-registry-wave1-manifest.json">manifest with fingerprints</a>. To search every return in the edition, use the <a href={url('/record/charity-financials/england-wales/')}>England and Wales financial filings search</a>.</p>
+</Entry>

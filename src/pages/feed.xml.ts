@@ -1,11 +1,13 @@
 import type { APIRoute } from 'astro';
 import { allPages } from '../lib/pages';
 import { SITE, absolute } from '../lib/site';
+import { WAVE1_SITEMAP_SECTIONS } from '../lib/registry-wave1';
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 export const GET: APIRoute = async ({ site }) => {
-  const pages = (await allPages()).filter((p) => p.section !== 'Charitology');
+  // Wave 1 registry dossiers are reference records, not new writing; the sitemap lists them.
+  const pages = (await allPages()).filter((p) => p.section !== 'Charitology' && !WAVE1_SITEMAP_SECTIONS.has(p.section));
   const items = pages
     .map((p) => {
       const link = absolute(p.path, site);

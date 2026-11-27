@@ -25,9 +25,10 @@ interface Props {
   identitySymbol?: SymbolName;
   sections?: readonly { slug: string; text: string; depth?: number; symbol?: SymbolName }[];
   sources?: { title: string; url: string; publisher?: string; year?: string | number; note?: string }[];
+  jsonLd?: Record<string, unknown>[];
 }
 
-const { title, description, eyebrow, summary, crumbs, filePath, review = 'draft', sources = [], identityCode, identitySymbol, sections } = Astro.props;
+const { title, description, eyebrow, summary, crumbs, filePath, review = 'draft', sources = [], identityCode, identitySymbol, sections, jsonLd } = Astro.props;
 const destinations = pageSections(Astro.url.pathname.slice(url('/').length - 1)) ?? [];
 const hasAside = Astro.slots.has('aside');
 const hasTool = Astro.slots.has('top');
@@ -36,7 +37,7 @@ const outline = hasTool ? [...destinations, ...articleSections] : [...articleSec
 if (hasTool && destinations.length === 0) outline.unshift({ slug: 'working-tool', text: 'Open the tool', symbol: 'bolt' });
 ---
 
-<Base title={title} description={description ?? summary} identitySymbol={identitySymbol} crumbs={crumbs}>
+<Base title={title} description={description ?? summary} identitySymbol={identitySymbol} crumbs={crumbs} jsonLd={jsonLd}>
   <header class="page-head">
     <div class="wrap">
       {crumbs && <Crumbs items={crumbs} />}

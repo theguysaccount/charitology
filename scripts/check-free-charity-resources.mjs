@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { readBuiltSitemapSet } from './sitemap-set.mjs';
 
 const srcRaw = readFileSync('src/data/free-charity-resources.json', 'utf8');
 const pubRaw = readFileSync('public/data/free-charity-resources.json', 'utf8');
@@ -32,8 +33,8 @@ assert.ok(html.includes('Cloudflare Project Galileo'), 'Built /for-charities/fre
 assert.ok(html.includes('OpenAI for Nonprofits'), 'Built /for-charities/free/ missing OpenAI for Nonprofits');
 assert.ok(html.includes('Claude for Nonprofits'), 'Built /for-charities/free/ missing Claude for Nonprofits');
 
-const sitemap = readFileSync('dist/sitemap.xml', 'utf8');
-assert.ok(sitemap.includes('/for-charities/free/'), 'sitemap.xml missing /for-charities/free/');
+const sitemap = readBuiltSitemapSet('dist');
+assert.ok(sitemap.locs.some((loc) => new URL(loc).pathname.endsWith('/for-charities/free/')), 'sitemap.xml missing /for-charities/free/');
 
 const llms = readFileSync('dist/llms.txt', 'utf8');
 assert.ok(llms.includes('/for-charities/free/'), 'llms.txt missing /for-charities/free/');
