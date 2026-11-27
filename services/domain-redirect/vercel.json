@@ -7,6 +7,23 @@
   "trailingSlash": true,
   "headers": [
     {
+      "source": "/_astro/:path(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/:path(.*)",
+      "missing": [
+        { "type": "query", "key": "legacy", "value": "1" },
+        { "type": "cookie", "key": "__Host-charitology-legacy", "value": "1" }
+      ],
+      "headers": [
+        { "key": "CDN-Cache-Control", "value": "public, s-maxage=3600, stale-while-revalidate=86400" },
+        { "key": "Vercel-CDN-Cache-Control", "value": "public, s-maxage=3600, stale-while-revalidate=86400" }
+      ]
+    },
+    {
       "source": "/:path(.*)",
       "has": [
         { "type": "host", "value": "charitology.org" },

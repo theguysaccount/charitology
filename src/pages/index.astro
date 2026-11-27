@@ -10,8 +10,14 @@ import { SITE, pad, url } from '../lib/site';
 import { getCollection } from 'astro:content';
 import figures from '../data/figures.json';
 import ecosystem from '../data/ecosystem.json';
+import freeCharityData from '../data/free-charity-resources.json';
+import { GLOBAL_CHARITY_INDEX_PANELS, GLOBAL_CHARITY_INDEX_TOTAL_RECORDS } from '../lib/global-index-catalog';
+import { HOME_FAQS } from '../lib/structured-data';
 
 const conditions = await conditionsInOrder();
+const jurisdictionCount = GLOBAL_CHARITY_INDEX_PANELS.length;
+const totalRegistryRecords = GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US');
+const freeProgramCount = freeCharityData.items.length;
 const problems = (await problemsInOrder()).slice(0, 6);
 const totalProblems = (await getCollection('problems')).length;
 const field = await Promise.all(
@@ -44,8 +50,27 @@ const giving = figures.usGiving;
         </p>
         <div class="btn-row hero-actions">
           <a class="btn" href={url('/diagnosis/')}>Read the diagnosis</a>
-          <a class="btn btn-ghost" href={url('/tools/values-compass/')}>Find your compass</a>
+          <a class="btn btn-ghost" href={url('/record/charity-index/coverage/')}>Explore Charity Index</a>
+          <a class="btn btn-ghost" href={url('/tools/public-api/')}>Public API &amp; MCP</a>
         </div>
+        <nav class="hero-quicklinks" aria-label="Direct entry points">
+          <a href={url('/record/charity-index/coverage/')}>
+            <strong>Global Charity Index</strong>
+            <span>{jurisdictionCount} jurisdictions · {totalRegistryRecords} records</span>
+          </a>
+          <a href={url('/diagnosis/missing-feedback-loop/')}>
+            <strong>C01: Missing Feedback Loop</strong>
+            <span>15 conditions of the charity system</span>
+          </a>
+          <a href={url('/tools/public-api/')}>
+            <strong>Public JSON API &amp; MCP</strong>
+            <span>42 open endpoints · CC BY 4.0</span>
+          </a>
+          <a href={url('/for-charities/free/')}>
+            <strong>Free Charity Resources</strong>
+            <span>{freeProgramCount} verified software &amp; credit offers</span>
+          </a>
+        </nav>
         <p class="note hero-src">
           Figure: <a href={giving.sources[0].url}>{giving.sources[0].publisher}</a>.
         </p>
@@ -242,6 +267,26 @@ const giving = figures.usGiving;
     </div>
   </section>
 
+  <section class="section" aria-labelledby="home-faq-heading">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Quick answers</span>
+        <h2 id="home-faq-heading">Frequently asked questions</h2>
+        <p>Direct answers on Charitology’s open charity registries, methodology, free Charity OS workspace, and institutional partnerships.</p>
+      </div>
+      <div class="home-faq-list">
+        {
+          HOME_FAQS.map((faq) => (
+            <details class="home-faq">
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
   <section class="section join">
     <div class="wrap join-grid">
       <div>
@@ -280,7 +325,7 @@ const giving = figures.usGiving;
   @media(max-width:560px){.starting-grid{grid-template-columns:1fr;gap:.6rem}.starting-grid a{border-top:1px solid var(--rule);padding-block:1rem}}
 
   .hero {
-    padding-block: clamp(3rem, 9vw, 7rem) clamp(2.5rem, 6vw, 4.5rem);
+    padding-block: clamp(2rem, 5vw, 3.75rem) clamp(1.75rem, 4vw, 2.75rem);
     border-bottom: 1px solid var(--rule);
     background:
       radial-gradient(1200px 400px at 80% -10%, var(--accent-wash), transparent 70%),
@@ -306,7 +351,83 @@ const giving = figures.usGiving;
     color: var(--ink-2);
   }
   .hero-actions {
-    margin-top: 1.75rem;
+    margin-top: 1.4rem;
+  }
+  .hero-quicklinks {
+    margin-top: 1.25rem;
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13.5rem), 1fr));
+  }
+  .hero-quicklinks a {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.65rem 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .hero-quicklinks a:hover {
+    border-color: var(--accent);
+    background: var(--bg-2);
+    color: var(--ink);
+  }
+  .hero-quicklinks strong {
+    font-size: 0.88rem;
+    font-weight: 650;
+    line-height: 1.25;
+  }
+  .hero-quicklinks span {
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    line-height: 1.35;
+  }
+  .home-faq-list {
+    display: grid;
+    gap: 0.65rem;
+    max-width: 52rem;
+  }
+  .home-faq {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .home-faq > summary {
+    padding: 0.9rem 1.1rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.96rem;
+    list-style: none;
+  }
+  .home-faq > summary::-webkit-details-marker {
+    display: none;
+  }
+  .home-faq > summary::before {
+    content: '▸';
+    margin-inline-end: 0.6rem;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+  .home-faq[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  .home-faq > p {
+    margin: 0;
+    padding: 0.9rem 1.1rem;
+    border-top: 1px solid var(--rule);
+    background: var(--bg);
+    color: var(--ink-2);
+    font-size: 0.96rem;
+    line-height: 1.55;
   }
   .hero-src {
     margin-top: 1rem;

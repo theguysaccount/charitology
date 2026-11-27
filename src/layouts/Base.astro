@@ -1,9 +1,9 @@
 ---
-import '@fontsource-variable/fraunces/opsz.css';
-import '@fontsource-variable/source-serif-4/opsz.css';
-import '@fontsource-variable/source-serif-4/opsz-italic.css';
+import '../styles/fonts.css';
 import '../styles/global.css';
 import '../styles/site-identity.css';
+import frauncesLatinFont from '@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2?url';
+import sourceSerifLatinFont from '@fontsource-variable/source-serif-4/files/source-serif-4-latin-opsz-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE, url } from '../lib/site';
@@ -48,9 +48,12 @@ const ogVideo = Astro.url.pathname === url('/')
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preload" as="font" type="font/woff2" href={frauncesLatinFont} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={sourceSerifLatinFont} crossorigin />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="stylesheet" href={url('/site-identities.css')} />
     <link rel="icon" href={url('/favicon.ico')} sizes="16x16 32x32 48x48" />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
     <link rel="icon" href={url('/favicon-32.png')} type="image/png" sizes="32x32" />
@@ -97,7 +100,6 @@ const ogVideo = Astro.url.pathname === url('/')
         }
       } catch {}
     </script>
-    <link rel="stylesheet" href={url('/site-identities.css')} />
     {
       structuredData.map((node) => (
         <script type="application/ld+json" set:html={JSON.stringify(node).replace(/</g, '\\u003c')} />

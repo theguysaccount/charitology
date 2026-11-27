@@ -31,6 +31,20 @@ assert.deepEqual(config.redirects, [
 ]);
 assert.deepEqual(config.headers, [
   {
+    source: "/_astro/:path(.*)",
+    headers: [
+      { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+    ],
+  },
+  {
+    source: path,
+    missing: [legacyQuery, legacyCookie],
+    headers: [
+      { key: "CDN-Cache-Control", value: "public, s-maxage=3600, stale-while-revalidate=86400" },
+      { key: "Vercel-CDN-Cache-Control", value: "public, s-maxage=3600, stale-while-revalidate=86400" },
+    ],
+  },
+  {
     source: path,
     has: [previousHost, legacyQuery],
     headers: [
