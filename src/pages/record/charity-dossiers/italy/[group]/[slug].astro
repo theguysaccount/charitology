@@ -1,0 +1,11 @@
+---
+// Wave 1d: italy dossiers and hubs (static paths from src/lib/registry-wave1d.ts).
+import W1dEntryPage from '../../../../../components/registry/W1dEntryPage.astro';
+import { wave1dCountryPaths } from '../../../../../lib/registry-wave1d';
+
+export function getStaticPaths() {
+  return wave1dCountryPaths('it');
+}
+---
+
+<W1dEntryPage {...(Astro.props as any)} />

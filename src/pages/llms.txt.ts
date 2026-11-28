@@ -8,6 +8,7 @@ import { absolute } from '../lib/site';
 import { wave1, usStatePath, US_BASE, EW_BASE, WAVE1_BASE, WAVE1_DATA_PATH } from '../lib/registry-wave1';
 import { wave1b, sentence, SC_BASE, AU_BASE, CA_BASE, CAUSE_PATH, WAVE1B_DATA_PATH, WAVE1B_SITEMAP } from '../lib/registry-wave1b';
 import { wave1c, DOSSIER_KEYS, HUB_KEYS, WAVE1C_DATA_PATH, WAVE1C_SITEMAP } from '../lib/registry-wave1c';
+import { wave1d, W1D_KEYS, WAVE1D_DATA_PATH, WAVE1D_SITEMAP } from '../lib/registry-wave1d';
 
 // The registry sections of llms.txt are plain ASCII; labels in other scripts are listed by URL only.
 const ascii = (text: string) => text.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^\x20-\x7e]/g, '');
@@ -20,6 +21,8 @@ export const GET: APIRoute = ({ site }) => {
   const b = wave1b();
   const c = wave1c();
   const cTotal = DOSSIER_KEYS.reduce((n, k) => n + c.sorted[k].length, 0);
+  const d = wave1d();
+  const dTotal = W1D_KEYS.reduce((n, k) => n + d.sorted[k].length, 0);
 
   const lines: string[] = [
     '# Charitology',
@@ -87,6 +90,14 @@ export const GET: APIRoute = ({ site }) => {
     ...HUB_KEYS.map((k) => `- [${c.H[k].country} register hubs (${c.registryHubKeys(k).length}, ${ascii(c.H[k].labelPlural)}, no per-organization figures in the edition)](${absolute(c.base(c.H[k].slug), site)}): ${c.registryHubKeys(k).map((key) => absolute(c.registryHubPath(k, key), site)).join(' | ')} | data: ${absolute(`${WAVE1C_DATA_PATH}${k}-hubs.json`, site)}`),
     `- [Cause x Country index](${absolute(CAUSE_PATH, site)}) also sets the Wave 1c registers' own labels side by side (${c.causes.groups.length} groups; Wave 1b stems plus stems for labels in Swedish, Spanish, German, Latvian and Croatian); not a crosswalk.`,
     '',
+    `## Verified Charity Dossiers, Wave 1d (${dTotal.toLocaleString('en-US')} Organizations | ${W1D_KEYS.length} National Registers Rebuilt from Official Downloads | Figures Exactly as Published | No Ratings)`,
+    '',
+    `- Wave 1d manifest (official file URLs, retrieval times, sizes, SHA-256; compact source extracts): ${absolute(`${WAVE1D_DATA_PATH}manifest.json`, site)} | sitemap: ${absolute(`/${WAVE1D_SITEMAP}`, site)} | cause groups: ${absolute(`${WAVE1D_DATA_PATH}cause-groups.json`, site)}`,
+    ...W1D_KEYS.map((k) => `- [${d.D[k].country} (${d.sorted[k].length.toLocaleString('en-US')} dossiers, ${ascii(d.D[k].register)})](${absolute(d.base(k), site)}): threshold ${d.sel[k].threshold.currency} ${d.sel[k].threshold.value} on ${d.sel[k].threshold.line} | data: ${absolute(`${WAVE1D_DATA_PATH}${k}-dossiers.json`, site)} | extract: ${absolute(`${WAVE1D_DATA_PATH}${d.manifest.extracts[k].path}`, site)}`),
+    ...W1D_KEYS.filter((k) => d.hubKeys[k].length).map((k) => `- ${d.D[k].country} ${ascii(d.D[k].labelNoun!)} hubs (${d.hubKeys[k].length}, each with >= ${d.hubMin} dossiers): ${d.hubKeys[k].map((l) => absolute(d.hubPath(k, l), site)).join(' | ')}`),
+    '- Slovenia covers only recipients in section 1 (non-governmental organizations in the public interest) of the Government 2025 list of eligible recipients; political parties, trade unions, religious communities and schools are excluded.',
+    `- [Cause x Country index](${absolute(CAUSE_PATH, site)}) also sets the Israel and Italy labels side by side (${d.causes.groups.length} groups; Wave 1b stems plus stems for Hebrew and Italian labels); not a crosswalk.`,
+    '',
     `## Key Funding-Flow Datasets (${lookupCount} Lookups, ${caseCount} Case Studies)`,
     '',
     `- [Browse all ${totalFlows} funding flows](${absolute('/record/funding-flows/', site)})`,
@@ -111,7 +122,7 @@ export const GET: APIRoute = ({ site }) => {
     `- ${absolute('/api/v1/conditions.json', site)}`,
     `- ${absolute('/api/v1/open-problems.json', site)}`,
     `- ${absolute('/api/v1/checklist.json', site)}`,
-    `- ${absolute('/sitemap.xml', site)} (sitemap index: ${absolute('/sitemap-core.xml', site)} | ${absolute('/sitemap-registries-wave1.xml', site)} | ${absolute(`/${WAVE1B_SITEMAP}`, site)} | ${absolute(`/${WAVE1C_SITEMAP}`, site)})`,
+    `- ${absolute('/sitemap.xml', site)} (sitemap index: ${absolute('/sitemap-core.xml', site)} | ${absolute('/sitemap-registries-wave1.xml', site)} | ${absolute(`/${WAVE1B_SITEMAP}`, site)} | ${absolute(`/${WAVE1C_SITEMAP}`, site)} | ${absolute(`/${WAVE1D_SITEMAP}`, site)})`,
     '',
   ];
 

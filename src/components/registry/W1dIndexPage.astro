@@ -1,0 +1,108 @@
+---
+// Wave 1d country index: every dossier of one register and its label hubs, built
+// only from the committed, hash-pinned Wave 1d dataset.
+import Entry from '../../layouts/Entry.astro';
+import Faq from './Faq.astro';
+import W1dDossierTable from './W1dDossierTable.astro';
+import '../../styles/registry-wave1.css';
+import { absolute, url } from '../../lib/site';
+import { faqNode, hubNodes, count, dayLabel, WAVE1_BASE } from '../../lib/registry-wave1';
+import { wave1d, WAVE1D_DATA_PATH, type W1dKey } from '../../lib/registry-wave1d';
+
+interface Props {
+  k: W1dKey;
+}
+const { k } = Astro.props;
+const w = wave1d();
+const def = w.D[k];
+const sel = w.sel[k];
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const faqs = w.indexFaqs(k);
+const sourceEntries = Object.entries(w.src[k] as Record<string, any>);
+const sources = sourceEntries.map(([, s]) => ({
+  title: s.title, publisher: def.publisher, url: s.url,
+  note: `retrieved ${String(s.retrievedAt).slice(0, 10)}; ${count(Number(s.bytes))} bytes; SHA-256 ${s.sha256}`,
+}));
+const hubKeys = w.hubKeys[k];
+const title = `${def.country} charity dossiers`;
+const description = `${count(w.sorted[k].length)} verified ${def.country} dossiers from the ${def.register}, each organization reporting ${def.thresholdText}.${hubKeys.length ? ` ${count(hubKeys.length)} ${def.labelNoun} hubs.` : ''} Figures exactly as published.`;
+const items = hubKeys.length
+  ? hubKeys.map((l) => ({ name: w.hubTitle(k, l), url: absolute(w.hubPath(k, l), Astro.site) }))
+  : w.sorted[k].map((x) => ({ name: x.name, url: absolute(w.dossierPath(k, x), Astro.site) }));
+const dataFiles = [`${k}-dossiers.json`, `${k}-counts.json`, `extracts/${w.manifest.extracts[k].path.split('/').at(-1)}`, 'manifest.json'].map((f) => absolute(`${WAVE1D_DATA_PATH}${f}`, Astro.site));
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin, dateModified: w.manifest.edition, items, spatialCoverage: def.country, dataFiles,
+    isBasedOn: sourceEntries.map(([, s]) => s.url), license: def.licence, creditText: `${def.attribution} Selected and formatted by Charitology.`,
+  }),
+  faqNode(faqs),
+];
+const excluded = Object.entries(sel.excluded as Record<string, string[]>).filter(([, v]) => v.length);
+const excludedCount = excluded.reduce((n, [, v]) => n + v.length, 0);
+const labelRows = def.hubSegment ? Object.keys(w.counts[k].labels as Record<string, number>).sort((a, b) => def.labelSlugOf!(a).localeCompare(def.labelSlugOf!(b))) : [];
+const rule: Record<W1dKey, string> = {
+  il: 'Wave 1d includes every amuta in the dataset whose latest financial report shows the threshold revenue and whose status is “רשומה” (registered) or “פעילה” (active). Revenue is copied with the decimals the dataset publishes. The dataset’s total-expenses field prints 0 for most amutot that report revenue, so a 0 there is shown as “Not supplied”.',
+  ee: 'Wave 1d covers the organizations on the Estonian Tax and Customs Board’s list of non-profit associations, foundations and religious associations eligible for income tax incentives. It includes each one whose latest annual report in the e-Business Register file (2025, otherwise 2024) shows the threshold revenue and whose register status is “Registrisse kantud”. Report values keep exactly the digits and decimal place the file prints.',
+  it: 'Wave 1d takes the Agenzia delle Entrate’s AF 2025 list of entities admitted to the 5 per mille, which publishes one row per entity with its own amounts. It includes every row at the threshold except entities admitted only in the Comuni column, which are municipalities. Rows are never merged and amounts never summed; a blank cell reads “Not supplied”.',
+  hu: 'Wave 1d takes NAV’s lists of registered civil beneficiaries of the 1% personal income tax assignment for 2024, 2025 and 2026, and includes every beneficiary whose 2026 amount reaches the threshold. NAV publishes beneficiaries with a technical number in a separate list, which is not covered.',
+  si: 'The FURS lists of recipients do not say what kind of organization each recipient is, and they include political parties. Wave 1d therefore uses the official classification in the Government’s 2025 list of eligible recipients (Uradni list RS 70/2025): it includes only recipients that the list places in section 1, non-governmental organizations in the public interest, and leaves out every recipient listed only in sections 2 to 6 (churches and other religious communities and their parts, representative trade unions, political parties, schools and kindergartens) or not found in the list.',
+};
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified charity dossiers · Wave 1d"
+  identityCode={def.identityCode}
+  summary={`${count(w.sorted[k].length)} dossiers from the ${def.register}, listed alphabetically, with every figure copied exactly as the official file publishes it.`}
+  description={description}
+  crumbs={[{ label: 'The Record', href: '/record/' }, { label: 'Charity dossiers', href: WAVE1_BASE }, { label: def.country }]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'selection', text: 'Who is included', symbol: 'filter' },
+    ...(labelRows.length ? [{ slug: 'by-label', text: `By ${def.labelNoun}`, symbol: 'bookmark' as const }] : []),
+    { slug: 'dossiers', text: `All ${def.country} dossiers`, symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>Each dossier reproduces one organization’s record in the {def.register} published by {def.publisher}, with the source file and record reference. Nothing here is a rating, ranking or endorsement, and a value the source does not supply reads “Not supplied”, never zero.</p>
+  <h2 id="selection">Who is included</h2>
+  <p>{rule[k]} {count(sel.candidates)} records qualify{excludedCount ? `; ${count(excludedCount)} of them ${excludedCount === 1 ? 'is' : 'are'} left out for the recorded reasons below` : ''}, so {count(w.sorted[k].length)} dossiers are published. The threshold is a coverage boundary, not a judgment of any organization.</p>
+  <dl class="rw-facts">
+    <dt>Inclusion threshold</dt><dd>{def.thresholdText}</dd>
+    <dt>Qualifying records</dt><dd>{count(sel.candidates)}</dd>
+    {excluded.map(([reason, ids]) => <><dt>Left out: {w.exclusionText(k, reason)}</dt><dd>{ids.join(', ')}</dd></>)}
+    <dt>Wave 1d dossiers</dt><dd>{count(w.sorted[k].length)}</dd>
+    <dt>Files retrieved</dt><dd>{dayLabel(w.editionDate[k])}</dd>
+  </dl>
+  {labelRows.length > 0 && (
+    <>
+      <h2 id="by-label">By {def.labelNoun}</h2>
+      <div class="table-wrap">
+        <table class="data rw-table" data-labels="w1d">
+          <caption>{k === 'il' ? 'Amutot with the status “רשומה” or “פעילה”' : 'Rows of the AF 2025 list'} and Wave 1d dossiers by {def.labelNoun}, as worded in the official file{k === 'il' ? ' (English translations by Charitology in brackets)' : ' (English names by Charitology in brackets)'}. A linked label has a hub with at least {w.hubMin} dossiers.</caption>
+          <thead><tr><th scope="col">{def.labelNoun}</th><th scope="col" class="num">Organizations in the file</th><th scope="col" class="num">Wave 1d dossiers</th></tr></thead>
+          <tbody>
+            {labelRows.map((l) => (
+              <tr data-label={l}>
+                <th scope="row">{hubKeys.includes(l) ? <a href={url(w.hubPath(k, l))}>{def.labelDisplay!(l)}</a> : def.labelDisplay!(l)}</th>
+                <td class="num">{count(w.counts[k].labels[l])}</td>
+                <td class="num">{count((w.labelMaps[k].get(l) ?? []).length)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
+  <h2 id="dossiers">All {def.country} dossiers</h2>
+  <W1dDossierTable k={k} items={w.sorted[k]} caption={`Every ${def.country} Wave 1d dossier, in alphabetical order. ${def.moneyNote}.`} />
+
+  <Faq faqs={faqs} />
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Every value comes from a compact extract of the official files listed under Sources, retrieved {dayLabel(w.editionDate[k])} and fingerprinted in the Wave 1d manifest. <code>scripts/build-registry-wave1d.py</code> writes the extract from the official downloads and rebuilds the dossiers from it; <code>scripts/check-registry-wave1d.mjs</code> re-derives every dossier from the extract. Check the official register for later filings. Related: <a href={url(def.recordPage)}>search the full {def.country} edition</a>{def.hubSegment && <> · <a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a></>} · <a href={url(WAVE1_BASE)}>all verified charity dossiers</a>.</p>
+  <p>{def.attribution} Downloads: <a href={url(`${WAVE1D_DATA_PATH}${k}-dossiers.json`)} download={`charitology-${k}-dossiers.json`}>dossier records</a> · <a href={url(`${WAVE1D_DATA_PATH}${k}-counts.json`)} download={`charitology-${k}-counts.json`}>file counts</a> · <a href={url(`${WAVE1D_DATA_PATH}${w.manifest.extracts[k].path}`)} download={`charitology-${k}-extract.json.gz`}>source extract</a> · <a href={url(`${WAVE1D_DATA_PATH}manifest.json`)} download="charitology-registry-wave1d-manifest.json">Wave 1d manifest with fingerprints</a>.</p>
+</Entry>

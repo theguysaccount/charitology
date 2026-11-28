@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { SITEMAP_CHILDREN } from '../lib/sitemaps';
 import { absolute } from '../lib/site';
 
-// Sitemap index. Core pages and the Wave 1, Wave 1b and Wave 1c registry dossiers are separate children.
+// Sitemap index. Core pages and the Wave 1, Wave 1b, Wave 1c and Wave 1d registry dossiers are separate children.
 export const GET: APIRoute = async ({ site }) => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

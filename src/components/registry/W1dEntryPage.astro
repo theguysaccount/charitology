@@ -1,0 +1,185 @@
+---
+// Wave 1d pages below a country: one dossier per organization, and label hubs of
+// dossiers. Every value comes from the committed, hash-pinned Wave 1d dataset.
+import Entry from '../../layouts/Entry.astro';
+import Faq from './Faq.astro';
+import W1dDossierTable from './W1dDossierTable.astro';
+import '../../styles/registry-wave1.css';
+import { absolute, url } from '../../lib/site';
+import { faqNode, hubNodes, count, dayLabel, WAVE1_BASE } from '../../lib/registry-wave1';
+import { midSentence } from '../../lib/registry-wave1c';
+import { wave1d, WAVE1D_DATA_PATH, type W1dKey } from '../../lib/registry-wave1d';
+
+type Props = { kind: 'dossier'; k: W1dKey; id: string } | { kind: 'hub'; k: W1dKey; label: string };
+const props = Astro.props as Props;
+const w = wave1d();
+const k = props.k;
+const def = w.D[k];
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const countryBase = w.base(k);
+const sourceEntries = Object.entries(w.src[k] as Record<string, any>);
+const sources = sourceEntries.map(([, s]) => ({
+  title: s.title, publisher: def.publisher, url: s.url,
+  note: `retrieved ${String(s.retrievedAt).slice(0, 10)}; ${count(Number(s.bytes))} bytes; SHA-256 ${s.sha256}`,
+}));
+const d = props.kind === 'dossier' ? w.sorted[k].find((x) => x.id === props.id)! : null;
+let title: string;
+let description: string;
+let summary: string;
+let eyebrow: string;
+let identityCode: string;
+let faqs: ReturnType<typeof w.dossierFaqs>;
+let jsonLd: Record<string, unknown>[];
+let crumbs: { label: string; href?: string }[];
+let sections: { slug: string; text: string; symbol: any }[];
+if (props.kind === 'dossier' && d) {
+  const p = w.latest(d);
+  const entry = def.entryUrl(d);
+  title = def.titleOf(d);
+  faqs = w.dossierFaqs(k, d);
+  eyebrow = `Verified charity dossier · ${def.country}`;
+  identityCode = d.id;
+  summary = `${def.register} record and published figures for ${midSentence(def.idLabel)} ${d.id}. Figures are copied exactly as published, with their source file and record reference.`;
+  const shown = def.lines.filter((l) => l.key === w.sel[k].threshold.line).concat(def.lines.filter((l) => l.key !== w.sel[k].threshold.line)).slice(0, 2);
+  description = `${def.country} ${def.idLabel} ${d.id}: ${shown.map((l) => `${midSentence(l.label)} ${w.cell(k, p, l.key)}`).join(', ')} for ${midSentence(def.periodHeading(p))}, copied from the ${def.register} with its source record.`;
+  crumbs = [{ label: 'The Record', href: '/record/' }, { label: 'Charity dossiers', href: WAVE1_BASE }, { label: def.country, href: countryBase }, { label: d.name }];
+  sections = [
+    { slug: 'register-record', text: 'Register record', symbol: 'fileSearch' },
+    { slug: 'figures', text: 'Published figures', symbol: 'table' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'related', text: 'Where this record appears', symbol: 'network' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ];
+  jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      '@id': `${canonical}#organization`,
+      name: d.name,
+      identifier: [{ '@type': 'PropertyValue', propertyID: def.idProperty, value: d.id }],
+      ...(entry ? { sameAs: [entry] } : {}),
+      mainEntityOfPage: canonical,
+    },
+    faqNode(faqs),
+  ];
+} else {
+  const label = (props as { label: string }).label;
+  const items = w.labelMaps[k].get(label)!;
+  const display = def.labelDisplay!(label);
+  title = w.hubTitle(k, label);
+  faqs = w.hubFaqs(k, label);
+  eyebrow = `Verified registry hub · ${def.country}`;
+  identityCode = def.identityCode;
+  summary = `${def.country} organizations carrying the ${def.labelNoun} “${display}”, and the ${count(items.length)} Wave 1d dossiers among them, listed alphabetically.`;
+  description = `${count(items.length)} Wave 1d dossiers and ${count(w.counts[k].labels[label])} organizations in the ${def.register} with the ${def.labelNoun} “${display}”. Figures as published by ${def.publisher}.`;
+  crumbs = [{ label: 'The Record', href: '/record/' }, { label: 'Charity dossiers', href: WAVE1_BASE }, { label: def.country, href: countryBase }, { label: display }];
+  sections = [
+    { slug: 'register-counts', text: 'Register counts', symbol: 'bars' },
+    { slug: 'dossiers', text: 'Wave 1d dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ];
+  jsonLd = [
+    ...hubNodes({
+      name: title, description, canonical, origin, dateModified: w.manifest.edition,
+      items: items.map((x) => ({ name: x.name, url: absolute(w.dossierPath(k, x), Astro.site) })),
+      spatialCoverage: def.country,
+      dataFiles: [`${k}-dossiers.json`, `${k}-counts.json`].map((f) => absolute(`${WAVE1D_DATA_PATH}${f}`, Astro.site)),
+      isBasedOn: sourceEntries.map(([, s]) => s.url), license: def.licence, creditText: `${def.attribution} Selected and formatted by Charitology.`,
+    }),
+    faqNode(faqs),
+  ];
+}
+---
+
+<Entry title={title} eyebrow={eyebrow} identityCode={identityCode} summary={summary} description={description} crumbs={crumbs} sources={sources} jsonLd={jsonLd} sections={sections}>
+  {props.kind === 'dossier' && d && (() => {
+    const entry = def.entryUrl(d);
+    const factRows = w.facts(k, d);
+    const hubs = d.labels.filter((l) => w.hubKeys[k].includes(l));
+    return (
+      <>
+        <p>This dossier reproduces what the {def.register} published by {def.publisher} records about {midSentence(def.idLabel)} {d.id}. It is not a rating, ranking, endorsement or effectiveness claim, and Charitology computes no ratio or total from these figures. A value the source does not supply is shown as “Not supplied”, never as zero.</p>
+
+        <h2 id="register-record">Register record</h2>
+        <dl class="rw-facts">
+          {factRows.map((f) => (
+            <>
+              <dt>{f.label}</dt>
+              <dd dir="auto">{f.links && f.links.some((l) => l.href)
+                ? f.links.map((l, i) => <>{i > 0 && '; '}{l.href ? <a href={url(l.href)}>{l.text}</a> : l.text}</>)
+                : f.value}</dd>
+            </>
+          ))}
+        </dl>
+        <p class="note">{d.record !== null ? `Source record: ${k === 'il' ? 'datastore record' : k === 'it' ? 'Prog' : k === 'hu' ? 'Sorszám' : 'worksheet row'} ${count(d.record)} of the ${def.country} file. ` : `Source record: keyed by ${midSentence(def.idLabel)}; each annual report column names its report number. `}{k === 'il' ? 'English translations of the Hebrew labels in brackets are Charitology’s. ' : k === 'it' ? 'The English category names in the record’s FAQ are Charitology’s; the column headers and marks are as published. ' : ''}Addresses, contact details, people’s names and staff or volunteer counts are omitted.</p>
+
+        <h2 id="figures">Published figures</h2>
+        <p>{count(d.periods.length)} {def.periodNoun}{d.periods.length > 1 ? 's' : ''} from the official files retrieved {dayLabel(w.editionDate[k])}. Each column cites its period and source record.</p>
+        <div class="table-wrap">
+          <table class="data rw-table" data-figures="w1d">
+            <caption>{def.moneyNote}. “Not supplied” means the source has no value; it is never zero.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Published line</th>
+                {d.periods.map((p) => <th scope="col" class="num" data-period={p.label}>{def.periodHeading(p)}{def.periodSub(p) && <span class="rw-sub">{def.periodSub(p)}</span>}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {def.lines.map((line) => (
+                <tr data-line={line.key}>
+                  <th scope="row">{line.label}<span class="rw-sub">{line.ref}</span></th>
+                  {d.periods.map((p) => <td class="num">{w.cell(k, p, line.key)}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {k === 'ee' && <p class="note">Table used in each report: {d.periods.map((p) => `${p.label}: ${p.incomeTable ?? 'no income statement'} and ${p.balanceTable ?? 'no balance sheet'}`).join('; ')}. Elements absent from a report read “Not supplied”.</p>}
+        {k === 'it' && <p class="note">The list publishes one row per entity, covering every category it is admitted in. Its note says the amounts exclude a category share under €100, which is not paid and is redistributed within that category.</p>}
+        <p class="note">Figures describe what the source reports for each period. Do not add them across periods, registers or organizations.</p>
+
+        <Faq faqs={faqs} />
+
+        <h2 id="related">Where this record appears</h2>
+        <ul>
+          {hubs.map((l) => <li><a href={url(w.hubPath(k, l))}>{w.hubTitle(k, l)}</a>.</li>)}
+          <li><a href={url(countryBase)}>All {def.country} charity dossiers</a>.</li>
+          {def.hubSegment && <li><a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a>: the same labels beside comparable labels in other registers.</li>}
+          <li><a href={url(def.recordPage)}>Search the full {def.country} edition</a>.</li>
+          {entry && <li><a href={entry}>{def.entryName}</a> for current status and later filings.</li>}
+        </ul>
+
+        <h2 id="limits">Sources and limits</h2>
+        <p>Inclusion follows one rule: this record reports {def.thresholdText}. The rule is a coverage boundary for Wave 1d, not a judgment of the organization. Every value is read from a compact extract of the official files, fingerprinted in the Wave 1d manifest; nothing is estimated, merged or summed.</p>
+        <p>{def.attribution} Charitology selected and reformatted the records. <a href={url(`${WAVE1D_DATA_PATH}manifest.json`)} download="charitology-registry-wave1d-manifest.json">Download the Wave 1d manifest</a> for every source URL, retrieval time, size and SHA-256 fingerprint, or the <a href={url(`${WAVE1D_DATA_PATH}${k}-dossiers.json`)} download={`charitology-${k}-dossiers.json`}>{def.country} dossier dataset</a>.</p>
+      </>
+    );
+  })()}
+
+  {props.kind === 'hub' && (() => {
+    const label = props.label;
+    const items = w.labelMaps[k].get(label)!;
+    const display = def.labelDisplay!(label);
+    const others = w.hubKeys[k].filter((l) => l !== label);
+    return (
+      <>
+        <p>The {def.register} {k === 'it' ? 'marks the beneficiary categories in which each entity is admitted' : 'records an activity sector for each amuta'}. This hub groups the Wave 1d dossiers carrying “{label}”, exactly as the official file words it{k === 'il' ? ` (Charitology’s translation: ${w.ilGloss(label)})` : ''}. It does not rank, rate or endorse any organization.</p>
+        <h2 id="register-counts">Register counts</h2>
+        <dl class="rw-facts">
+          <dt>Organizations with this {def.labelNoun}</dt><dd>{count(w.counts[k].labels[label])}</dd>
+          <dt>Wave 1d dossiers with this {def.labelNoun}</dt><dd>{count(items.length)}</dd>
+          <dt>Files retrieved</dt><dd>{dayLabel(w.editionDate[k])}</dd>
+        </dl>
+        <p>{k === 'it' ? 'An entity can be admitted in several categories, so counts overlap.' : 'Each amuta carries one activity sector.'}{others.length > 0 && <> Other hubs: {others.map((l, i) => <>{i > 0 && ' · '}<a href={url(w.hubPath(k, l))}>{def.labelDisplay!(l)}</a></>)}.</>} Compare comparable labels in other registers on the <a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a> page.</p>
+        <h2 id="dossiers">Wave 1d dossiers</h2>
+        <W1dDossierTable k={k} items={items} caption={`Wave 1d dossiers carrying “${display}”. ${def.moneyNote}.`} />
+        <Faq faqs={faqs} />
+        <h2 id="limits">Sources and limits</h2>
+        <p>Counts cover the official files retrieved {dayLabel(w.editionDate[k])}. Dossiers include organizations whose record reports {def.thresholdText}. Figures are not added across organizations. <a href={url(countryBase)}>All {def.country} dossiers</a>.</p>
+        <p>{def.attribution} <a href={url(`${WAVE1D_DATA_PATH}${k}-counts.json`)} download={`charitology-${k}-counts.json`}>Download the file counts</a> or the <a href={url(`${WAVE1D_DATA_PATH}manifest.json`)} download="charitology-registry-wave1d-manifest.json">Wave 1d manifest</a>.</p>
+      </>
+    );
+  })()}
+</Entry>

@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1d } from '../../../lib/registry-wave1d';
 import manifest from '../../../../public/data/charity-registry/hungary/manifest.json';
 import flowManifest from '../../../../public/data/funding-flows/hungary-szja-1-percent/manifest.json';
 import '../../../styles/charity-financial-search.css';
@@ -51,6 +52,7 @@ const sources = [
     publishes the <strong>exact taxpayer headcount for every single civil recipient</strong>, letting readers inspect both total HUF and average HUF per donor.
   </p>
 
+  <p>For {wave1d().sorted.hu.length.toLocaleString('en-US')} of these organizations, a <a href={url(wave1d().base('hu'))}>verified charity dossier</a> (Wave 1d) puts the official record and every published figure on one page, copied exactly as the official file prints it, with its source record. They are the organizations whose record reports {wave1d().D.hu.thresholdText}.</p>
   <section
     class="charity-financial-search"
     data-hungary-registry

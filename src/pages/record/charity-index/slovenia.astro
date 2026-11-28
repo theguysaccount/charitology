@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1d } from '../../../lib/registry-wave1d';
 import manifest from '../../../../public/data/charity-registry/slovenia/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
@@ -74,6 +75,7 @@ const sources = [
     and compares all five European statutory tax-assignment systems (Italy, Poland, Slovakia, Hungary, and Slovenia).
   </p>
 
+  <p>For {wave1d().sorted.si.length.toLocaleString('en-US')} of these organizations, a <a href={url(wave1d().base('si'))}>verified charity dossier</a> (Wave 1d) puts the official record and every published figure on one page, copied exactly as the official file prints it, with its source record. They are the organizations whose record reports {wave1d().D.si.thresholdText}.</p>
   <section
     class="charity-financial-search"
     data-si-registry

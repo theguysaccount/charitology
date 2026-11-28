@@ -1,0 +1,40 @@
+---
+// Alphabetical list of Wave 1d dossiers for one register. Ordering is by name, never by amount.
+import { url } from '../../lib/site';
+import { wave1d, type W1dDossier, type W1dKey } from '../../lib/registry-wave1d';
+
+interface Props {
+  k: W1dKey;
+  items: W1dDossier[];
+  caption: string;
+}
+const { k, items, caption } = Astro.props;
+const w = wave1d();
+const def = w.D[k];
+const line = def.lines.find((l) => l.key === w.sel[k].threshold.line)!;
+---
+
+<div class="table-wrap">
+  <table class="data rw-table">
+    <caption>{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Organization (name as published)</th>
+        <th scope="col">Latest {def.periodNoun}</th>
+        <th scope="col" class="num">{line.label}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {items.map((d) => {
+        const p = w.latest(d);
+        return (
+          <tr>
+            <th scope="row"><a href={url(w.dossierPath(k, d))} dir="auto">{d.name}</a><span class="rw-sub">{def.idLabel} {d.id}</span></th>
+            <td>{def.periodHeading(p)}</td>
+            <td class="num">{w.cell(k, p, line.key)}</td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,427 @@
+{
+ "format": "charitology-registry-wave1d-v1",
+ "edition": "2026-11-28",
+ "builder": "scripts/build-registry-wave1d.py",
+ "checker": "scripts/check-registry-wave1d.mjs",
+ "policy": "Figures are copied exactly as the official files publish them, decimals included, from compact extracts of the official downloads. Inclusion follows one published-figure threshold per register and is a coverage boundary, not a rating, ranking or endorsement. Null means not supplied; it is never zero. Lists are never merged and amounts are never summed. Cause groups match published category labels only and are not a crosswalk.",
+ "selection": {
+  "il": {
+   "threshold": {
+    "line": "revenue",
+    "value": "50000000.00",
+    "currency": "ILS"
+   },
+   "candidates": 442,
+   "dossiers": 441,
+   "excluded": {
+    "מחוסלת עקב מיזוג": [
+     "510738099"
+    ]
+   }
+  },
+  "ee": {
+   "threshold": {
+    "line": "TotalRevenue",
+    "value": "500000",
+    "currency": "EUR"
+   },
+   "candidates": 234,
+   "dossiers": 233,
+   "excluded": {
+    "notEntered": [
+     "80039565"
+    ]
+   }
+  },
+  "it": {
+   "threshold": {
+    "line": "total",
+    "value": "150000.00",
+    "currency": "EUR"
+   },
+   "candidates": 256,
+   "dossiers": 253,
+   "excluded": {
+    "municipalityOnly": [
+     "00514490010",
+     "01199250158",
+     "02438750586"
+    ]
+   }
+  },
+  "hu": {
+   "threshold": {
+    "line": "amount",
+    "value": "10000000",
+    "currency": "HUF"
+   },
+   "candidates": 228,
+   "dossiers": 228,
+   "excluded": {}
+  },
+  "si": {
+   "threshold": {
+    "line": "amount",
+    "value": "10000.00",
+    "currency": "EUR"
+   },
+   "candidates": 181,
+   "dossiers": 170,
+   "excluded": {
+    "section2": [
+     "14385708",
+     "41242963",
+     "95857320"
+    ],
+    "section4": [
+     "42885370",
+     "52800512",
+     "83912665",
+     "95159436"
+    ],
+    "section5": [
+     "13843214",
+     "20601379",
+     "45485712",
+     "76534740"
+    ]
+   }
+  },
+  "hubMinimumDossiers": 5,
+  "rules": {
+   "il": {
+    "includedStatuses": [
+     "פעילה",
+     "רשומה"
+    ]
+   },
+   "ee": {
+    "population": "organizations on the EMTA income tax incentive list",
+    "years": [
+     "2025",
+     "2024"
+    ],
+    "registerStatus": "R"
+   },
+   "it": {
+    "excluded": "entities admitted only in the Comuni (municipalities) column"
+   },
+   "hu": {
+    "selectionYear": "2026"
+   },
+   "si": {
+    "includedSection": 1,
+    "sections": {
+     "1": "Nevladne organizacije v javnem interesu",
+     "2": "Registrirane cerkve in druge verske skupnosti",
+     "3": "Sestavni deli registriranih cerkva in drugih verskih skupnosti",
+     "4": "Reprezentativni sindikati",
+     "5": "Politične stranke",
+     "6": "Šole in vrtci"
+    }
+   }
+  }
+ },
+ "sources": {
+  "il": {
+   "page0": {
+    "title": "Registrar of Amutot datastore, records 1 to 10000 (data.gov.il resource be5b7935-3922-45d4-9638-08871b17ec95)",
+    "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=be5b7935-3922-45d4-9638-08871b17ec95&limit=10000&offset=0&sort=_id%20asc",
+    "bytes": 12143226,
+    "sha256": "538012603f56a03491994aa0b6e4240e444a79ee5913cf6975c2c5aa226ce953",
+    "retrievedAt": "2026-11-28T05:15:17Z"
+   },
+   "page10000": {
+    "title": "Registrar of Amutot datastore, records 10001 to 20000 (data.gov.il resource be5b7935-3922-45d4-9638-08871b17ec95)",
+    "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=be5b7935-3922-45d4-9638-08871b17ec95&limit=10000&offset=10000&sort=_id%20asc",
+    "bytes": 11872795,
+    "sha256": "9424e5dfcaf886db1fab794877521bf068fda800b2f8a65ba2a414d67b9a95f8",
+    "retrievedAt": "2026-11-28T05:15:20Z"
+   },
+   "page20000": {
+    "title": "Registrar of Amutot datastore, records 20001 to 30000 (data.gov.il resource be5b7935-3922-45d4-9638-08871b17ec95)",
+    "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=be5b7935-3922-45d4-9638-08871b17ec95&limit=10000&offset=20000&sort=_id%20asc",
+    "bytes": 12216155,
+    "sha256": "da906be6ac8615d102c4c00de23dd44c33fdec0d8fb9e663f13f374f9d5b7826",
+    "retrievedAt": "2026-11-28T05:15:23Z"
+   },
+   "page30000": {
+    "title": "Registrar of Amutot datastore, records 30001 to 40000 (data.gov.il resource be5b7935-3922-45d4-9638-08871b17ec95)",
+    "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=be5b7935-3922-45d4-9638-08871b17ec95&limit=10000&offset=30000&sort=_id%20asc",
+    "bytes": 12655713,
+    "sha256": "bad81ec96ede5dfa3430ef7df8d80469bf16dda1cfb36b49052e98574da04523",
+    "retrievedAt": "2026-11-28T05:15:26Z"
+   },
+   "page40000": {
+    "title": "Registrar of Amutot datastore, records 40001 to 50000 (data.gov.il resource be5b7935-3922-45d4-9638-08871b17ec95)",
+    "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=be5b7935-3922-45d4-9638-08871b17ec95&limit=10000&offset=40000&sort=_id%20asc",
+    "bytes": 13503838,
+    "sha256": "3785203bb52720fc9acb8cf0a396941287c8e82a2ad41009169d72a4629b6070",
+    "retrievedAt": "2026-11-28T05:15:29Z"
+   },
+   "page50000": {
+    "title": "Registrar of Amutot datastore, records 50001 to 60000 (data.gov.il resource be5b7935-3922-45d4-9638-08871b17ec95)",
+    "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=be5b7935-3922-45d4-9638-08871b17ec95&limit=10000&offset=50000&sort=_id%20asc",
+    "bytes": 14911095,
+    "sha256": "5c3cfa1f0daad456c5766b33937d2932c62b72c92d475eed3c37da561e34e968",
+    "retrievedAt": "2026-11-28T05:15:32Z"
+   },
+   "page60000": {
+    "title": "Registrar of Amutot datastore, records 60001 to 70000 (data.gov.il resource be5b7935-3922-45d4-9638-08871b17ec95)",
+    "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=be5b7935-3922-45d4-9638-08871b17ec95&limit=10000&offset=60000&sort=_id%20asc",
+    "bytes": 14633892,
+    "sha256": "194cde9a4152287cdb12b1bb8cbd6759199a6b23169c592cc03afc4586eb9959",
+    "retrievedAt": "2026-11-28T05:15:34Z"
+   },
+   "page70000": {
+    "title": "Registrar of Amutot datastore, records 70001 to 76192 (data.gov.il resource be5b7935-3922-45d4-9638-08871b17ec95)",
+    "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=be5b7935-3922-45d4-9638-08871b17ec95&limit=10000&offset=70000&sort=_id%20asc",
+    "bytes": 8726812,
+    "sha256": "c65840d0a86c79d9a3c2f546404a4db99e2dd88fa7c26e47431b320a86d753fe",
+    "retrievedAt": "2026-11-28T05:15:36Z"
+   }
+  },
+  "ee": {
+   "reports": {
+    "title": "e-Business Register annual reports general data through 31 October 2026 (aruannete üldandmed)",
+    "url": "https://avaandmed.ariregister.rik.ee/sites/default/files/1.aruannete_yldandmed_kuni_31102026_1.zip",
+    "bytes": 20820793,
+    "sha256": "75e453763b7d415aca46662021bbd2ca5a540e2474f4e608f4013648d5a5b2aa",
+    "retrievedAt": "2026-11-28T05:16:50Z"
+   },
+   "elements2025": {
+    "title": "e-Business Register 2025 annual report elements through 31 October 2026 (aruannete elemendid)",
+    "url": "https://avaandmed.ariregister.rik.ee/sites/default/files/4.2025_aruannete_elemendid_kuni_31102026_0.zip",
+    "bytes": 22975534,
+    "sha256": "1fb22c4c24ad5047ec60b62acbaba032328a33375d7bc959816eea60543484f1",
+    "retrievedAt": "2026-11-28T05:16:52Z"
+   },
+   "elements2024": {
+    "title": "e-Business Register 2024 annual report elements through 31 October 2026 (aruannete elemendid)",
+    "url": "https://avaandmed.ariregister.rik.ee/sites/default/files/4.2024_aruannete_elemendid_kuni_31102026_0.zip",
+    "bytes": 23708371,
+    "sha256": "1cd37dbcd03ef39e17e3d416c55ac057f1e438182c8a5ea186bd1aa086ae0293",
+    "retrievedAt": "2026-11-28T05:16:54Z"
+   },
+   "entities": {
+    "title": "e-Business Register basic entity data (ettevõtja rekvisiidid, lihtandmed CSV)",
+    "url": "https://avaandmed.ariregister.rik.ee/sites/default/files/avaandmed/ettevotja_rekvisiidid__lihtandmed.csv.zip",
+    "bytes": 18719049,
+    "sha256": "ab47a055fb021c79f6ff1cf712cd8d345e4cdef54066239c6e364414f415b680",
+    "retrievedAt": "2026-11-28T05:16:56Z"
+   },
+   "emta": {
+    "title": "EMTA list of non-profit associations, foundations and religious associations eligible for income tax incentives, as of 1 November 2026",
+    "url": "https://ncfailid.emta.ee/s/69dm4GRbczHFbWQ/download",
+    "bytes": 930216,
+    "sha256": "22734d3846be7f4d19559eca5fc826660ee0f05640c5e295590ff639216e0408",
+    "retrievedAt": "2026-11-28T05:26:55Z"
+   }
+  },
+  "it": {
+   "part1": {
+    "title": "5 per mille AF 2025, elenco destinatari ammessi, parte 1 di 7 (CSV)",
+    "url": "https://www.agenziaentrate.gov.it/portale/documents/20143/10453418/5x1000+AF+2025+-+Elenco+destinatari+ammessi+al+contributo+-+1+-+agg.+5.11.2026.csv/54646b38-af11-1a58-37a0-edef2af7d9dd?t=1793882444569",
+    "bytes": 1706716,
+    "sha256": "280559352c8e65eb83817d11fe8518d3cbd7dcffc9d640365b29f9d3673645c7",
+    "retrievedAt": "2026-11-28T05:19:08Z"
+   },
+   "part2": {
+    "title": "5 per mille AF 2025, elenco destinatari ammessi, parte 2 di 7 (CSV)",
+    "url": "https://www.agenziaentrate.gov.it/portale/documents/20143/10453418/5x1000+AF+2025+-+Elenco+destinatari+ammessi+al+contributo+-+2+-+agg.+5.11.2026.csv/1b22fa0e-4a60-33d1-b689-703afcfa112e?t=1793882440586",
+    "bytes": 1684157,
+    "sha256": "824db54feed40d57bc745648ae27f4c1f91816c6f6de1e4a7366101dc65bc15a",
+    "retrievedAt": "2026-11-28T05:19:09Z"
+   },
+   "part3": {
+    "title": "5 per mille AF 2025, elenco destinatari ammessi, parte 3 di 7 (CSV)",
+    "url": "https://www.agenziaentrate.gov.it/portale/documents/20143/10453418/5x1000+AF+2025+-+Elenco+destinatari+ammessi+al+contributo+-+3+-+agg.+5.11.2026.csv/bbd82d26-3a3f-4acf-afc2-4afba3640647?t=1793882436557",
+    "bytes": 1668959,
+    "sha256": "0c2dc956bd364c4cf26f0304156871a921ffe0053609f25a36fb6f18176b8a57",
+    "retrievedAt": "2026-11-28T05:19:11Z"
+   },
+   "part4": {
+    "title": "5 per mille AF 2025, elenco destinatari ammessi, parte 4 di 7 (CSV)",
+    "url": "https://www.agenziaentrate.gov.it/portale/documents/20143/10453418/5x1000+AF+2025+-+Elenco+destinatari+ammessi+al+contributo+-+4+-+agg.+5.11.2026.csv/7ecb6433-1b64-5b5f-2d6b-e42b6dcca4e0?t=1793882432562",
+    "bytes": 1604614,
+    "sha256": "37ebd8b5e011da428cbd397c1a5fbe14a5b64f0a06c13f0f347854dee43f2378",
+    "retrievedAt": "2026-11-28T05:19:12Z"
+   },
+   "part5": {
+    "title": "5 per mille AF 2025, elenco destinatari ammessi, parte 5 di 7 (CSV)",
+    "url": "https://www.agenziaentrate.gov.it/portale/documents/20143/10453418/5x1000+AF+2025+-+Elenco+destinatari+ammessi+al+contributo+-+5+-+agg.+5.11.2026.csv/81c4dde3-d5d1-3187-ca45-d563d09761e1?t=1793882428552",
+    "bytes": 1571915,
+    "sha256": "0eff35cbfbcb435a100899f196422849c32c8d0f714802aa22a153ac66a920f9",
+    "retrievedAt": "2026-11-28T05:19:14Z"
+   },
+   "part6": {
+    "title": "5 per mille AF 2025, elenco destinatari ammessi, parte 6 di 7 (CSV)",
+    "url": "https://www.agenziaentrate.gov.it/portale/documents/20143/10453418/5x1000+AF+2025+-+Elenco+destinatari+ammessi+al+contributo+-+6+-+agg.+5.11.2026.csv/b4624ada-6dcf-7413-daf3-4a2e3a586a2f?t=1793882424612",
+    "bytes": 1421613,
+    "sha256": "79400d13b5d5eab8a1875083c49b1dec116d07c0a2a3b5bd5f6de22396860aef",
+    "retrievedAt": "2026-11-28T05:19:16Z"
+   },
+   "part7": {
+    "title": "5 per mille AF 2025, elenco destinatari ammessi, parte 7 di 7 (CSV)",
+    "url": "https://www.agenziaentrate.gov.it/portale/documents/20143/10453418/5x1000+AF+2025+-+Elenco+destinatari+ammessi+al+contributo+-+7+-+agg.+5.11.2026.csv/0f662a18-8e5e-d5b7-1d9d-c083dae73113?t=1793882420613",
+    "bytes": 1247007,
+    "sha256": "8c050b7f4007ff7d2a6b31b1d37ef9b5c9b313061503a31af344aefe993e2e66",
+    "retrievedAt": "2026-11-28T05:19:17Z"
+   },
+   "legendPdf": {
+    "title": "Elenco destinatari ammessi al contributo, parte 1 di 7 (PDF edition, legend of the ETS column)",
+    "url": "https://www.agenziaentrate.gov.it/portale/documents/20143/10453418/5x1000+AF+2025+-+Elenco+destinatari+ammessi+al+contributo+-+1+-+agg.+5.11.2026.pdf/4f9cb390-1d40-0a07-a69e-30060f3a7660?t=1793882442581",
+    "bytes": 3065202,
+    "sha256": "adac1e0eb5c9fa3ee86417c0158b76d37681e1f177e785fb07db9c8b5005aab5",
+    "retrievedAt": "2026-11-28T05:32:33Z"
+   }
+  },
+  "hu": {
+   "civil2024": {
+    "title": "Szja 1%-os felajánlásban részesült regisztrált civil kedvezményezettek a 2024. rendelkező évben",
+    "url": "https://nav.gov.hu/pfile/file?path=/ado/szja1_1/kimutatasok_elszamolasok/civil-szervezetek/egyszaz_kiut_2024/Szja_1-os_felajanlasban_reszesult_regisztralt_civil_kedvezmenyezettek_2024.xlsx1",
+    "bytes": 3350491,
+    "sha256": "fa7d757d575bcd685e0d3a24be019b53ad554d3b65110989daa7c589d25be066",
+    "retrievedAt": "2026-11-28T05:24:42Z"
+   },
+   "civil2025": {
+    "title": "Szja 1%-os felajánlásban részesült regisztrált civil kedvezményezettek a 2025. rendelkező évben",
+    "url": "https://nav.gov.hu/pfile/file?path=/ado/szja1_1/kimutatasok_elszamolasok/civil-szervezetek/egyszaz_kiut_2025/Szja_1-os_felajanlasban_reszesult_regisztralt_civil_kedvezmenyezettek_2025xlsx1",
+    "bytes": 2655679,
+    "sha256": "60381eaa63b164de34f5b31a10e1e012eb7861fa3ffa2f17671a02111508109a",
+    "retrievedAt": "2026-11-28T05:22:47Z"
+   },
+   "civil2026": {
+    "title": "Szja 1%-os felajánlásban részesült regisztrált civil kedvezményezettek a 2026. rendelkező évben",
+    "url": "https://nav.gov.hu/pfile/file?path=/ado/szja1_1/kimutatasok_elszamolasok/civil-szervezetek/egyszaz_kiut_2026/Szja_1-os_felajanlasban_reszesult_regisztralt_civil_kedvezmenyezettek_2026.xlsx",
+    "bytes": 2659767,
+    "sha256": "f1f128ebe14e328ef9a04be327ae738cf969abd1b14db2cdc183ae2528e96b85",
+    "retrievedAt": "2026-11-28T05:24:02Z"
+   }
+  },
+  "si": {
+   "recipients2023": {
+    "title": "Seznam prejemnikov za leto 2023 (preliminarni podatki)",
+    "url": "https://podatki.gov.si/dataset/3ea7706b-4385-4460-aba6-a2ab7ff0922d/resource/0a0d030a-efe6-4461-9d7d-a16e61c010da/download/seznamprejemnikovzaleto2023preliminarnipodatki.xlsx",
+    "bytes": 324234,
+    "sha256": "a62efe716777c46df3c227463995a6aefa15b8765e7e1c58e4f621315c7a2329",
+    "retrievedAt": "2026-11-28T05:30:16Z"
+   },
+   "recipients2024": {
+    "title": "Seznam prejemnikov za leto 2024 (preliminarni podatki)",
+    "url": "https://www.fu.gov.si/fileadmin/Internet/Davki_in_druge_dajatve/Podrocja/Dohodnina/Letna_odmera_dohodnine/Opis/Seznam_prejemnikov_za_leto_2024-preliminarni_podatki.xlsx",
+    "bytes": 329923,
+    "sha256": "3414cde30f701fadffaea1f9998a393445ca0d1b89cea1a7afa6fe726a2e4145",
+    "retrievedAt": "2026-11-28T05:30:18Z"
+   },
+   "recipients2025": {
+    "title": "Seznam prejemnikov za leto 2025 (preliminarni podatki)",
+    "url": "https://www.fu.gov.si/fileadmin/Internet/Davki_in_druge_dajatve/Podrocja/Dohodnina/Letna_odmera_dohodnine/Opis/Seznam_prejemnikov_za_leto_2025-preliminarni_podatki.xlsx",
+    "bytes": 332464,
+    "sha256": "e047e1d646c62ef591d934e7e53077954a904079798b598fe04f78865a8eb1a6",
+    "retrievedAt": "2026-11-28T05:23:39Z"
+   },
+   "eligibleList2025": {
+    "title": "Seznam upravičencev do donacij za leto 2025 (Uradni list RS, št. 70/2025, priloga)",
+    "url": "https://www.fu.gov.si/fileadmin/Internet/Davki_in_druge_dajatve/Podrocja/Dohodnina/Letna_odmera_dohodnine/Zakonodaja/Seznam_upravicencev_do_donacij_2025.pdf",
+    "bytes": 3093967,
+    "sha256": "66de9e4e08f09161310489f44d03888b4f4ae4ba19a1bd86cdd33a5a647ba689",
+    "retrievedAt": "2026-11-28T05:25:39Z"
+   }
+  }
+ },
+ "extracts": {
+  "il": {
+   "path": "extracts/il-amutot.json.gz",
+   "bytes": 653226,
+   "sha256": "eb5a33224df955f33131bc49bc79b0855868da31fab841e53e830b5f86b3465c",
+   "decodedBytes": 2628938,
+   "decodedSha256": "6a62509b0a2451323d76e075d9df3fa174f0446696b24752eb7cd8d8e16003ea"
+  },
+  "ee": {
+   "path": "extracts/ee-rik-emta.json.gz",
+   "bytes": 359809,
+   "sha256": "d50f2eae23dfeedbe954b3fccc9d1c03fcac48d479f1c789ac6953add5a3dcea",
+   "decodedBytes": 3689926,
+   "decodedSha256": "0a7a94268fb529e2b7a1afff7263b7df3fca7839e26699427331c97262eba743"
+  },
+  "it": {
+   "path": "extracts/it-5x1000.json.gz",
+   "bytes": 482471,
+   "sha256": "4e55563faf0be7bb4b600456c7a8634256e31c7889ebaeae63c9b0e57eeb81b0",
+   "decodedBytes": 2596483,
+   "decodedSha256": "75c8ed4edb6af80761be04c08e0784179688c9e0adb1fbb30db24ccdd1867f8e"
+  },
+  "hu": {
+   "path": "extracts/hu-szja.json.gz",
+   "bytes": 942814,
+   "sha256": "2562863d7ed93bef1b9f21a6c23afb28b1aa34c3b156119325c661baf9518cc1",
+   "decodedBytes": 2584717,
+   "decodedSha256": "cb9fec5e03f07689471b2a8518d3d4e1f8f7f438ee64d673e92fe5f669dfa2e6"
+  },
+  "si": {
+   "path": "extracts/si-dohodnina.json.gz",
+   "bytes": 534804,
+   "sha256": "ad261d8e8bc6ed43eb13b10da5284f20722e5c3c9eac2ad1c23bf6fc93a17e88",
+   "decodedBytes": 1568164,
+   "decodedSha256": "fe405a10fae2f2309aff02d8cc5e96fdf545af06734b18841490bad7e8419eee"
+  }
+ },
+ "outputs": {
+  "il": {
+   "path": "il-dossiers.json",
+   "bytes": 223437,
+   "sha256": "13b5090dd90fe19a2469f11d3ee7e4c86a8ba3b291c4cba6fe427a328958f62b"
+  },
+  "ilCounts": {
+   "path": "il-counts.json",
+   "bytes": 1169,
+   "sha256": "18a60cbe3b28d4d71e3ba4bdedbb9d8b182dc89d14ea2e8e28b6e96579efd11b"
+  },
+  "ee": {
+   "path": "ee-dossiers.json",
+   "bytes": 290425,
+   "sha256": "4dd5c651b96ec3ee86d10f2cb00e59ee642895417dbafd689475ee14ada2335e"
+  },
+  "eeCounts": {
+   "path": "ee-counts.json",
+   "bytes": 124,
+   "sha256": "46a22c72d239760fca39c611599454c4f6b8c2a8546bfd5626bfb57d3d2236e0"
+  },
+  "it": {
+   "path": "it-dossiers.json",
+   "bytes": 128815,
+   "sha256": "c06c2f6b22b9d556c845badf20256959f55e56b36b1d002cb7aef8fc2c5ea6db"
+  },
+  "itCounts": {
+   "path": "it-counts.json",
+   "bytes": 236,
+   "sha256": "5dd17123fc9d41f0c56b2f874a4b1f4f2f579fa014872aa8971345004285bad8"
+  },
+  "hu": {
+   "path": "hu-dossiers.json",
+   "bytes": 132877,
+   "sha256": "6a34fe0314ff46bcefd9eef88b430b2c6265735ba9161885a267cdefbd714cbb"
+  },
+  "huCounts": {
+   "path": "hu-counts.json",
+   "bytes": 56,
+   "sha256": "f88f63915b3257162019720d5d6fa69ae2d870adbe36fb84f7d9bdbb77613ca6"
+  },
+  "si": {
+   "path": "si-dossiers.json",
+   "bytes": 90074,
+   "sha256": "c6e6d48a1d8c9c5953600e1fe450c7f43f1878425caa54962ae76eefcfe88806"
+  },
+  "siCounts": {
+   "path": "si-counts.json",
+   "bytes": 254,
+   "sha256": "624cb8d4d0f2d2a5e5570ba33e81c4a4b368c1229cc89aa29c69d95e86a3b0d5"
+  },
+  "causes": {
+   "path": "cause-groups.json",
+   "bytes": 5436,
+   "sha256": "51f48fae8ea9494492ec9882a18cd0eefa101eef252048e040c746fb8afebf97"
+  }
+ }
+}

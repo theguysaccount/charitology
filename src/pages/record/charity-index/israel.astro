@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1d } from '../../../lib/registry-wave1d';
 import manifest from '../../../../public/data/charity-registry/israel/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
@@ -25,6 +26,7 @@ const sectorEntries = Object.entries(manifest.sectors).sort((a, b) => b[1].count
   filePath="src/pages/record/charity-index/israel.astro" sources={sources}>
   <p>This edition merges Israel’s Ministry of Justice (Registrar of Associations) open-data tables captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>: <strong>{count(manifest.counts.amutotSourceRows)} Amutot records</strong> and <strong>{count(manifest.counts.pbcSourceRows)} Public Benefit Company (Chalotz / חל״צ) records</strong> ({count(manifest.counts.pbcOverlapWithAmutot)} overlap by exact ID; {count(manifest.counts.pbcOnlyAdded)} appear only in the PBC table), yielding <strong>{count(manifest.counts.includedOrganizations)} distinct organizations</strong> (<strong>{count(manifest.counts.byStatus.active)}</strong> active or registered; <strong>{count(manifest.counts.byStatus.dissolvedOrStruckOff)}</strong> dissolved or struck off). Exact nine-digit joins attach <strong>{count(manifest.counts.properManagementSourceRows)} multi-year Proper Management certificate rows</strong> (<strong>{count(manifest.counts.withProperManagement2026Or2027)}</strong> organizations with signed 2026–2027 approval) and flag <strong>{count(manifest.counts.matchedForeignStateDonations2012to2026)}</strong> organizations appearing in 2012–2026 foreign-state donation disclosures.</p>
 
+  <p>For {wave1d().sorted.il.length.toLocaleString('en-US')} of these organizations, a <a href={url(wave1d().base('il'))}>verified charity dossier</a> (Wave 1d) puts the official record and every published figure on one page, copied exactly as the official file prints it, with its source record. They are the organizations whose record reports {wave1d().D.il.thresholdText}.</p>
   <section class="charity-financial-search" data-israel-registry data-base={url(dataPath)}
     data-fsd={url(fsdPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="il-search-heading">
     <h2 id="il-search-heading">Search Israeli nonprofits</h2>
