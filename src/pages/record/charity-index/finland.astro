@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1c } from '../../../lib/registry-wave1c';
 import manifest from '../../../../public/data/charity-registry/finland/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
@@ -73,6 +74,7 @@ const decades = Object.entries(manifest.counts.byRegistrationDecade).map(([decad
     registered for VAT.
   </p>
 
+  <p><a href={url(wave1c().base(wave1c().H.fi.slug))}>Browse {wave1c().registryHubKeys('fi').length} register hubs</a> that group {wave1c().hubs.fi.counts.population.toLocaleString('en-US')} {wave1c().H.fi.population} by the register’s own {wave1c().H.fi.labelPlural}, with each entry as published.</p>
   <section
     class="charity-financial-search"
     data-fi-registry

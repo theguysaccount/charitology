@@ -2,6 +2,7 @@
 import Entry from '../../../layouts/Entry.astro';
 import SiteSymbol from '../../../components/SiteSymbol.astro';
 import { url } from '../../../lib/site';
+import { wave1c } from '../../../lib/registry-wave1c';
 import manifest from '../../../../public/data/charity-financials/mx/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
@@ -28,6 +29,7 @@ const sources = [
   filePath="src/pages/record/charity-financials/mexico.astro" sources={sources}>
   <p>Mexico’s tax administration, SAT, publishes financial reports for organizations and trusts authorized to receive tax-deductible gifts. This edition combines {count(manifest.coverage.financialPeriods)} organization-year records with two authorization directories. It connects them using the complete 12-character institutional tax identifier, or RFC. It keeps the names, classifications and locations recorded in each source.</p>
 
+  <p>For {wave1c().sorted.mx.length.toLocaleString('en-US')} of these organizations, a <a href={url(wave1c().base(wave1c().D.mx.slug))}>verified charity dossier</a> puts the register record and every published figure on one page, with its source record. They are the organizations whose record reports {wave1c().D.mx.thresholdText}.</p>
   <section class="charity-financial-search" data-mx-financials data-asset={url(base + manifest.asset.path)}
     data-manifest={JSON.stringify(manifest)} aria-labelledby="mx-search-heading">
     <h2 id="mx-search-heading">Find an organization</h2>

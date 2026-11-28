@@ -382,8 +382,10 @@ const abs = (path) => new URL(base + path, home.origin).href;
 
 const sitemap = readBuiltSitemapSet(dist);
 assert.ok(sitemap.index, '/sitemap.xml must be a sitemap index');
-assert.deepEqual(sitemap.children.map((c) => c.file), ['sitemap-core.xml', 'sitemap-registries-wave1.xml', 'sitemap-registries-wave1b.xml'], 'Unexpected child sitemaps');
-const [core, wave1, wave1b] = sitemap.children;
+assert.deepEqual(sitemap.children.map((c) => c.file), ['sitemap-core.xml', 'sitemap-registries-wave1.xml', 'sitemap-registries-wave1b.xml', 'sitemap-registries-wave1c.xml'], 'Unexpected child sitemaps');
+const [core, wave1, wave1b, wave1c] = sitemap.children;
+// Cause × Country also lists the Wave 1c country pages and hubs (verified in full by scripts/check-registry-wave1c.mjs).
+const wave1cPaths = new Set(wave1c.locs.map((loc) => new URL(loc).pathname.slice(base.length)));
 const wave1Paths = new Set(wave1.locs.map((loc) => new URL(loc).pathname.slice(base.length)));
 
 const text = (node) => (node.nodeName === '#text' ? node.value : (node.childNodes ?? []).map(text).join(''));
@@ -594,7 +596,8 @@ for (const path of allRoutes) {
     list.itemListElement.forEach((item, i) => {
       assert.equal(item.position, i + 1);
       const target = new URL(item.url).pathname.slice(base.length);
-      assert.ok(routes.hubs.has(target) || routes.dossiers.has(target) || wave1Paths.has(target), `${label}: ItemList points outside the verified registry pages: ${item.url}`);
+      const wave1cEntry = path === CAUSE && wave1cPaths.has(target) && existsSync(join(dist, target.slice(1), 'index.html'));
+      assert.ok(routes.hubs.has(target) || routes.dossiers.has(target) || wave1Paths.has(target) || wave1cEntry, `${label}: ItemList points outside the verified registry pages: ${item.url}`);
       assert.ok(html.includes(`href="${base}${target}"`), `${label}: ItemList entry is not linked on the page: ${target}`);
     });
     assert.equal(dataset[0].isAccessibleForFree, true, `${label}: free dataset`);
@@ -684,6 +687,7 @@ assert.deepEqual([...wave1b.locs].sort(), allRoutes.map(abs).sort(), 'Wave 1b si
 const wave1bSet = new Set(allRoutes.map(abs));
 assert.ok(!core.locs.some((loc) => wave1bSet.has(loc)), 'Core sitemap must not list Wave 1b pages');
 assert.ok(!wave1.locs.some((loc) => wave1bSet.has(loc)), 'Wave 1 sitemap must not list Wave 1b pages');
+assert.ok(!wave1c.locs.some((loc) => wave1bSet.has(loc)), 'Wave 1c sitemap must not list Wave 1b pages');
 assert.ok(!core.locs.some((loc) => new URL(loc).pathname.startsWith(base + W)), 'Core sitemap must not list registry dossier pages');
 const llms = readFileSync(join(dist, 'llms.txt'), 'utf8');
 for (const path of routes.hubs.keys()) assert.ok(llms.includes(abs(path)), `llms.txt missing hub ${path}`);

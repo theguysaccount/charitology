@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1c } from '../../../lib/registry-wave1c';
 import manifest from '../../../../public/data/charity-registry/new-zealand/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
@@ -30,6 +31,7 @@ const excluded = {
   crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'New Zealand'}]}
   filePath="src/pages/record/charity-index/new-zealand.astro" sources={sources}>
   <p>This edition includes {count(manifest.registry.included)} organization entries and {count(totalReturns)} individual Tier 3 returns for periods ending in 2024 or 2025. The dated register includes registered, deregistered and removed entries. Use the regulator’s register for current information.</p>
+  <p>For {wave1c().sorted.nz.length.toLocaleString('en-US')} of these organizations, a <a href={url(wave1c().base(wave1c().D.nz.slug))}>verified charity dossier</a> puts the register record and every published figure on one page, with its source record. They are the organizations whose record reports {wave1c().D.nz.thresholdText}.</p>
   <section class="charity-financial-search" data-nz-registry data-asset={url(base + manifest.asset.path)}
     data-manifest={JSON.stringify(manifest)} aria-labelledby="nz-search-heading">
     <h2 id="nz-search-heading">Look up a charity</h2>

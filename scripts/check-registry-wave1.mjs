@@ -182,6 +182,9 @@ const allRoutes = [...routes.hubs.keys(), ...routes.dossiers.keys()];
 // Cause × Country). scripts/check-registry-wave1b.mjs verifies those pages in full; here the
 // index's ItemList must be exactly the two Wave 1 registers plus these four built pages.
 const WAVE1B_INDEXES = [`${W}scotland/`, `${W}australia/`, `${W}canada/`, `${W}cause-by-country/`];
+// Wave 1c adds twelve country pages to the same ItemList, in this exact order; scripts/check-registry-wave1c.mjs
+// verifies those pages in full.
+const WAVE1C_INDEXES = ['new-zealand', 'northern-ireland', 'japan', 'sweden', 'mexico', 'slovakia', 'poland', 'austria', 'finland', 'latvia', 'denmark', 'croatia'].map((c) => `${W}${c}/`);
 assert.equal(new Set(allRoutes).size, allRoutes.length, 'Duplicate Wave 1 route');
 assert.ok(routes.dossiers.size >= 2000, 'Wave 1 should publish at least 2,000 dossiers');
 
@@ -330,12 +333,12 @@ for (const path of allRoutes) {
     }
     if (path === W) {
       assert.deepEqual(list.itemListElement.map((i) => new URL(i.url).pathname.slice(base.length)),
-        [`${W}united-states/`, `${W}england-wales/`, ...WAVE1B_INDEXES], `${label}: ItemList must list exactly the five registers and Cause × Country`);
+        [`${W}united-states/`, `${W}england-wales/`, ...WAVE1B_INDEXES, ...WAVE1C_INDEXES], `${label}: ItemList must list exactly the Wave 1 and 1b registers, Cause × Country and the Wave 1c countries`);
     }
     list.itemListElement.forEach((item, i) => {
       assert.equal(item.position, i + 1);
       const target = new URL(item.url).pathname.slice(base.length);
-      const wave1bIndex = path === W && WAVE1B_INDEXES.includes(target) && existsSync(join(dist, target.slice(1), 'index.html'))
+      const wave1bIndex = path === W && [...WAVE1B_INDEXES, ...WAVE1C_INDEXES].includes(target) && existsSync(join(dist, target.slice(1), 'index.html'))
         && html.includes(`href="${base}${target}"`);
       assert.ok(routes.hubs.has(target) || routes.dossiers.has(target) || wave1bIndex, `${label}: ItemList points outside Wave 1: ${item.url}`);
     });

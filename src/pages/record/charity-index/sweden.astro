@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1c } from '../../../lib/registry-wave1c';
 import manifest from '../../../../public/data/charity-registry/sweden/manifest.json';
 import flowManifest from '../../../../public/data/funding-flows/sweden-90-konto/manifest.json';
 import '../../../styles/charity-financial-search.css';
@@ -50,6 +51,7 @@ const sources = [
     <strong>SEK {(manifest.counts.activeSumEquity2025Tkr / 1_000_000).toFixed(2)} billion</strong> in equity.
   </p>
 
+  <p>For {wave1c().sorted.se.length.toLocaleString('en-US')} of these organizations, a <a href={url(wave1c().base(wave1c().D.se.slug))}>verified charity dossier</a> puts the register record and every published figure on one page, with its source record. They are the organizations whose record reports {wave1c().D.se.thresholdText}.</p>
   <section
     class="charity-financial-search"
     data-sweden-registry
