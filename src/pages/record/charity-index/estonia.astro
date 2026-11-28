@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1d } from '../../../lib/registry-wave1d';
 import manifest from '../../../../public/data/charity-registry/estonia/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
@@ -23,6 +24,7 @@ const sources = [
   filePath="src/pages/record/charity-index/estonia.astro" sources={sources}>
   <p>This edition joins three official Estonian open-data sources captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time> by exact 8-digit registry code (<em>registrikood</em>): the Centre of Registers and Information Systems (RIK) e-Business Register (scanning {count(manifest.counts.rikTotalEntitiesScanned)} legal entities to extract all <strong>{count(manifest.counts.includedOrganizations - manifest.counts.emtaActiveAbsentFromRik)} nonprofit associations, foundations and trade unions</strong> while excluding {count(manifest.counts.rikApartmentAssociationsExcluded)} statutory apartment associations), RIK’s 2023–2025 annual report XBRL tables (<strong>{count(manifest.counts.withFinancialReports2023to2025)} nonprofits</strong> with structured EUR financial filings, reporting <strong>{eurM(manifest.counts.total2025ReportedRevenueEUR)}</strong> in 2025 revenue and <strong>{eurM(manifest.counts.total2025ReportedAssetsEUR)}</strong> in 2025 assets across {count(manifest.counts.with2025FinancialReport)} 2025 filers), and the Estonian Tax and Customs Board (EMTA) income-tax-incentive charity list (<em>Tulumaksusoodustusega ühingute nimekiri</em>, TMNSN, as of 2026-11-01: <strong>{count(manifest.counts.byTmnsn.active)} active charities</strong>, including <strong>{count(manifest.counts.emtaActiveAbsentFromRik)}</strong> absent from the Nov 22 RIK extract, plus <strong>{count(manifest.counts.byTmnsn.removed2025)}</strong> removed in 2025).</p>
 
+  <p>For {wave1d().sorted.ee.length.toLocaleString('en-US')} of these organizations, a <a href={url(wave1d().base('ee'))}>verified charity dossier</a> (Wave 1d) puts the official record and every published figure on one page, copied exactly as the official file prints it, with its source record. They are the organizations whose record reports {wave1d().D.ee.thresholdText}.</p>
   <section class="charity-financial-search" data-estonia-registry data-base={url(dataPath)}
     data-flow={url(flowPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="ee-search-heading">
     <h2 id="ee-search-heading">Search Estonian nonprofits</h2>

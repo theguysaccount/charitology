@@ -547,8 +547,8 @@ const sitePath = home.pathname.replace(/\/$/, '');
 const abs = (path) => new URL(sitePath + path, home.origin).href;
 const sitemap = readBuiltSitemapSet(dist);
 assert.ok(sitemap.index, '/sitemap.xml must be a sitemap index');
-assert.deepEqual(sitemap.children.map((c) => c.file), ['sitemap-core.xml', 'sitemap-registries-wave1.xml', 'sitemap-registries-wave1b.xml', 'sitemap-registries-wave1c.xml'], 'Unexpected child sitemaps');
-const [core, wave1, wave1b, wave1c] = sitemap.children;
+assert.deepEqual(sitemap.children.map((c) => c.file), ['sitemap-core.xml', 'sitemap-registries-wave1.xml', 'sitemap-registries-wave1b.xml', 'sitemap-registries-wave1c.xml', 'sitemap-registries-wave1d.xml'], 'Unexpected child sitemaps');
+const [core, wave1, wave1b, wave1c, wave1d] = sitemap.children;
 
 const text = (node) => (node.nodeName === '#text' ? node.value : (node.childNodes ?? []).map(text).join(''));
 const attr = (node, name) => node.attrs?.find((a) => a.name === name)?.value;
@@ -873,7 +873,7 @@ for (const p of causeWave1c) assert.ok(causeHtml.includes(`href="${sitePath}${p}
 // ---------- 6. Sitemap partition, llms.txt and feed ----------
 assert.deepEqual([...wave1c.locs].sort(), allRoutes.map(abs).sort(), 'Wave 1c sitemap must list exactly the Wave 1c pages');
 const wave1cSet = new Set(allRoutes.map(abs));
-for (const child of [core, wave1, wave1b]) assert.ok(!child.locs.some((loc) => wave1cSet.has(loc)), `${child.file} must not list Wave 1c pages`);
+for (const child of [core, wave1, wave1b, wave1d]) assert.ok(!child.locs.some((loc) => wave1cSet.has(loc)), `${child.file} must not list Wave 1c pages`);
 assert.ok(!core.locs.some((loc) => new URL(loc).pathname.startsWith(sitePath + W)), 'Core sitemap must not list registry dossier pages');
 const llms = readFileSync(join(dist, 'llms.txt'), 'utf8');
 for (const [path, r] of routes) if (r.kind !== 'dossier') assert.ok(llms.includes(abs(path)), `llms.txt missing ${path}`);
