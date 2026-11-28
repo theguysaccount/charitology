@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1c } from '../../../lib/registry-wave1c';
 import manifest from '../../../../public/data/charity-registry/slovakia/manifest.json';
 import flowManifest from '../../../../public/data/funding-flows/slovakia-pit-2-percent/manifest.json';
 import '../../../styles/charity-financial-search.css';
@@ -28,6 +29,7 @@ const sources = [
   <p>This edition combines ten consecutive official annual disbursement CSVs published by the Financial Directorate of the Slovak Republic (<em>Finančná správa SR</em>, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>, covering tax-assignment payouts through <time datetime={manifest.asOf}>{manifest.asOf}</time> under §50 of Act No. 595/2003 Coll.). Across <strong>2016–2025</strong>, <strong>{count(manifest.counts.includedOrganizations)} distinct 8-digit <em>IČO</em> organizations</strong> received statutory 2%/3% individual and 1%/2% corporate income-tax shares totaling <strong>{eurM(manifest.counts.total10YearEurCents)}</strong> — growing from {count(manifest.yearly['2016'].distinctOrganizations)} organizations ({eurM(manifest.yearly['2016'].totalCents)}) in 2016 to <strong>{count(manifest.counts.active2025Organizations)} organizations ({eurM(manifest.counts.total2025EurCents)}) in 2025</strong> (+82.5% over the decade; {count(manifest.counts.presentAll10Years)} organizations received payouts in all ten years).</p>
   <p>Unlike <a href={url('/record/charity-index/poland/')}>Poland’s</a> individual-only 1.5% PIT mechanism (where medical sub-account intermediaries lead 45.7%), Slovakia allows <strong>both individuals and corporations</strong> to assign income-tax shares. As a result, entities named <em>Nadácia</em> (foundations — heavily represented by corporate foundations) account for <strong>{flowManifest.counts.namedFoundationShare2025Pct}% ({eurM(manifest.counts.byNameHint2025Cents.foundation_named)})</strong> of all 2025 payouts despite representing just {count(manifest.counts.byNameHint.foundation_named)} organizations.</p>
 
+  <p>For {wave1c().sorted.sk.length.toLocaleString('en-US')} of these organizations, a <a href={url(wave1c().base(wave1c().D.sk.slug))}>verified charity dossier</a> puts the register record and every published figure on one page, with its source record. They are the organizations whose record reports {wave1c().D.sk.thresholdText}.</p>
   <section class="charity-financial-search" data-slovakia-registry data-base={url(dataPath)}
     data-flow={url(flowPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="sk-search-heading">
     <h2 id="sk-search-heading">Search Slovak 2%/3% recipient organizations</h2>

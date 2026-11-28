@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1c } from '../../../lib/registry-wave1c';
 import manifest from '../../../../public/data/charity-registry/poland/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
@@ -26,6 +27,7 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].or
   filePath="src/pages/record/charity-index/poland.astro" sources={sources}>
   <p>This edition combines three statutory National Freedom Institute (NIW-CRSO) eligible Public Benefit Organization (<em>Organizacja Pożytku Publicznego</em>, OPP) registers for tax years <strong>2023, 2024 and 2025</strong> (latest list updated November 16, 2026; captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>) with four years of Ministry of Finance 1.5% PIT disbursements (tax years 2022–2025, paid 2023–2026) under <a href={manifest.license}>CC0 1.0</a>. Together they identify <strong>{count(manifest.counts.includedOrganizations)} distinct 10-digit KRS organizations</strong>: <strong>{count(manifest.counts.eligible2025)}</strong> eligible in the latest 2025/2026 NIW register (<strong>{count(manifest.counts.eligibleAllThreeYears)}</strong> eligible in all three years; <strong>{count(manifest.counts.eligible2025OnlyNew)}</strong> newly added for 2025) and <strong>{count(manifest.counts.notEligibleInFinal2025List)}</strong> appearing in earlier 2022–2024 lists or payouts only. Every non-blank 10-digit tax identifier (<strong>{count(manifest.counts.withValidatedNip)}</strong> NIPs) passes Poland’s official weighted mod-11 checksum.</p>
 
+  <p>For {wave1c().sorted.pl.length.toLocaleString('en-US')} of these organizations, a <a href={url(wave1c().base(wave1c().D.pl.slug))}>verified charity dossier</a> puts the register record and every published figure on one page, with its source record. They are the organizations whose record reports {wave1c().D.pl.thresholdText}.</p>
   <section class="charity-financial-search" data-poland-registry data-base={url(dataPath)}
     data-flow={url(flowPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="pl-search-heading">
     <h2 id="pl-search-heading">Search Polish public benefit organizations</h2>

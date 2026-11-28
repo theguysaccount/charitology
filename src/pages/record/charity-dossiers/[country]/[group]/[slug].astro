@@ -1,0 +1,292 @@
+---
+// Wave 1c pages below a country: one dossier per organization, label hubs of
+// dossiers, and register hubs for registers without per-organization figures.
+// Every value comes from the committed, hash-pinned Wave 1c dataset.
+import Entry from '../../../../../layouts/Entry.astro';
+import Faq from '../../../../../components/registry/Faq.astro';
+import W1cDossierTable from '../../../../../components/registry/W1cDossierTable.astro';
+import '../../../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../../../lib/site';
+import { faqNode, hubNodes, count, dayLabel, WAVE1_BASE } from '../../../../../lib/registry-wave1';
+import { wave1c, midSentence, DOSSIER_KEYS, HUB_KEYS, WAVE1C_DATA_PATH, type Dossier, type DossierKey, type HubKey } from '../../../../../lib/registry-wave1c';
+
+type Props =
+  | { kind: 'dossier'; k: DossierKey; d: Dossier }
+  | { kind: 'dossierHub'; k: DossierKey; label: string }
+  | { kind: 'registryHub'; k: HubKey; key: string };
+
+export function getStaticPaths() {
+  const w = wave1c();
+  const split = (path: string) => {
+    const [country, group, slug] = path.slice(WAVE1_BASE.length).split('/');
+    return { country, group, slug };
+  };
+  const paths = [
+    ...DOSSIER_KEYS.flatMap((k) => w.sorted[k].map((d) => ({ params: split(w.dossierPath(k, d)), props: { kind: 'dossier' as const, k, d } }))),
+    ...DOSSIER_KEYS.flatMap((k) => w.dossierHubs[k].map((label) => ({ params: split(w.dossierHubPath(k, label)), props: { kind: 'dossierHub' as const, k, label } }))),
+    ...HUB_KEYS.flatMap((k) => w.registryHubKeys(k).map((key) => ({ params: split(w.registryHubPath(k, key)), props: { kind: 'registryHub' as const, k, key } }))),
+  ];
+  const seen = new Set<string>();
+  for (const p of paths) {
+    const id = `${p.params.country}/${p.params.group}/${p.params.slug}`;
+    if (seen.has(id)) throw new Error(`Duplicate Wave 1c route ${id}`);
+    seen.add(id);
+  }
+  return paths;
+}
+
+const props = Astro.props as Props;
+const w = wave1c();
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const k = props.k;
+const def = props.kind === 'registryHub' ? w.H[props.k] : w.D[props.k];
+const countryBase = w.base(def.slug);
+const sourceEntries = Object.entries(w.src[k] as Record<string, any>);
+const sources = [
+  ...sourceEntries.map(([name, s]) => ({
+    title: s.title ?? s.description ?? s.file ?? name,
+    publisher: def.publisher,
+    url: s.url,
+    note: [s.retrievedAt ? `retrieved ${String(s.retrievedAt).slice(0, 10)}` : null, s.bytes ? `${count(Number(s.bytes))} bytes` : null, s.sha256 ? `SHA-256 ${s.sha256}` : null].filter(Boolean).join('; '),
+  })),
+  { title: `Committed ${def.country} edition manifest`, publisher: 'Charitology', url: absolute(`${def.editionPath}manifest.json`, Astro.site) },
+];
+
+let title = '';
+let description = '';
+let summary = '';
+let eyebrow = '';
+let identityCode = '';
+let faqs: ReturnType<typeof w.dossierFaqs> = [];
+let jsonLd: Record<string, unknown>[] = [];
+let crumbs: { label: string; href?: string }[] = [];
+let sections: { slug: string; text: string; symbol: any }[] = [];
+
+if (props.kind === 'dossier') {
+  const { d } = props;
+  const dd = w.D[props.k];
+  const p = w.latest(d);
+  const entry = dd.entryUrl(d);
+  title = dd.titleOf(d);
+  faqs = w.dossierFaqs(props.k, d);
+  eyebrow = `Verified charity dossier · ${dd.country}`;
+  identityCode = props.k === 'ni' ? d.facts.nic : d.id;
+  summary = `${dd.register} record and published figures for ${midSentence(dd.idLabel)} ${identityCode}. Figures are copied as published, with their source file and record reference.`;
+  description = `${dd.country} ${dd.idLabel} ${identityCode}: ${dd.lines.slice(0, 2).map((l) => `${midSentence(l.label)} ${w.cell(props.k, p, l.key)}`).join(', ')} for ${midSentence(dd.periodHeading(p))}, copied from the ${dd.register} with its source record.`;
+  crumbs = [{ label: 'The Record', href: '/record/' }, { label: 'Charity dossiers', href: WAVE1_BASE }, { label: dd.country, href: countryBase }, { label: d.name }];
+  sections = [
+    { slug: 'register-record', text: 'Register record', symbol: 'fileSearch' },
+    { slug: 'figures', text: 'Published figures', symbol: 'table' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'related', text: 'Where this record appears', symbol: 'network' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ];
+  jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      '@id': `${canonical}#organization`,
+      name: d.name,
+      identifier: [{ '@type': 'PropertyValue', propertyID: dd.idProperty, value: d.id }],
+      ...(entry ? { sameAs: [entry] } : {}),
+      mainEntityOfPage: canonical,
+    },
+    faqNode(faqs),
+  ];
+} else if (props.kind === 'dossierHub') {
+  const dd = w.D[props.k];
+  const items = w.labelMaps[props.k].get(props.label)!;
+  const text = dd.labelText!(props.label);
+  title = w.dossierHubTitle(props.k, props.label);
+  faqs = w.dossierHubFaqs(props.k, props.label);
+  eyebrow = `Verified registry hub · ${dd.country}`;
+  identityCode = dd.identityCode;
+  summary = `${dd.country} organizations carrying the ${dd.labelNoun} “${text}”, and the ${count(items.length)} Wave 1c dossiers among them, listed alphabetically.`;
+  description = `${count(items.length)} Wave 1c dossiers and ${count(w.counts[props.k].labels[props.label])} organizations in the ${dd.register} with the ${dd.labelNoun} “${text}”. Figures as published by ${dd.publisher}.`;
+  crumbs = [{ label: 'The Record', href: '/record/' }, { label: 'Charity dossiers', href: WAVE1_BASE }, { label: dd.country, href: countryBase }, { label: text }];
+  sections = [
+    { slug: 'register-counts', text: 'Register counts', symbol: 'bars' },
+    { slug: 'dossiers', text: 'Wave 1c dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ];
+  jsonLd = [
+    ...hubNodes({
+      name: title, description, canonical, origin, dateModified: w.manifest.edition,
+      items: items.map((x) => ({ name: x.name, url: absolute(w.dossierPath(props.k as DossierKey, x), Astro.site) })),
+      spatialCoverage: dd.country,
+      dataFiles: [`${props.k}-dossiers.json`, `${props.k}-counts.json`].map((f) => absolute(`${WAVE1C_DATA_PATH}${f}`, Astro.site)),
+      isBasedOn: sourceEntries.map(([, s]) => s.url), license: dd.licence, creditText: `${dd.attribution} Selected and formatted by Charitology.`,
+    }),
+    faqNode(faqs),
+  ];
+} else {
+  const h = w.H[props.k];
+  const hub = w.hubs[props.k].hubs[props.key];
+  title = h.hubTitle(hub.label, props.key);
+  faqs = w.registryHubFaqs(props.k, props.key);
+  eyebrow = `Verified registry hub · ${h.country}`;
+  identityCode = h.identityCode;
+  summary = `${count(hub.count)} organizations in the ${h.register} carry the ${h.labelNoun} “${hub.label}”. ${hub.capped ? `This hub lists the ${count(hub.members.length)} most recently registered.` : 'This hub lists all of them.'}`;
+  description = `${count(hub.count)} ${h.country} organizations with the ${h.labelNoun} “${hub.label}” in the ${h.register}${hub.capped ? `, ${count(hub.members.length)} most recently registered listed` : ''}. Entries as published by ${h.publisher}.`;
+  crumbs = [{ label: 'The Record', href: '/record/' }, { label: 'Charity dossiers', href: WAVE1_BASE }, { label: h.country, href: countryBase }, { label: hub.label }];
+  sections = [
+    { slug: 'register-counts', text: 'Register counts', symbol: 'bars' },
+    { slug: 'entries', text: 'Register entries', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ];
+  const listNodes = hubNodes({
+    name: title, description, canonical, origin, dateModified: w.manifest.edition,
+    items: [],
+    spatialCoverage: h.country,
+    dataFiles: [absolute(`${WAVE1C_DATA_PATH}${props.k}-hubs.json`, Astro.site), absolute(`${h.editionPath}manifest.json`, Astro.site)],
+    isBasedOn: sourceEntries.map(([, s]) => s.url), license: h.licence, creditText: `${h.attribution} Selected and formatted by Charitology.`,
+  });
+  const list = (listNodes[0] as any).mainEntity;
+  list.name = `${title}: alphabetical list of register entries`;
+  list.numberOfItems = hub.members.length;
+  list.itemListElement = hub.members.map((m, i) => ({
+    '@type': 'ListItem', position: i + 1, name: m[1],
+    ...(h.entryUrl ? { url: h.entryUrl(m[0]) } : {}),
+  }));
+  jsonLd = [...listNodes, faqNode(faqs)];
+}
+const dd = props.kind === 'registryHub' ? null : w.D[props.k];
+const hasLabels = dd?.hubSegment;
+---
+
+<Entry title={title} eyebrow={eyebrow} identityCode={identityCode} summary={summary} description={description} crumbs={crumbs} sources={sources} jsonLd={jsonLd} sections={sections}>
+  {props.kind === 'dossier' && dd && (() => {
+    const d = props.d;
+    const entry = dd.entryUrl(d);
+    const factRows = w.facts(props.k, d);
+    return (
+      <>
+        <p>This dossier reproduces what the {dd.register} published by {dd.publisher} records about {midSentence(dd.idLabel)} {props.k === 'ni' ? d.facts.nic : d.id}. It is not a rating, ranking, endorsement or effectiveness claim, and Charitology computes no ratio from these figures. A value the source does not supply is shown as “Not supplied”, never as zero.</p>
+
+        <h2 id="register-record">Register record</h2>
+        <dl class="rw-facts">
+          {factRows.map((f) => (
+            <>
+              <dt>{f.label}</dt>
+              <dd>{f.links && f.links.some((l) => l.href)
+                ? f.links.map((l, i) => <>{i > 0 && '; '}{l.href ? <a href={url(l.href)}>{l.text}</a> : l.text}</>)
+                : f.value}</dd>
+            </>
+          ))}
+        </dl>
+        <p class="note">{d.record !== null ? `Edition record: row ${count(d.record)} of the committed ${dd.country} edition asset. ` : `Edition record: keyed by ${dd.idLabel} in the committed ${dd.country} edition. `}{props.k === 'mx' ? 'Directory activity codes are the letters printed in the SAT directory; the words in brackets are Charitology’s English summaries of the directory legend. ' : ''}Addresses, contact details, people’s names and staff or volunteer counts are omitted.</p>
+        {props.k === 'ni' && d.facts.editionFlag && <p class="note">Edition anomaly note: {d.facts.editionFlag}</p>}
+
+        <h2 id="figures">Published figures</h2>
+        <p>{count(d.periods.length)} {dd.periodNoun}{d.periods.length > 1 ? 's' : ''} from the committed edition captured {dayLabel(w.editionDate[props.k])}. Each column cites its period{dd.periodSubIsRecord ? ' and source record' : ''}.</p>
+        <div class="table-wrap">
+          <table class="data rw-table" data-figures="w1c">
+            <caption>{dd.moneyNote}. “Not supplied” means the source has no value; it is never zero.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Published line</th>
+                {d.periods.map((p) => <th scope="col" class="num" data-period={p.end ?? p.label}>{dd.periodHeading(p)}{dd.periodSub(p) && <span class="rw-sub">{dd.periodSub(p)}</span>}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {dd.lines.map((line) => (
+                <tr data-line={line.key}>
+                  <th scope="row">{line.label}<span class="rw-sub">{line.ref}</span></th>
+                  {d.periods.map((p) => <td class="num">{w.cell(props.k, p, line.key)}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Figures describe what the source reports for each period. Do not add them across periods, registers or related organizations.</p>
+
+        <Faq faqs={faqs} />
+
+        <h2 id="related">Where this record appears</h2>
+        <ul>
+          {hasLabels && d.labels.filter((l) => w.dossierHubs[props.k].includes(l)).map((l) => <li><a href={url(w.dossierHubPath(props.k, l))}>{w.dossierHubTitle(props.k, l)}</a>.</li>)}
+          <li><a href={url(countryBase)}>All {dd.country} charity dossiers</a>.</li>
+          {hasLabels && <li><a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a>: the same labels beside comparable labels in other registers.</li>}
+          <li><a href={url(dd.recordPage)}>Search the full {dd.country} edition</a>.</li>
+          {entry && <li><a href={entry}>Current official register entry</a> for later filings and status.</li>}
+        </ul>
+
+        <h2 id="limits">Sources and limits</h2>
+        <p>Inclusion follows one rule: this record reports {dd.thresholdText}. The rule is a coverage boundary for Wave 1c, not a judgment of the organization. The committed edition is read only after its SHA-256 fingerprint is checked; nothing is estimated or summed.</p>
+        <p>{dd.attribution} Charitology selected and reformatted the records. <a href={url(`${WAVE1C_DATA_PATH}manifest.json`)} download="charitology-registry-wave1c-manifest.json">Download the Wave 1c manifest</a> for every source URL, capture date, size and SHA-256 fingerprint, or the <a href={url(`${WAVE1C_DATA_PATH}${props.k}-dossiers.json`)} download={`charitology-${props.k}-dossiers.json`}>{dd.country} dossier dataset</a>.</p>
+      </>
+    );
+  })()}
+
+  {props.kind === 'dossierHub' && dd && (() => {
+    const items = w.labelMaps[props.k].get(props.label)!;
+    const text = dd.labelText!(props.label);
+    const others = w.dossierHubs[props.k].filter((l) => l !== props.label);
+    return (
+      <>
+        <p>The {dd.register} records a {dd.labelNoun} for each organization. This hub groups the Wave 1c dossiers carrying “{text}”, exactly as the register words it. It does not rank, rate or endorse any organization.</p>
+        <h2 id="register-counts">Register counts</h2>
+        <dl class="rw-facts">
+          <dt>Organizations with this {dd.labelNoun}</dt><dd>{count(w.counts[props.k].labels[props.label])}</dd>
+          <dt>Wave 1c dossiers with this {dd.labelNoun}</dt><dd>{count(items.length)}</dd>
+          <dt>Edition captured</dt><dd>{dayLabel(w.editionDate[props.k])}</dd>
+        </dl>
+        <p>An organization can carry several labels, so counts overlap.{others.length > 0 && <> Other hubs: {others.map((l, i) => <>{i > 0 && ' · '}<a href={url(w.dossierHubPath(props.k, l))}>{dd.labelText!(l)}</a></>)}.</>} Compare comparable labels in other registers on the <a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a> page.</p>
+        <h2 id="dossiers">Wave 1c dossiers</h2>
+        <W1cDossierTable k={props.k} items={items} caption={`Wave 1c dossiers carrying “${text}”. ${dd.moneyNote}.`} />
+        <Faq faqs={faqs} />
+        <h2 id="limits">Sources and limits</h2>
+        <p>Counts cover the committed edition captured {dayLabel(w.editionDate[props.k])}. Dossiers include organizations whose record reports {dd.thresholdText}. Figures are not added across organizations. <a href={url(countryBase)}>All {dd.country} dossiers</a>.</p>
+        <p>{dd.attribution} <a href={url(`${WAVE1C_DATA_PATH}${props.k}-counts.json`)} download={`charitology-${props.k}-counts.json`}>Download the edition counts</a> or the <a href={url(`${WAVE1C_DATA_PATH}manifest.json`)} download="charitology-registry-wave1c-manifest.json">Wave 1c manifest</a>.</p>
+      </>
+    );
+  })()}
+
+  {props.kind === 'registryHub' && (() => {
+    const h = w.H[props.k];
+    const hub = w.hubs[props.k].hubs[props.key];
+    const others = w.registryHubKeys(props.k).filter((x) => x !== props.key);
+    return (
+      <>
+        <p>The {h.register} records {h.labelNoun === 'approval marker' ? 'approval markers' : `the ${h.labelNoun}`} of each organization. This hub lists the organizations carrying “{hub.label}”, exactly as the register words it, {h.entryUrl ? 'each linked to its official register entry' : `with the ${midSentence(h.idLabel)} to look up in the official register`}. It does not rank, rate or endorse any organization.</p>
+        <h2 id="register-counts">Register counts</h2>
+        <dl class="rw-facts">
+          <dt>Organizations with this {h.labelNoun}</dt><dd>{count(hub.count)}</dd>
+          <dt>Listed on this page</dt><dd>{count(hub.members.length)}{hub.capped ? ', the most recently registered' : ', all of them'}</dd>
+          <dt>Population</dt><dd>{count(w.hubs[props.k].counts.population)} {h.population}</dd>
+          <dt>Edition captured</dt><dd>{dayLabel(w.editionDate[props.k])}</dd>
+          {props.k === 'at' && <><dt>BMF prefix</dt><dd>{props.key}</dd></>}
+          {props.k === 'fi' && <><dt>Industry code (TOL)</dt><dd>{props.key.split('|')[0]}</dd></>}
+        </dl>
+        {others.length > 0 && <p>Other {h.country} hubs: {others.map((x, i) => <>{i > 0 && ' · '}<a href={url(w.registryHubPath(props.k, x))}>{w.hubs[props.k].hubs[x].label}</a></>)}.</p>}
+        <h2 id="entries">Register entries</h2>
+        <div class="table-wrap">
+          <table class="data rw-table" data-entries={props.k}>
+            <caption>{hub.capped ? `The ${count(hub.members.length)} most recently registered of ${count(hub.count)} entries, in alphabetical order.` : `All ${count(hub.members.length)} entries, in alphabetical order.`} As published in the {h.register}.</caption>
+            <thead><tr>{h.columns.map((c) => <th scope="col">{c}</th>)}</tr></thead>
+            <tbody>
+              {hub.members.map((m) => (
+                <tr data-id={m[0]}>
+                  <th scope="row">{h.entryUrl ? <a href={h.entryUrl(m[0])}>{m[1]}</a> : m[1]}</th>
+                  <td>{m[0]}</td>
+                  {props.k === 'at' && <td>{m[2] ? dayLabel(m[2]) : 'Not supplied'}</td>}
+                  {props.k === 'fi' && <><td>{m[2]}</td><td>{m[3] ? dayLabel(m[3]) : 'Not supplied'}</td><td>{m[4] ?? 'Not supplied'}</td></>}
+                  {props.k === 'lv' && <><td>{m[2]}</td><td>{m[3] ? dayLabel(m[3]) : 'Not supplied'}</td></>}
+                  {props.k === 'dk' && <td>{m[2] ? 'Yes' : 'No'}</td>}
+                  {props.k === 'hr' && <><td>{m[2] ?? 'Not supplied'}</td><td>{m[3] ?? 'Not supplied'}</td><td>{dayLabel(m[4])}</td></>}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <Faq faqs={faqs} />
+        <h2 id="limits">Sources and limits</h2>
+        <p>The committed edition carries no per-organization financial figures for {h.country}, so these are register entries, not dossiers. {h.entryUrl ? 'Each name links to the official register entry.' : `The official register has no page per entry; look up the ${midSentence(h.idLabel)} at ${h.entrySite}.`} {hub.capped ? `Hubs with more than ${count(w.sel[props.k].listCap)} organizations list the most recently registered by registration date; the full list is in the downloadable hub file.` : ''} <a href={url(countryBase)}>All {h.country} hubs</a> · <a href={url(h.recordPage)}>search the full {h.country} edition</a> · <a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a>.</p>
+        <p>{h.attribution} <a href={url(`${WAVE1C_DATA_PATH}${props.k}-hubs.json`)} download={`charitology-${props.k}-hubs.json`}>Download the hub lists</a> or the <a href={url(`${WAVE1C_DATA_PATH}manifest.json`)} download="charitology-registry-wave1c-manifest.json">Wave 1c manifest</a>.</p>
+      </>
+    );
+  })()}
+</Entry>

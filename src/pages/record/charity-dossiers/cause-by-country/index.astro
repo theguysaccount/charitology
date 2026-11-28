@@ -5,16 +5,34 @@ import '../../../../styles/registry-wave1.css';
 import { absolute, url } from '../../../../lib/site';
 import { faqNode, hubNodes, count, US_BASE, EW_BASE, WAVE1_BASE, WAVE1_DATA_PATH } from '../../../../lib/registry-wave1';
 import { wave1b, sentence, REGISTRY_NAMES, CLASSIFICATION_NAMES, SC_BASE, AU_BASE, CA_BASE, WAVE1B_DATA_PATH, type Registry } from '../../../../lib/registry-wave1b';
+import { wave1c, DOSSIER_KEYS, WAVE1C_DATA_PATH, type CauseKey, type HubKey } from '../../../../lib/registry-wave1c';
 
 const w = wave1b();
-const faqs = w.causeFaqs();
+const c = wave1c();
+const faqsBase = w.causeFaqs();
+const C = c.CAUSE_KEYS;
+const cIndex = (r: CauseKey) => c.base(r === 'ni' || r === 'se' || r === 'mx' ? c.D[r].slug : c.H[r as HubKey].slug);
+const noLabels = DOSSIER_KEYS.filter((k) => !c.D[k].hubSegment);
+const cHubPaths = [...new Set(c.causes.groups.flatMap((g: any) => C.flatMap((r) => (g.matches[r] as string[]).map((k) => c.causeHub(r, k)).filter(Boolean) as string[])))];
+const cHubName = new Map<string, string>();
+for (const g of c.causes.groups) for (const r of C) for (const k of g.matches[r] as string[]) {
+  const hub = c.causeHub(r, k);
+  if (hub && !cHubName.has(hub)) cHubName.set(hub, `${c.causeName[r]}: ${c.causeDisplay(r, k)}`);
+}
+const languageNames: Record<string, string> = { sv: 'Swedish', es: 'Spanish', de: 'German', lv: 'Latvian', hr: 'Croatian' };
+// The Wave 1b answers, with the Wave 1c registers added where the question covers them.
+const faqs = faqsBase.map((f, i) => (i === 0
+  ? { ...f, answer: `${f.answer} Wave 1c applies the same rule to the labels of ${C.map((r) => c.causeName[r]).join(', ')}, adding stems for labels published in ${Object.values(languageNames).join(', ')}; they are listed in a second table and in the Wave 1c cause-groups.json.` }
+  : i === 5
+    ? { ...f, answer: `${f.answer} For the Wave 1c registers: ${C.map((r) => `${c.causeName[r]} ${count(c.causes.ungrouped[r].length)}`).join(', ')}.` }
+    : f));
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const origin = absolute('/', Astro.site);
 const R = w.REGISTRIES;
 const indexPath: Record<Registry, string> = { us: US_BASE, ew: EW_BASE, scotland: SC_BASE, australia: AU_BASE, canada: CA_BASE };
 const display = (r: Registry, key: string) => (r === 'scotland' ? sentence(w.labelName(r, key)) : w.labelName(r, key));
 const title = 'Cause × Country: charity dossiers by registry category';
-const description = `${count(w.causes.groups.length)} label-level cause groups across the IRS NTEE, Charity Commission, OSCR, ACNC and CRA classifications, linking hubs for the United States, England and Wales, Scotland, Australia and Canada.`;
+const description = `${count(w.causes.groups.length)} label-level cause groups across the IRS NTEE, Charity Commission, OSCR, ACNC and CRA classifications, plus the published labels of ${C.map((r) => c.causeName[r]).join(', ')}, with hubs for each country.`;
 const hubPaths = [...new Set(w.causes.groups.flatMap((g) => R.flatMap((r) => g.matches[r].map((k) => w.labelHub(r, k)).filter(Boolean) as string[])))];
 const hubName = new Map<string, string>();
 for (const g of w.causes.groups) for (const r of R) for (const k of g.matches[r]) {
@@ -27,9 +45,11 @@ const jsonLd = [
     items: [
       ...R.map((r) => ({ name: `${REGISTRY_NAMES[r]} charity dossiers`, url: absolute(indexPath[r], Astro.site) })),
       ...hubPaths.map((p) => ({ name: hubName.get(p)!, url: absolute(p, Astro.site) })),
+      ...C.map((r) => ({ name: `${c.causeName[r]} ${r === 'ni' || r === 'se' || r === 'mx' ? 'charity dossiers' : 'register hubs'}`, url: absolute(cIndex(r), Astro.site) })),
+      ...cHubPaths.map((p) => ({ name: cHubName.get(p)!, url: absolute(p, Astro.site) })),
     ],
-    spatialCoverage: 'United States; England and Wales; Scotland; Australia; Canada',
-    dataFiles: [absolute(`${WAVE1B_DATA_PATH}cause-groups.json`, Astro.site), absolute(`${WAVE1B_DATA_PATH}manifest.json`, Astro.site), absolute(`${WAVE1_DATA_PATH}manifest.json`, Astro.site)],
+    spatialCoverage: ['United States', 'England and Wales', 'Scotland', 'Australia', 'Canada', ...C.map((r) => c.causeName[r])].join('; '),
+    dataFiles: [absolute(`${WAVE1B_DATA_PATH}cause-groups.json`, Astro.site), absolute(`${WAVE1B_DATA_PATH}manifest.json`, Astro.site), absolute(`${WAVE1_DATA_PATH}manifest.json`, Astro.site), absolute(`${WAVE1C_DATA_PATH}cause-groups.json`, Astro.site), absolute(`${WAVE1C_DATA_PATH}manifest.json`, Astro.site)],
     isBasedOn: [w.cra.source.url, w.acnc.source.url, w.src.oscrRegister.url, 'https://www.irs.gov/pub/foia/ig/tege/eo-info.pdf', 'https://ccewuksprdoneregsadata1.blob.core.windows.net/data/txt/publicextract.charity_classification.zip'],
     license: 'https://creativecommons.org/licenses/by/4.0/',
     creditText: 'Category labels published by the IRS, the Charity Commission for England and Wales, the Office of the Scottish Charity Regulator, the ACNC and the Canada Revenue Agency; grouped by label text by Charitology.',
@@ -63,6 +83,9 @@ const sources = [
     { slug: 'groups', text: 'Cause groups by register', symbol: 'compare' },
     { slug: 'registers', text: 'The five classifications', symbol: 'archive' },
     { slug: 'ungrouped', text: 'Labels in no group', symbol: 'layers' },
+    { slug: 'wave1c', text: 'Wave 1c registers', symbol: 'globe' },
+    { slug: 'wave1c-stems', text: 'Stems by label language', symbol: 'table' },
+    { slug: 'wave1c-ungrouped', text: 'Wave 1c labels in no group', symbol: 'bookmark' },
     { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
     { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
   ]}
@@ -115,9 +138,62 @@ const sources = [
     {R.map((r) => <><dt>{REGISTRY_NAMES[r]}</dt><dd>{w.causes.ungrouped[r].length ? w.causes.ungrouped[r].map((k) => `${display(r, k)} (${count(w.labelCount(r, k))})`).join('; ') : 'None'}</dd></>)}
   </dl>
 
+  <h2 id="wave1c">Wave 1c registers</h2>
+  <p>Wave 1c adds the published labels of {C.length} more registers: {C.map((r, i) => <>{i > 0 && ', '}<a href={url(cIndex(r))}>{c.causeName[r]}</a> ({c.causeClassification[r]})</>)}. The same rule applies: a label joins a group when one of its words starts with one of the group’s stems. The Wave 1b English stems apply to every label; for labels published in another language, each group also has stems in that language, listed below. Counts are Wave 1c dossiers for Northern Ireland, Sweden and Mexico, and registered organizations for the register-hub countries, so they are never added across a row. {noLabels.map((k) => c.D[k].country).join(', ')} {noLabels.length > 1 ? 'have' : 'has'} no category field in the committed edition and no column here.</p>
+  <p>Word-start matching is mechanical. Finnish industry labels such as “Other social work activities without accommodation” match the housing stem “accommodation” although they describe the opposite, so read every match against its label.</p>
+  <div class="table-wrap">
+    <table class="data rw-table" data-figures="cause-groups-wave1c">
+      <caption>Published category labels of the Wave 1c registers by cause group. Counts in brackets; a linked label has a hub with at least {c.hubMin} dossiers or organizations.</caption>
+      <thead>
+        <tr><th scope="col">Cause group</th>{C.map((r) => <th scope="col">{c.causeName[r]}<span class="rw-sub">{c.causeClassification[r]}</span></th>)}</tr>
+      </thead>
+      <tbody>
+        {c.causes.groups.map((g: any) => (
+          <tr data-group-1c={g.id}>
+            <th scope="row">{g.name}</th>
+            {C.map((r) => (
+              <td data-registry={r}>
+                {g.matches[r].length
+                  ? (g.matches[r] as string[]).map((k, i) => {
+                      const hub = c.causeHub(r, k);
+                      return <>{i > 0 && <br />}{hub ? <a href={url(hub)}>{c.causeDisplay(r, k)}</a> : c.causeDisplay(r, k)} ({count(c.causeCount(r, k))})</>;
+                    })
+                  : 'No matching label'}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="wave1c-stems">Stems by label language</h2>
+  <p>Northern Ireland and Finland publish English labels, so only the Wave 1b stems apply to them; Denmark’s approval markers are statute references and match no stem.</p>
+  <div class="table-wrap">
+    <table class="data rw-table" data-figures="cause-stems-wave1c">
+      <caption>Stems per cause group. English stems are unchanged from Wave 1b; the other stems apply only to labels published in that language.</caption>
+      <thead><tr><th scope="col">Cause group</th><th scope="col">English (all labels)</th>{Object.values(languageNames).map((n) => <th scope="col">{n}</th>)}</tr></thead>
+      <tbody>
+        {c.causes.groups.map((g: any) => (
+          <tr data-stems={g.id}>
+            <th scope="row">{g.name}</th>
+            <td>{g.stems.map((x: string) => `“${x}”`).join(', ')}</td>
+            {Object.keys(languageNames).map((l) => <td data-language={l}>{g.languageStems[l].length ? g.languageStems[l].map((x: string) => `“${x}”`).join(', ') : 'None'}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="wave1c-ungrouped">Wave 1c labels in no group</h2>
+  <p>These labels contain none of the stems that apply to them. They are listed so that nothing is silently dropped.</p>
+  <dl class="rw-facts" data-ungrouped="wave1c">
+    {C.map((r) => <><dt>{c.causeName[r]}</dt><dd>{c.causes.ungrouped[r].length ? (c.causes.ungrouped[r] as string[]).map((k) => `${c.causeDisplay(r, k)} (${count(c.causeCount(r, k))})`).join('; ') : 'None'}</dd></>)}
+  </dl>
+
   <Faq faqs={faqs} />
 
   <h2 id="limits">Sources and limits</h2>
   <p>Labels are copied from each register’s published classification: the IRS EO BMF code tables, the Charity Commission classification extract, the OSCR register download, the ACNC Registered Charities user guide and the CRA codes list. The same organization can appear in more than one register, especially Cross Border charities registered in Scotland and in England and Wales, so dossier counts are not totals of distinct organizations and are never summed across countries.</p>
-  <p>Downloads: <a href={url(`${WAVE1B_DATA_PATH}cause-groups.json`)} download="charitology-cause-groups.json">cause groups with every label, stem and match</a> · <a href={url(`${WAVE1B_DATA_PATH}manifest.json`)} download="charitology-registry-wave1b-manifest.json">Wave 1b manifest</a> · <a href={url(`${WAVE1_DATA_PATH}manifest.json`)} download="charitology-registry-wave1-manifest.json">Wave 1 manifest</a>.</p>
+  <p>Downloads: <a href={url(`${WAVE1C_DATA_PATH}cause-groups.json`)} download="charitology-cause-groups-wave1c.json">Wave 1c cause groups with every label, stem and match</a> · <a href={url(`${WAVE1B_DATA_PATH}cause-groups.json`)} download="charitology-cause-groups.json">cause groups with every label, stem and match</a> · <a href={url(`${WAVE1B_DATA_PATH}manifest.json`)} download="charitology-registry-wave1b-manifest.json">Wave 1b manifest</a> · <a href={url(`${WAVE1_DATA_PATH}manifest.json`)} download="charitology-registry-wave1-manifest.json">Wave 1 manifest</a>.</p>
 </Entry>

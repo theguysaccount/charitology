@@ -7,6 +7,10 @@ import {
 import { absolute } from '../lib/site';
 import { wave1, usStatePath, US_BASE, EW_BASE, WAVE1_BASE, WAVE1_DATA_PATH } from '../lib/registry-wave1';
 import { wave1b, sentence, SC_BASE, AU_BASE, CA_BASE, CAUSE_PATH, WAVE1B_DATA_PATH, WAVE1B_SITEMAP } from '../lib/registry-wave1b';
+import { wave1c, DOSSIER_KEYS, HUB_KEYS, WAVE1C_DATA_PATH, WAVE1C_SITEMAP } from '../lib/registry-wave1c';
+
+// The registry sections of llms.txt are plain ASCII; labels in other scripts are listed by URL only.
+const ascii = (text: string) => text.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^\x20-\x7e]/g, '');
 
 export const GET: APIRoute = ({ site }) => {
   const lookupCount = FUNDING_FLOW_GROUPS[0].items.length;
@@ -14,6 +18,8 @@ export const GET: APIRoute = ({ site }) => {
   const totalFlows = lookupCount + caseCount;
   const w = wave1();
   const b = wave1b();
+  const c = wave1c();
+  const cTotal = DOSSIER_KEYS.reduce((n, k) => n + c.sorted[k].length, 0);
 
   const lines: string[] = [
     '# Charitology',
@@ -73,6 +79,14 @@ export const GET: APIRoute = ({ site }) => {
     `- Canada category hubs (${b.caCategoryHubs.length}, each with >= ${b.hubMin} dossiers): ${b.caCategoryHubs.map((c) => `[${b.categoryLabel(c)} (${c})](${absolute(b.caCategoryPath(c), site)})`).join(' | ')}`,
     `- Canada designation hubs (${b.caDesignationHubs.length}, each with >= ${b.hubMin} dossiers): ${b.caDesignationHubs.map((c) => `[${b.designationLabel(c)} (${c})](${absolute(b.caDesignationPath(c), site)})`).join(' | ')}`,
     '',
+    `## Verified Charity Dossiers, Wave 1c (${cTotal.toLocaleString('en-US')} Organizations | ${DOSSIER_KEYS.length} National Registers with Figures + ${HUB_KEYS.length} Register-Hub Countries | No Ratings)`,
+    '',
+    `- Wave 1c manifest (committed editions, capture dates, sizes, SHA-256): ${absolute(`${WAVE1C_DATA_PATH}manifest.json`, site)} | sitemap: ${absolute(`/${WAVE1C_SITEMAP}`, site)} | cause groups: ${absolute(`${WAVE1C_DATA_PATH}cause-groups.json`, site)}`,
+    ...DOSSIER_KEYS.map((k) => `- [${c.D[k].country} (${c.sorted[k].length.toLocaleString('en-US')} dossiers, ${ascii(c.D[k].register)})](${absolute(c.base(c.D[k].slug), site)}): threshold ${c.sel[k].threshold.currency} ${Number(c.sel[k].threshold.value).toLocaleString('en-US')}${c.sel[k].threshold.unit ? ` ${c.sel[k].threshold.unit}` : ''} on ${c.sel[k].threshold.line} | data: ${absolute(`${WAVE1C_DATA_PATH}${k}-dossiers.json`, site)}`),
+    ...DOSSIER_KEYS.filter((k) => c.dossierHubs[k].length).map((k) => `- ${c.D[k].country} ${ascii(c.D[k].labelNoun!)} hubs (${c.dossierHubs[k].length}, each with >= ${c.hubMin} dossiers): ${c.dossierHubs[k].map((l) => absolute(c.dossierHubPath(k, l), site)).join(' | ')}`),
+    ...HUB_KEYS.map((k) => `- [${c.H[k].country} register hubs (${c.registryHubKeys(k).length}, ${ascii(c.H[k].labelPlural)}, no per-organization figures in the edition)](${absolute(c.base(c.H[k].slug), site)}): ${c.registryHubKeys(k).map((key) => absolute(c.registryHubPath(k, key), site)).join(' | ')} | data: ${absolute(`${WAVE1C_DATA_PATH}${k}-hubs.json`, site)}`),
+    `- [Cause x Country index](${absolute(CAUSE_PATH, site)}) also sets the Wave 1c registers' own labels side by side (${c.causes.groups.length} groups; Wave 1b stems plus stems for labels in Swedish, Spanish, German, Latvian and Croatian); not a crosswalk.`,
+    '',
     `## Key Funding-Flow Datasets (${lookupCount} Lookups, ${caseCount} Case Studies)`,
     '',
     `- [Browse all ${totalFlows} funding flows](${absolute('/record/funding-flows/', site)})`,
@@ -97,7 +111,7 @@ export const GET: APIRoute = ({ site }) => {
     `- ${absolute('/api/v1/conditions.json', site)}`,
     `- ${absolute('/api/v1/open-problems.json', site)}`,
     `- ${absolute('/api/v1/checklist.json', site)}`,
-    `- ${absolute('/sitemap.xml', site)} (sitemap index: ${absolute('/sitemap-core.xml', site)} | ${absolute('/sitemap-registries-wave1.xml', site)} | ${absolute(`/${WAVE1B_SITEMAP}`, site)})`,
+    `- ${absolute('/sitemap.xml', site)} (sitemap index: ${absolute('/sitemap-core.xml', site)} | ${absolute('/sitemap-registries-wave1.xml', site)} | ${absolute(`/${WAVE1B_SITEMAP}`, site)} | ${absolute(`/${WAVE1C_SITEMAP}`, site)})`,
     '',
   ];
 

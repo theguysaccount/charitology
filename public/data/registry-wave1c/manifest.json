@@ -1,0 +1,844 @@
+{
+ "format": "charitology-registry-wave1c-v1",
+ "edition": "2026-11-28",
+ "builder": "scripts/build-registry-wave1c.py",
+ "checker": "scripts/check-registry-wave1c.mjs",
+ "policy": "Figures are copied exactly as the committed, hash-pinned editions store them. Inclusion follows one published-figure threshold per register and is a coverage boundary, not a rating, ranking or endorsement. Null means not supplied; it is never zero. Registers without per-organization figures get hubs from their own category labels only. Cause groups match published category labels only and are not a crosswalk.",
+ "selection": {
+  "nz": {
+   "threshold": {
+    "line": "totalGrossIncome",
+    "value": "3000000",
+    "currency": "NZD"
+   },
+   "candidates": 322,
+   "dossiers": 318,
+   "excluded": {
+    "notRegistered": [
+     "CC20422",
+     "CC23424",
+     "CC32220",
+     "CC37089"
+    ]
+   }
+  },
+  "ni": {
+   "threshold": {
+    "line": "totalIncome",
+    "value": "1000000",
+    "currency": "GBP"
+   },
+   "candidates": 291,
+   "dossiers": 282,
+   "excluded": {
+    "removed": [
+     "100019",
+     "100628",
+     "100903",
+     "101149",
+     "101449",
+     "101551",
+     "101933",
+     "102590",
+     "108032"
+    ]
+   }
+  },
+  "jp": {
+   "threshold": {
+    "line": "ordinaryRevenue",
+    "value": "100000000",
+    "currency": "JPY"
+   },
+   "candidates": 103,
+   "dossiers": 101,
+   "excluded": {
+    "dissolutionRecorded": [
+     "003000408",
+     "046000065"
+    ]
+   }
+  },
+  "se": {
+   "threshold": {
+    "line": "revenue",
+    "value": "50000",
+    "currency": "SEK",
+    "unit": "thousand"
+   },
+   "candidates": 86,
+   "dossiers": 84,
+   "excluded": {
+    "duplicateYearHeaderCard": [
+     "802006-2660",
+     "843001-3501"
+    ]
+   }
+  },
+  "mx": {
+   "threshold": {
+    "line": "dona_efe_nal",
+    "value": "50000000.00",
+    "currency": "MXN"
+   },
+   "candidates": 144,
+   "dossiers": 144,
+   "excluded": {}
+  },
+  "sk": {
+   "threshold": {
+    "line": "amount",
+    "value": "100000.00",
+    "currency": "EUR"
+   },
+   "candidates": 86,
+   "dossiers": 86,
+   "excluded": {}
+  },
+  "pl": {
+   "threshold": {
+    "line": "amount",
+    "value": "2000000.00",
+    "currency": "PLN"
+   },
+   "candidates": 127,
+   "dossiers": 127,
+   "excluded": {}
+  },
+  "at": {
+   "hubMinimum": 5,
+   "listCap": null,
+   "hubs": 19,
+   "cappedHubs": []
+  },
+  "fi": {
+   "hubMinimum": 5,
+   "listCap": null,
+   "hubs": 49,
+   "cappedHubs": []
+  },
+  "lv": {
+   "hubMinimum": 5,
+   "listCap": null,
+   "hubs": 12,
+   "cappedHubs": []
+  },
+  "dk": {
+   "hubMinimum": 5,
+   "listCap": null,
+   "hubs": 3,
+   "cappedHubs": []
+  },
+  "hr": {
+   "hubMinimum": 5,
+   "listCap": 1000,
+   "hubs": 38,
+   "cappedHubs": [
+    "1. BRANITELJI I STRADALNICI",
+    "1. ŠPORTSKA",
+    "10. GOSPODARSKA",
+    "10. ODRŽIVI RAZVOJ",
+    "11. SOCIJALNA DJELATNOST",
+    "12. SPORT",
+    "13. TEHNIČKA KULTURA",
+    "14. ZAŠTITA ZDRAVLJA",
+    "15. ZAŠTITA OKOLIŠA I PRIRODE",
+    "16. ZAŠTITA I SPAŠAVANJE",
+    "18. NOMENKLATURA SPORTOVA",
+    "2. DEMOKRATSKA POLITIČKA KULTURA",
+    "20. OSTALE DJELATNOSTI",
+    "3. DUHOVNOST",
+    "4. GOSPODARSTVO",
+    "5. HOBISTIČKA DJELATNOST",
+    "6. KULTURA I UMJETNOST",
+    "7. LJUDSKA PRAVA",
+    "8. KULTURNA",
+    "8. MEĐUNARODNA SURADNJA",
+    "9. OBRAZOVANJE, ZNANOST I ISTRAŽIVANJE"
+   ]
+  },
+  "hubMinimumDossiers": 5,
+  "registryHubListCap": 1000
+ },
+ "pinnedEditions": {
+  "nz": {
+   "path": "public/data/charity-registry/new-zealand/manifest.json",
+   "sha256": "2f4f5523fb1b9ebcdd41fb24f51d5ed0f7f0f773ae9928434e879e5c08ab64d0"
+  },
+  "ni": {
+   "path": "public/data/charity-registry/northern-ireland/manifest.json",
+   "sha256": "c0aee8093c71ba9130624f92958ffc8953ae19bd09cf43196fa9ff130cb58661"
+  },
+  "niAnomalies": {
+   "path": "public/data/charity-registry/northern-ireland/anomalies.json",
+   "sha256": "b8689f5cee3440909d12bfd70afaef1d3403fcf23aceb0e4fc9df93263d2a5e3"
+  },
+  "jp": {
+   "path": "public/data/charity-registry/japan-npo/manifest.json",
+   "sha256": "965d73a2cb39ae709465cc231a360e0c3e5f1f962db6ebefe448a7d8738cd823"
+  },
+  "se": {
+   "path": "public/data/charity-registry/sweden/manifest.json",
+   "sha256": "d69c0528f7492e5c72685a1204d08aad9bffe94722ea3452efcfef8aafb3fab2"
+  },
+  "seAnomalies": {
+   "path": "public/data/funding-flows/sweden-90-konto/anomalies.json",
+   "sha256": "422242a7dac5d61ba917da3c4fa10bf2c64b3039b19e582face0285b59dc46f1"
+  },
+  "mx": {
+   "path": "public/data/charity-financials/mx/manifest.json",
+   "sha256": "afa96fe2139dc73c5e1c913e794ff3463d7f1da4abc9c763c7e791bfb541ed5c"
+  },
+  "sk": {
+   "path": "public/data/charity-registry/slovakia/manifest.json",
+   "sha256": "1965201117ea69417aa4d3cc0b6c553be1ac23e483fd42689b82ae762707a183"
+  },
+  "skAnomalies": {
+   "path": "public/data/funding-flows/slovakia-pit-2-percent/anomalies.json",
+   "sha256": "20766f8cb19db495a68bef6e29f6d2d8b3d3c4fdef133d8b2013956a7bb1104b"
+  },
+  "pl": {
+   "path": "public/data/charity-registry/poland/manifest.json",
+   "sha256": "1ffbd2aa2546b11b3ea9210ce38095bc2269d29060d8e6a0e5dfbb8cd514c434"
+  },
+  "plFlows": {
+   "path": "public/data/funding-flows/poland-pit-1-5-percent/manifest.json",
+   "sha256": "09f9bcdf11f069b9a049771b9389e75f712b2944a8ced58cfcabf73e3e21f4ca"
+  },
+  "at": {
+   "path": "public/data/charity-registry/austria/manifest.json",
+   "sha256": "34a1d310944b9635cbf9256e06af1a32d5e0553a6144cf08d9d4a7da748b7372"
+  },
+  "fi": {
+   "path": "public/data/charity-registry/finland/manifest.json",
+   "sha256": "df2107fa7a0b1bc8ee569b1841ecf21a2f9fc242046620912f56e4f8504a8157"
+  },
+  "lv": {
+   "path": "public/data/charity-registry/latvia/manifest.json",
+   "sha256": "71e20841b0ab0e8a7f78d49619918b991cfbace4441e13bbce80910093ee5194"
+  },
+  "dk": {
+   "path": "public/data/charity-registry/denmark/manifest.json",
+   "sha256": "aa50b4ded7ccf17ee852d86d49869eee4e44442121136946a556f1751e9694bf"
+  },
+  "hr": {
+   "path": "public/data/charity-registry/croatia/manifest.json",
+   "sha256": "b4e24f39732bc270cac5ec697adf8b3c0b366d5e7183ba07b8c148cad9e6c04b"
+  },
+  "wave1b": {
+   "path": "public/data/registry-wave1b/manifest.json",
+   "sha256": "0c3896923388a393e2b19d569e77c98f838a001274a67299c3cb9f5671f07797"
+  }
+ },
+ "sourceTables": {
+  "ni": {
+   "path": "src/data/northern-ireland-index-sources.tsv",
+   "sha256": "9736545f01d73c420e3b7592bd5595da566b29de28f091820e2e9b89beb1f8ed"
+  },
+  "se": {
+   "path": "src/data/sweden-index-sources.tsv",
+   "sha256": "a631b11cfa72ebb498012dc2847cb654c10e6b0809cdc0bdc18a2d6de8651a1e"
+  },
+  "sk": {
+   "path": "src/data/slovakia-index-sources.tsv",
+   "sha256": "beb00e1b1218edcac6586b27bfedfc98b4fd73c603dd44b640090d8fe69cb3b0"
+  },
+  "pl": {
+   "path": "src/data/poland-index-sources.tsv",
+   "sha256": "5a08f6fbbb8b71b39981b912261795159e0eb6c7ad4df78db8a616d46ca7f720"
+  },
+  "at": {
+   "path": "src/data/austria-index-sources.tsv",
+   "sha256": "a83512cd4bec6524479d7ecbff84c58b951a473f9ebf8ac676b00eeb1b96938d"
+  },
+  "lv": {
+   "path": "src/data/latvia-index-sources.tsv",
+   "sha256": "d60c26a8c41ef807a520c244edad0cabbb13169d8a77d2d7f2880c983df6f9e5"
+  },
+  "dk": {
+   "path": "src/data/denmark-index-sources.tsv",
+   "sha256": "3e5c70ba981e5cc30b6bb66f000f4d19059c263cdb4ccd4d529ad484284e2aef"
+  },
+  "hr": {
+   "path": "src/data/croatia-index-sources.tsv",
+   "sha256": "1b78db67ebfc78a63d2c1e5add784d464de8e78c298c072c3e926cd413c5f3f6"
+  }
+ },
+ "sources": {
+  "nz": {
+   "organisations": {
+    "title": "Charities Register organisation extract (OData Organisations)",
+    "url": "https://www.odata.charities.govt.nz/Organisations?%24format=json&%24select=OrganisationId%2CCharityRegistrationNumber%2CName%2CRegistrationStatus%2CGroupId%2CDateRegistered%2CDeregistrationDate&%24orderby=OrganisationId&%24returnall=true&%24inlinecount=allpages",
+    "bytes": 19333812,
+    "sha256": "692c576977310d94655e8ad3be908b0ccc843532b725af85f11c96c807444263",
+    "rows": 46189,
+    "retrievedAt": "2026-11-11T12:20:58.053383+00:00"
+   },
+   "tier3-2024": {
+    "title": "Tier 3 annual return extract, years ending in 2024 (OData AnnualReturn)",
+    "url": "https://www.odata.charities.govt.nz/AnnualReturn?%24format=json&%24select=AnnualReturnId%2COrganisationId%2CGroupId%2CReportingTierId%2CStatus%2CYearEnded%2CReportingCurrency%2CTotalGrossIncome%2CTotalExpenditure&%24orderby=AnnualReturnId&%24returnall=true&%24inlinecount=allpages&%24filter=ReportingTierId+eq+3+and+YearEnded+ge+datetime%272024-01-01T00%3A00%3A00%27+and+YearEnded+lt+datetime%272025-01-01T00%3A00%3A00%27",
+    "bytes": 3908342,
+    "sha256": "e0723e59b85a2b19dd04301fba92fcc476905ef1756d5a4d38554a4690d23ee6",
+    "rows": 9906,
+    "retrievedAt": "2026-11-11T12:20:58.053383+00:00"
+   },
+   "tier3-2025": {
+    "title": "Tier 3 annual return extract, years ending in 2025 (OData AnnualReturn)",
+    "url": "https://www.odata.charities.govt.nz/AnnualReturn?%24format=json&%24select=AnnualReturnId%2COrganisationId%2CGroupId%2CReportingTierId%2CStatus%2CYearEnded%2CReportingCurrency%2CTotalGrossIncome%2CTotalExpenditure&%24orderby=AnnualReturnId&%24returnall=true&%24inlinecount=allpages&%24filter=ReportingTierId+eq+3+and+YearEnded+ge+datetime%272025-01-01T00%3A00%3A00%27+and+YearEnded+lt+datetime%272026-01-01T00%3A00%3A00%27",
+    "bytes": 4083607,
+    "sha256": "1c18ba172da594b21dab310fff569b73e23327352d453cfeec8369313e73b850",
+    "rows": 10351,
+    "retrievedAt": "2026-11-11T12:20:58.053383+00:00"
+   },
+   "tiers": {
+    "title": "Reporting tier code list (OData ReportingTier)",
+    "url": "https://www.odata.charities.govt.nz/ReportingTier?%24format=json&%24select=ReportingTierId%2CName&%24orderby=ReportingTierId&%24returnall=true&%24inlinecount=allpages",
+    "bytes": 1506,
+    "sha256": "dbd317929ae56af910a420f685c704836f6f25f47790e83042f6b4e5266d348c",
+    "rows": 5,
+    "retrievedAt": "2026-11-11T12:20:58.053383+00:00"
+   },
+   "currencies": {
+    "title": "Reporting currency code list (OData ReportingCurrency)",
+    "url": "https://www.odata.charities.govt.nz/ReportingCurrency?%24format=json&%24select=ReportingCurrencyId%2CName&%24orderby=ReportingCurrencyId&%24returnall=true&%24inlinecount=allpages",
+    "bytes": 959,
+    "sha256": "722092082b81693a8b8d41a27ef91cde101a88378dd72554a92a10443ae10a59",
+    "rows": 4,
+    "retrievedAt": "2026-11-11T12:20:58.053383+00:00"
+   }
+  },
+  "ni": {
+   "ccni-register.csv": {
+    "title": "CCNI Register of Charities CSV export (ccni-register.csv)",
+    "url": "https://www.charitycommissionni.org.uk/api/charity-search/exportSearchResultsToCsv/?pageNumber=1&include=Linked&include=Removed",
+    "bytes": 10302379,
+    "sha256": "002a9bcd38cd1612f3bb469935e0a343e43a0a80e99028a0fff9da70465e4cbc",
+    "retrievedAt": "2026-11-25"
+   }
+  },
+  "jp": {
+   "administrative": {
+    "title": "NPO Portal administrative data (gyousei_000.zip, member 000_AdministrativeInputData_20261110.csv)",
+    "url": "https://www.npo-homepage.go.jp/npoportal/download/zip/gyousei_000.zip",
+    "file": "gyousei_000.zip",
+    "member": "000_AdministrativeInputData_20261110.csv",
+    "sha256": "7300cba5148b1f0c2a2d6a2a1be035678e9e96d257df93d71481c7bfce91f719",
+    "retrievedAt": "2026-11-11"
+   },
+   "organization": {
+    "title": "NPO Portal organization-entered data (houjin_000.zip, member 000_CorporateInputData_20261110.csv)",
+    "url": "https://www.npo-homepage.go.jp/npoportal/download/zip/houjin_000.zip",
+    "file": "houjin_000.zip",
+    "member": "000_CorporateInputData_20261110.csv",
+    "sha256": "f638d7e06570fcda2c560c8dddd0172eb224ff974a63949fd6a0c18b0b2945ec",
+    "retrievedAt": "2026-11-11"
+   }
+  },
+  "se": {
+   "si-dir-active": {
+    "title": "90-konto public directory — active organizations (accountStatus=90-account)",
+    "url": "https://www.insamlingskontroll.se/90-konto-organisationer/",
+    "bytes": 3620970,
+    "sha256": "f5f7f5f3f4af04163708a7502ab6b13d2b55eab744234f75b5960765a2604744",
+    "retrievedAt": "2026-11-23",
+    "file": "directory-90-account.json"
+   },
+   "si-dir-withdrawn": {
+    "title": "90-konto public directory — revoked/withdrawn organizations (accountStatus=withdrawn)",
+    "url": "https://www.insamlingskontroll.se/90-konto-organisationer/",
+    "bytes": 52109,
+    "sha256": "ea858eb16ce5daf7fb9d7144b067f01e1f2510ceee95ec5ea9b88befbffdad63",
+    "retrievedAt": "2026-11-23",
+    "file": "directory-withdrawn.json"
+   },
+   "si-dir-finished": {
+    "title": "90-konto public directory — voluntarily closed organizations (accountStatus=finished)",
+    "url": "https://www.insamlingskontroll.se/90-konto-organisationer/",
+    "bytes": 365672,
+    "sha256": "355c905f2402d869c0e0516071dd38654ce24730c38bd1bcc7e5b11dc469daa6",
+    "retrievedAt": "2026-11-23",
+    "file": "directory-finished.json"
+   },
+   "si-wp-orgs": {
+    "title": "WordPress REST API organizations taxonomy index (741 published profiles)",
+    "url": "https://www.insamlingskontroll.se/wp-json/wp/v2/organizations",
+    "bytes": 8374150,
+    "sha256": "7ed8d2c83d1ea0b5064aa98a2b5399f3076c522952f864c9d7b7497eb49d1893",
+    "retrievedAt": "2026-11-23",
+    "file": "organizations.json"
+   },
+   "si-tax-purpose": {
+    "title": "Charitable purpose taxonomy (organization_purpose, 28 terms)",
+    "url": "https://www.insamlingskontroll.se/wp-json/wp/v2/organization_purpose?per_page=100",
+    "bytes": 133833,
+    "sha256": "c3ef556253f5e431aa4045467d4ab5336d4c06ba03eaaa024c8bd712130da761",
+    "retrievedAt": "2026-11-23",
+    "file": "organization_purpose.json"
+   },
+   "si-tax-area": {
+    "title": "Target group / business area taxonomy (organization_business_area, 33 terms)",
+    "url": "https://www.insamlingskontroll.se/wp-json/wp/v2/organization_business_area?per_page=100",
+    "bytes": 156686,
+    "sha256": "cb61ac9c0640907fc3c4448032e2ee6ebb45ceb2c7429781caef224fa0f3d14c",
+    "retrievedAt": "2026-11-23",
+    "file": "organization_business_area.json"
+   },
+   "si-tax-region": {
+    "title": "Operating world region taxonomy (organization_region, 8 terms)",
+    "url": "https://www.insamlingskontroll.se/wp-json/wp/v2/organization_region?per_page=100",
+    "bytes": 35811,
+    "sha256": "937feebd1ac5116e842481a76e83fee9bda4500304b875591f081a37cb34863a",
+    "retrievedAt": "2026-11-23",
+    "file": "organization_region.json"
+   },
+   "si-tax-region-se": {
+    "title": "Swedish county operating region taxonomy (organization_region_sweden, 20 terms)",
+    "url": "https://www.insamlingskontroll.se/wp-json/wp/v2/organization_region_sweden?per_page=100",
+    "bytes": 96053,
+    "sha256": "9f382bc01de4afeb1075de72cb75b9660a33d29ac11c998d7a01c6bb45e5017f",
+    "retrievedAt": "2026-11-23",
+    "file": "organization_region_sweden.json"
+   },
+   "si-yearbook-2025": {
+    "title": "Statistik över insamlingsåret 2025 — Insamlingsåret 2025 i text och siffror med flerårsöversikter",
+    "url": "https://www.insamlingskontroll.se/wp-content/uploads/2026/10/Insamlingsaret-2025-i-text-siffror-med-flerarsoversikter.pdf",
+    "bytes": 595939,
+    "sha256": "c67cfc3373c905b7693e255ff3518f4e801f427c4c35d4f2a7729e1fdaf2ddae",
+    "retrievedAt": "2026-11-23",
+    "file": "insamlingsaret-2025.pdf"
+   },
+   "si-topp-110-2025": {
+    "title": "De största organisationerna under 2025 — Topp-110 Insamlade Gåvor och Bidrag (Mkr)",
+    "url": "https://www.insamlingskontroll.se/wp-content/uploads/2026/08/Topp-110-De-storsta-organisationerna-2025.pdf",
+    "bytes": 116902,
+    "sha256": "d08682a74c5acba226df9dafe0227b70684d0180ab42c0a2b523e80a9e13d195",
+    "retrievedAt": "2026-11-23",
+    "file": "topp-110-storsta-2025.pdf"
+   },
+   "si-topp-100-priv-2025": {
+    "title": "De största organisationerna under 2025 — Topp-100 Gåvor från privatpersoner (Mkr)",
+    "url": "https://www.insamlingskontroll.se/wp-content/uploads/2026/09/Topp-100-Gavor-fran-Privatpersoner-2025.pdf",
+    "bytes": 113246,
+    "sha256": "ef1fcced0b66b915d06fa78a7a88650ef908731a2e22dd558bcefd5962684ff5",
+    "retrievedAt": "2026-11-23",
+    "file": "topp-100-privatpersoner-2025.pdf"
+   }
+  },
+  "mx": {
+   "report2023": {
+    "title": "Donatarias autorizadas transparency report, fiscal year 2023 (reporte_donatarias_2024_datos_2023.csv)",
+    "url": "http://omawww.sat.gob.mx/cifras_sat/Documents/reporte_donatarias_2024_datos_2023.csv",
+    "file": "reporte_donatarias_2024_datos_2023.csv",
+    "bytes": 1738613,
+    "sha256": "185435257c2663abc412b049e13dd42f9727211f159b41bd58c355e4107469b4",
+    "rows": 11132,
+    "retrievedAt": "2026-11-11"
+   },
+   "report2024": {
+    "title": "Donatarias autorizadas transparency report, fiscal year 2024 (reporte_donatarias_2025_datos_2024.csv)",
+    "url": "http://omawww.sat.gob.mx/cifras_sat/Documents/reporte_donatarias_2025_datos_2024.csv",
+    "file": "reporte_donatarias_2025_datos_2024.csv",
+    "bytes": 1826767,
+    "sha256": "dbeb3d982f682952fd22ab6726edab95d2f32de185500833bf4c089d8e895bdc",
+    "rows": 10923,
+    "retrievedAt": "2026-11-11"
+   },
+   "report2025": {
+    "title": "Donatarias autorizadas transparency report, fiscal year 2025 (reporte_donatarias_2026_datos_2025.csv)",
+    "url": "https://www.sat.gob.mx/minisitio/DatosAbiertos/documentos/reporte_donatarias_2026_datos_2025.csv",
+    "file": "reporte_donatarias_2026_datos_2025.csv",
+    "bytes": 1659273,
+    "sha256": "378708c5ccc6ac58af9587243ab15b6ec539a5aa012cb36ced7f2bdec97bec9b",
+    "rows": 10313,
+    "retrievedAt": "2026-11-11"
+   },
+   "directory2025": {
+    "title": "Directory of authorized donees 2025 (Dir_2025_2.xlsx)",
+    "url": "https://www.sat.gob.mx/minisitio/DonatariasAutorizadas/documentos/padron_donatarias/Dir_2025_2.xlsx",
+    "file": "Dir_2025_2.xlsx",
+    "bytes": 5887340,
+    "sha256": "8ae05e28dc0c3daac5afa05d85891cca1b0718cf39cce90aac6c098b576b79a0",
+    "retrievedAt": "2026-11-11"
+   },
+   "directory2026": {
+    "title": "Directory of authorized donees 2026 (Dir_2026.xlsx)",
+    "url": "https://www.sat.gob.mx/minisitio/DonatariasAutorizadas/documentos/padron_donatarias/Dir_2026.xlsx",
+    "file": "Dir_2026.xlsx",
+    "bytes": 5678898,
+    "sha256": "c34a64b7bf4deb7ee567f061ecd04c7c66c741261d7039b2e545c3013b508e21",
+    "retrievedAt": "2026-11-11"
+   }
+  },
+  "sk": {
+   "pit_2016.csv": {
+    "title": "Annual overview of 2%/3% income-tax assignment recipients as of 31 Dec 2016 (EUR)",
+    "url": "https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Elektronicke_sluzby/Verejne_dostupne_elektronicke_sluzby/informacne_zoznamy/2016/2017.01.31_prijim_podiel_dane_2016.csv",
+    "bytes": 1156661,
+    "sha256": "f5f9ec41ac598d39ef734c2e9e247d1fa6f7de75a0d4fe2bd082d76f9e4edd77",
+    "retrievedAt": "2026-11-23T03:11:00Z",
+    "year": "2016"
+   },
+   "pit_2017.csv": {
+    "title": "Annual overview of 2%/3% income-tax assignment recipients as of 31 Dec 2017 (EUR)",
+    "url": "https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Elektronicke_sluzby/Verejne_dostupne_elektronicke_sluzby/informacne_zoznamy/2017/2018.01.31_Rocny_prehlad_prij.csv",
+    "bytes": 1240011,
+    "sha256": "1f8adc2c8355cf52ec0c268fd55e9c10c46607817e2a6f2cd38002fa74d14696",
+    "retrievedAt": "2026-11-23T03:11:00Z",
+    "year": "2017"
+   },
+   "pit_2018.csv": {
+    "title": "Annual overview of 2%/3% income-tax assignment recipients as of 31 Dec 2018 (EUR)",
+    "url": "https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Elektronicke_sluzby/Verejne_dostupne_elektronicke_sluzby/informacne_zoznamy/2018/2019.01.31_roc_prehl_prij.csv",
+    "bytes": 1312233,
+    "sha256": "4cd1574c892a22a9e872d983cb45a367ed46a020cfdc69ff6dd6805f4e04df6e",
+    "retrievedAt": "2026-11-23T03:11:00Z",
+    "year": "2018"
+   },
+   "pit_2019.csv": {
+    "title": "Annual overview of 2%/3% income-tax assignment recipients as of 31 Dec 2019 (EUR)",
+    "url": "https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Elektronicke_sluzby/Verejne_dostupne_elektronicke_sluzby/informacne_zoznamy/2019/2020.01.31_Prijimatelia.csv",
+    "bytes": 1352013,
+    "sha256": "c31213164a8732566fcb9c505d75f685783a4539a6cab5117dce4c0704393dcc",
+    "retrievedAt": "2026-11-23T03:11:00Z",
+    "year": "2019"
+   },
+   "pit_2020.csv": {
+    "title": "Annual overview of 2%/3% income-tax assignment recipients as of 31 Dec 2020 (EUR)",
+    "url": "https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Elektronicke_sluzby/Verejne_dostupne_elektronicke_sluzby/informacne_zoznamy/2020/2021.01.31_Prijimatelia.csv",
+    "bytes": 1372621,
+    "sha256": "3d7a7245e166ec4096ccab8eac278d699f19eaf10c86409a70a795966e913373",
+    "retrievedAt": "2026-11-23T03:11:00Z",
+    "year": "2020"
+   },
+   "pit_2021.csv": {
+    "title": "Annual overview of 2%/3% income-tax assignment recipients as of 31 Dec 2021 (EUR)",
+    "url": "https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Elektronicke_sluzby/Verejne_dostupne_elektronicke_sluzby/informacne_zoznamy/2022/2022.01.31_prehlad_prijimat.csv",
+    "bytes": 1607720,
+    "sha256": "70b2f916987b3ee8af43c5ab972f219fd0c71a1f0768ec65c0bcb7e5ff9cd332",
+    "retrievedAt": "2026-11-23T03:11:00Z",
+    "year": "2021"
+   },
+   "pit_2022.csv": {
+    "title": "Annual overview of 2%/3% income-tax assignment recipients as of 31 Dec 2022 (EUR)",
+    "url": "https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Elektronicke_sluzby/Verejne_dostupne_elektronicke_sluzby/informacne_zoznamy/2023/2023.01.31_Prijimatelia_2perc.csv",
+    "bytes": 1562831,
+    "sha256": "4edc28a7a7ea238ce98c063a68b1fb721eb3945b2f802b4114a048ea4a550bba",
+    "retrievedAt": "2026-11-23T03:11:00Z",
+    "year": "2022"
+   },
+   "pit_2023.csv": {
+    "title": "Annual overview of 2%/3% income-tax assignment recipients as of 31 Dec 2023 (EUR)",
+    "url": "https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Elektronicke_sluzby/Verejne_dostupne_elektronicke_sluzby/informacne_zoznamy/2024/2024.01.31_Rocny_prehl_prijimat.csv",
+    "bytes": 1565186,
+    "sha256": "61f6fcd27002b06c5932683ac4ca151bcaa79cc0c8f7d21fe82edf2217c74b27",
+    "retrievedAt": "2026-11-23T03:11:00Z",
+    "year": "2023"
+   },
+   "pit_2024.csv": {
+    "title": "Annual overview of 2%/3% income-tax assignment recipients as of 31 Dec 2024 (EUR)",
+    "url": "https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Elektronicke_sluzby/Verejne_dostupne_elektronicke_sluzby/informacne_zoznamy/2025/2025.01.31_Prijimatel_2perc.csv",
+    "bytes": 1603896,
+    "sha256": "db69219db4d3748841d9a0657a8a3899c73ac99da9671e01c71aab78ce9e6458",
+    "retrievedAt": "2026-11-23T03:11:00Z",
+    "year": "2024"
+   },
+   "pit_2025.csv": {
+    "title": "Annual overview of 2%/3% income-tax assignment recipients as of 31 Dec 2025 (EUR)",
+    "url": "https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Elektronicke_sluzby/Verejne_dostupne_elektronicke_sluzby/informacne_zoznamy/2026/2026.01.31_Prijimatel_2perc.csv",
+    "bytes": 1604411,
+    "sha256": "123dedf9946afaf6acb080338e6b3234022b189cb48145b5b9c4672b0c522672",
+    "retrievedAt": "2026-11-23T03:11:00Z",
+    "year": "2025"
+   }
+  },
+  "pl": {
+   "niw2025": {
+    "title": "Narodowy Instytut Wolności – Centrum Rozwoju Społeczeństwa Obywatelskiego (NIW-CRSO): niw-opp-eligible-2025-in-2026.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20261117/wykaz_OPP_uprawnionych_do_otrzymania_1_5_proc__podatku_za_2025_rok_w_2026_roku_11_2026.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/20137",
+    "file": "niw-opp-eligible-2025-in-2026.xlsx",
+    "bytes": 782406,
+    "sha256": "9eca10a1ab371acecd002a827b180a648bd00b043eab1e117c9b4df180fb4171",
+    "retrievedAt": "2026-11-22"
+   },
+   "niw2024": {
+    "title": "Narodowy Instytut Wolności – Centrum Rozwoju Społeczeństwa Obywatelskiego (NIW-CRSO): niw-opp-eligible-2024-in-2025.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20251210/wykaz_OPP_uprawnionych_do_otrzymania_1_5_proc__podatku_za_2024_rok_w_2025_roku_12_2025.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/4628",
+    "file": "niw-opp-eligible-2024-in-2025.xlsx",
+    "bytes": 758198,
+    "sha256": "6400ad7ba2d7bd276932d970db2e2807dc64e8ea3007d5bcb3274a2d113f03ea",
+    "retrievedAt": "2026-11-22"
+   },
+   "niw2023": {
+    "title": "Narodowy Instytut Wolności – Centrum Rozwoju Społeczeństwa Obywatelskiego (NIW-CRSO): niw-opp-eligible-2023-in-2024.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20241212/wykaz_OPP_uprawnionych_do_otrzymania_1_5_proc__podatku_za_2023_rok_w_2024_roku_12_2024_II.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/3564",
+    "file": "niw-opp-eligible-2023-in-2024.xlsx",
+    "bytes": 746809,
+    "sha256": "49ad58e26fbeed3947dec2ff96ccaf18916eebb7a3d7b548cff254e49801bbe7",
+    "retrievedAt": "2026-11-22"
+   },
+   "mfAmt2025": {
+    "title": "Ministerstwo Finansów (Ministry of Finance, Poland): mf-pit15-amounts-2025-in-2026.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20260930/Wykaz_OPP_kt%C3%B3re_w_2026_r._otrzyma%C5%82y_15_nale%C5%BCnego_podatku_za_2025_r._L1Wdahu.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/171",
+    "file": "mf-pit15-amounts-2025-in-2026.xlsx",
+    "bytes": 555890,
+    "sha256": "c70eafd1aeab3caea3daf1376cefb03849455119f5ff339bd61d4b879649c919",
+    "retrievedAt": "2026-11-22"
+   },
+   "mfTax2025": {
+    "title": "Ministerstwo Finansów (Ministry of Finance, Poland): mf-pit15-taxpayers-2025-in-2026.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20260930/Liczba_podatnik%C3%B3w_kt%C3%B3rzy_w_2026_r._przekazali_15_nale%C5%BCnego_podatku_za_2025_r._na_rzecz_poszczeg%C3%B3lnych_OPP.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/171",
+    "file": "mf-pit15-taxpayers-2025-in-2026.xlsx",
+    "bytes": 276467,
+    "sha256": "0165aa6b10f3c8230a952caa72966de1aa972a5e2b980c7b37290bffe307f0a2",
+    "retrievedAt": "2026-11-22"
+   },
+   "mfAmt2024": {
+    "title": "Ministerstwo Finansów (Ministry of Finance, Poland): mf-pit15-amounts-2024-in-2025.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20250929/Za%C5%82%C4%85cznik_nr_2_-_wykaz_OPP.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/171",
+    "file": "mf-pit15-amounts-2024-in-2025.xlsx",
+    "bytes": 539608,
+    "sha256": "ecbb75979c1d58eda248b7d0f5a799fd125d577c6d0c7f1fbb5e7679adcaa471",
+    "retrievedAt": "2026-11-22"
+   },
+   "mfTax2024": {
+    "title": "Ministerstwo Finansów (Ministry of Finance, Poland): mf-pit15-taxpayers-2024-in-2025.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20250929/Za%C5%82%C4%85cznik_nr_1_-_liczba_podatnik%C3%B3w_OPP.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/171",
+    "file": "mf-pit15-taxpayers-2024-in-2025.xlsx",
+    "bytes": 243996,
+    "sha256": "a70374bae52a67c45a311da847acf2c5d93a1c8ee5303cc3f9429d7a26b9829a",
+    "retrievedAt": "2026-11-22"
+   },
+   "mfAmt2023": {
+    "title": "Ministerstwo Finansów (Ministry of Finance, Poland): mf-pit15-amounts-2023-in-2024.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20241003/Wykaz_zasilonych_OPP_za_2023.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/171",
+    "file": "mf-pit15-amounts-2023-in-2024.xlsx",
+    "bytes": 503224,
+    "sha256": "47d5f98c3b669feb3b959b76b0a073a5eb6bbbef5ef735a0d5d0b05c2e9caeac",
+    "retrievedAt": "2026-11-22"
+   },
+   "mfTax2023": {
+    "title": "Ministerstwo Finansów (Ministry of Finance, Poland): mf-pit15-taxpayers-2023-in-2024.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20241003/Liczba_podatnik%C3%B3w_na_OPP_za_2023.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/171",
+    "file": "mf-pit15-taxpayers-2023-in-2024.xlsx",
+    "bytes": 236077,
+    "sha256": "dc72ee1824239e90bab9ec530abc230072fac86d8e57f7d44a1ee842d056a56f",
+    "retrievedAt": "2026-11-22"
+   },
+   "mfAmt2022": {
+    "title": "Ministerstwo Finansów (Ministry of Finance, Poland): mf-pit15-amounts-2022-in-2023.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20231002/wykaz_opp_za_2022.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/171",
+    "file": "mf-pit15-amounts-2022-in-2023.xlsx",
+    "bytes": 433049,
+    "sha256": "5ef16bc71b4ed6890c4f5f21d58e312173661474111b82166a0663dfee097818",
+    "retrievedAt": "2026-11-22"
+   },
+   "mfTax2022": {
+    "title": "Ministerstwo Finansów (Ministry of Finance, Poland): mf-pit15-taxpayers-2022-in-2023.xlsx",
+    "url": "https://api.dane.gov.pl/media/resources/20231002/liczba_podatnik%C3%B3w_za_2022.xlsx",
+    "dataset": "https://dane.gov.pl/pl/dataset/171",
+    "file": "mf-pit15-taxpayers-2022-in-2023.xlsx",
+    "bytes": 216318,
+    "sha256": "8d6957dc7a7ef07a10706619227b871702df42d525e0c904c8ffc0a2cdc443bf",
+    "retrievedAt": "2026-11-22"
+   }
+  },
+  "at": {
+   "ListebeguenstigterEinrichtungen.pdf": {
+    "title": "BMF Liste begünstigter Einrichtungen (ListebeguenstigterEinrichtungen.pdf)",
+    "url": "https://service.bmf.gv.at/service/allg/spenden/ListebeguenstigterEinrichtungen.pdf",
+    "bytes": 3236626,
+    "sha256": "6d41a25e5e9b2ac8f75c9692dda78333980f20fae38c134ef8c0e27fefd227da",
+    "retrievedAt": "2026-11-24"
+   }
+  },
+  "fi": {
+   "prh-ytj-ayh": {
+    "url": "https://avoindata.prh.fi/opendata-ytj-api/v3/companies?companyForm=AYH",
+    "bytes": 14415565,
+    "sha256": "0426614b7d5659855508b73f29901bc8f62430fa451cbcdc7133c886882dfbd2",
+    "retrievedAt": "2026-11-25",
+    "title": "PRH YTJ Open Data API v3 — Non-profit associations (companyForm=AYH)"
+   },
+   "prh-ytj-saa": {
+    "url": "https://avoindata.prh.fi/opendata-ytj-api/v3/companies?companyForm=S%C3%84%C3%84",
+    "bytes": 1152218,
+    "sha256": "0019886e92e58ea2c225420452807511765e50933407ab597725802a7f9fc185",
+    "retrievedAt": "2026-11-25",
+    "title": "PRH YTJ Open Data API v3 — Foundations (companyForm=SÄÄ)"
+   }
+  },
+  "lv": {
+   "urRegister": {
+    "title": "Uzņēmumu reģistrs (Enterprise Register of Latvia): ur-register.csv",
+    "url": "https://data.gov.lv/dati/dataset/4de9697f-850b-45ec-8bba-61fa09ce932f/resource/25e80bf3-f107-4ab4-89ef-251b5b9374e9/download/register.csv",
+    "dataset": "https://data.gov.lv/dati/lv/dataset/uz",
+    "file": "ur-register.csv",
+    "bytes": 129092124,
+    "sha256": "abafbcd11e3f8ccb22e68ffdda380e37b1b69ee225d0751d31663ba5240e53ba",
+    "retrievedAt": "2026-11-22"
+   },
+   "urAreas": {
+    "title": "Uzņēmumu reģistrs (Enterprise Register of Latvia): ur-areas-of-activity.csv",
+    "url": "https://data.gov.lv/dati/dataset/49a0f06b-2d2b-4368-8ed5-676a05244f6a/resource/263f7def-5df6-45ed-a747-81e1d48a48c4/download/areas_of_activity_of_associations_foundations.csv",
+    "dataset": "https://data.gov.lv/dati/lv/dataset/biedribu-un-nodibinajumu-darbibas-jomas",
+    "file": "ur-areas-of-activity.csv",
+    "bytes": 2462661,
+    "sha256": "ec4ce5cd8e66d2693ce3b913feed805793810d9d370265f55d6895fe8af59a69",
+    "retrievedAt": "2026-11-22"
+   },
+   "vidSlo": {
+    "title": "Valsts ieņēmumu dienests (State Revenue Service of Latvia): vid-slo-register.csv",
+    "url": "https://data.gov.lv/dati/dataset/694111ef-a1ae-4838-b0b0-75e70d4faf81/resource/476c04af-877c-4136-adc1-a42841650e45/download/pdb_sloregistrs_odata.csv",
+    "dataset": "https://data.gov.lv/dati/lv/dataset/sabiedriska-labuma-organizacijas",
+    "file": "vid-slo-register.csv",
+    "bytes": 3006084,
+    "sha256": "bda922fd6eab4908f3c19471d88f4254634716010d92bb994fa83cdea91484a6",
+    "retrievedAt": "2026-11-22"
+   }
+  },
+  "dk": {
+   "skat-ca4359-2026-2": {
+    "url": "https://info.skat.dk/data.aspx?oid=2061734",
+    "bytes": 2265070,
+    "sha256": "fb75201e619798e4688981703ad8a87150ab623c70c943e03d9e3976ff63bca2",
+    "retrievedAt": "2026-11-23",
+    "title": "Den juridiske vejledning 2026-2, section C.A.4.3.5.9 Liste over godkendte foreninger (LL § 8 A, LL § 12 stk. 3, BAL § 3 stk. 2; pubDate 2026-07-31)"
+   }
+  },
+  "hr": {
+   "croatia-registar-udruga-cts.json": {
+    "title": "data.gov.hr capture croatia-registar-udruga-cts.json",
+    "url": "https://data.gov.hr/ckan/dataset/b04f3da4-d2b6-4789-9e5f-dc4cc18ae6fe/resource/030a7bf0-2d07-422d-851b-4f2df2ddc45d/download/data.json",
+    "bytes": 132401555,
+    "sha256": "fedb1a54ce723bf1ed643973dfd89f8596a269e8237130a9fc5a9bf98d879c15",
+    "retrievedAt": "2026-11-23"
+   },
+   "croatia-registar-udruga-djelatnosti.json": {
+    "title": "data.gov.hr capture croatia-registar-udruga-djelatnosti.json",
+    "url": "https://data.gov.hr/ckan/dataset/b04f3da4-d2b6-4789-9e5f-dc4cc18ae6fe/resource/6f33ddad-4ed8-450c-8768-d37e8e1d05eb/download/data.json",
+    "bytes": 52864577,
+    "sha256": "15bb5c706e785171a18da5ec7276195cf8e7851070e6e4dbf3417d0143cbbbc3",
+    "retrievedAt": "2026-11-23"
+   },
+   "croatia-registar-zaklada.json": {
+    "title": "data.gov.hr capture croatia-registar-zaklada.json",
+    "url": "https://data.gov.hr/ckan/dataset/5ed3fa2b-774f-4c4a-9332-80e8486614bd/resource/5ea12faf-678e-46fb-9482-5b78da7214a7/download/data.json",
+    "bytes": 352217,
+    "sha256": "fb4657df69f4ea657455929dbcdaed3e39445faefe97dcb3a428e4833ab75ffa",
+    "retrievedAt": "2026-11-23"
+   }
+  }
+ },
+ "outputs": {
+  "nz": {
+   "path": "nz-dossiers.json",
+   "bytes": 170133,
+   "sha256": "93bd0e6c1c235b85366b42044a8fa71f13a9b08ffc6c1b7c48756a00890da491"
+  },
+  "nzCounts": {
+   "path": "nz-counts.json",
+   "bytes": 118,
+   "sha256": "997b5b653d953718f0a030ed7678d9d5b1553be3efc53115d9d2bd99c37c470d"
+  },
+  "ni": {
+   "path": "ni-dossiers.json",
+   "bytes": 104884,
+   "sha256": "30a841aeb6ebf4ca5eb361dbfa99a08dac396374a6824a7d13ecf5832f7530ee"
+  },
+  "niCounts": {
+   "path": "ni-counts.json",
+   "bytes": 246,
+   "sha256": "e41f95e669fc6ba171f2835c17e386539c580e0a9a9410cc5706efc0bff2772b"
+  },
+  "jp": {
+   "path": "jp-dossiers.json",
+   "bytes": 42586,
+   "sha256": "5c845e0aa2deb6ed9cec211fb1afdec14c6afa7deb164012a66c068340517e6b"
+  },
+  "jpCounts": {
+   "path": "jp-counts.json",
+   "bytes": 109,
+   "sha256": "89c4ccafed7b2bdeb7d2c454a5ff1deaa01941c9d45f133b480e5a0f9ac33ed5"
+  },
+  "se": {
+   "path": "se-dossiers.json",
+   "bytes": 61596,
+   "sha256": "80f4c83dbeed5c7bc62c9a0a68bbb682505904c424da9251431b295e9f4ae250"
+  },
+  "seCounts": {
+   "path": "se-counts.json",
+   "bytes": 848,
+   "sha256": "25a32ab6db88107edbb17348d247a6b5dd1033b6d75b7d4a66def2c1b377c6f9"
+  },
+  "mx": {
+   "path": "mx-dossiers.json",
+   "bytes": 271465,
+   "sha256": "dc5b63911d832a4487ac70d79769d6a45abee2888db93fb72a9be18efe8398af"
+  },
+  "mxCounts": {
+   "path": "mx-counts.json",
+   "bytes": 533,
+   "sha256": "207743ce23a265154f47d36febc76bab5ce19e19f052aeb68ae1ba5184c96839"
+  },
+  "sk": {
+   "path": "sk-dossiers.json",
+   "bytes": 68241,
+   "sha256": "e66ee5b5c1c195366b8a999396bae805e1b8e92f6f75e8502245547d7c6d09a0"
+  },
+  "skCounts": {
+   "path": "sk-counts.json",
+   "bytes": 255,
+   "sha256": "cdc6a70810d1f50ef08e0e51fa91c4d0b7b22086e144181908726745a7492ce7"
+  },
+  "pl": {
+   "path": "pl-dossiers.json",
+   "bytes": 71097,
+   "sha256": "23ff9270c9dcbbb32b90903982ffae817645227da0d6e7abb08ac4436f9bc701"
+  },
+  "plCounts": {
+   "path": "pl-counts.json",
+   "bytes": 135,
+   "sha256": "b819d60c42474eeaedb324d1d0e08ab39f6fec762cff469c7e41872d21ed4fe5"
+  },
+  "at": {
+   "path": "at-hubs.json",
+   "bytes": 477758,
+   "sha256": "6fa21553e241dfb7990c9c4685333c77028fdadbba8611044cd42725c2602a1c"
+  },
+  "fi": {
+   "path": "fi-hubs.json",
+   "bytes": 410166,
+   "sha256": "e4844067e21e54089a58300ceb4d561008e8f846c7ccb2e9c81aa62c8e0ce149"
+  },
+  "lv": {
+   "path": "lv-hubs.json",
+   "bytes": 225680,
+   "sha256": "3aef7ac6f89e910ba5d2684273ab4cffa55d45c95eb35fe70a519c814673cbc2"
+  },
+  "dk": {
+   "path": "dk-hubs.json",
+   "bytes": 95429,
+   "sha256": "316f7d8e0525cc02e99c1b126966a30216b1c1fb975d2ff76288f92d2b9344fe"
+  },
+  "hr": {
+   "path": "hr-hubs.json",
+   "bytes": 2877415,
+   "sha256": "4d0684bcedf5471518f5c940df00809b66c1fa400e85eab929bffe2809116a45"
+  },
+  "causes": {
+   "path": "cause-groups.json",
+   "bytes": 35932,
+   "sha256": "e302c14f3d2a8bc60be2307bdb64c87a198a395449ac929389376e9dee5c1e68"
+  }
+ }
+}

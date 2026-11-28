@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1c } from '../../../lib/registry-wave1c';
 import manifest from '../../../../public/data/charity-registry/croatia/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
@@ -48,6 +49,7 @@ const sources = [
     <strong>{count(manifest.counts.blankOibs)}</strong> historic records predate Croatia’s 2009 OIB rollout and carry blank OIBs).
   </p>
 
+  <p><a href={url(wave1c().base(wave1c().H.hr.slug))}>Browse {wave1c().registryHubKeys('hr').length} register hubs</a> that group {wave1c().hubs.hr.counts.population.toLocaleString('en-US')} {wave1c().H.hr.population} by the register’s own {wave1c().H.hr.labelPlural}, with each entry as published.</p>
   <section
     class="charity-financial-search"
     data-croatia-registry

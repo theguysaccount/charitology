@@ -16,6 +16,7 @@ import {
 } from "./global-index-catalog";
 import { wave1Pages } from "./registry-wave1";
 import { wave1bPages } from "./registry-wave1b";
+import { wave1cPages } from "./registry-wave1c";
 
 export interface PageInfo {
   path: string;
@@ -200,6 +201,8 @@ export async function allPages(): Promise<PageInfo[]> {
   for (const page of wave1Pages()) pages.push(page);
   // Wave 1b: Scotland, Australia and Canada dossiers, cause hubs and Cause × Country (own sitemap partition).
   for (const page of wave1bPages()) pages.push(page);
+  // Wave 1c: national register dossiers and register hubs (own sitemap partition).
+  for (const page of wave1cPages()) pages.push(page);
 
   return pages;
 }

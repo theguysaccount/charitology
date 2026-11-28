@@ -5,14 +5,26 @@ import '../../../styles/registry-wave1.css';
 import { absolute, url } from '../../../lib/site';
 import { wave1, faqNode, hubNodes, count, dayLabel, usStatePath, US_BASE, EW_BASE, WAVE1_DATA_PATH } from '../../../lib/registry-wave1';
 import { wave1b, sentence, SC_BASE, AU_BASE, CA_BASE, CAUSE_PATH, WAVE1B_DATA_PATH } from '../../../lib/registry-wave1b';
+import { wave1c, DOSSIER_KEYS, HUB_KEYS, WAVE1C_DATA_PATH } from '../../../lib/registry-wave1c';
 
 const w = wave1();
 const b = wave1b();
-const faqs = b.dossierIndexFaqs();
+const c = wave1c();
+const c1 = c.dossierIndexFaqsWave1c();
+// Wave 1 and 1b answers, extended with the Wave 1c registers.
+const faqs = b.dossierIndexFaqs().map((f, i) => {
+  if (i === 0) return { ...f, answer: `${f.answer} ${c1.text}` };
+  if (i === 1) return { ...f, answer: f.answer.replace(' Inclusion is a coverage boundary', ` Wave 1c uses one published figure per register too: ${DOSSIER_KEYS.map((k) => `${c.D[k].country}, ${c.D[k].thresholdText}`).join('; ')}. Inclusion is a coverage boundary`) };
+  if (i === 2) return { ...f, answer: `${f.answer} Wave 1c adds the committed national editions of the ${DOSSIER_KEYS.map((k) => `${c.D[k].register} (${c.D[k].country})`).join(', ')}, and register hubs from the ${HUB_KEYS.map((k) => `${c.H[k].register} (${c.H[k].country})`).join(', ')}.` };
+  if (i === 3) return { ...f, answer: `${f.answer} Wave 1c adds ${count(DOSSIER_KEYS.reduce((n, k) => n + c.dossierHubs[k].length, 0))} label hubs of dossiers and ${count(HUB_KEYS.reduce((n, k) => n + c.registryHubKeys(k).length, 0))} register hubs.` };
+  if (i === 5) return { ...f, answer: f.answer.replace(' and /data/registry-wave1b/.', ', /data/registry-wave1b/ and /data/registry-wave1c/.') };
+  return f;
+});
+const filesC = Object.values(c.manifest.outputs) as { path: string; bytes: number; sha256: string }[];
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const origin = absolute('/', Astro.site);
 const title = 'Verified charity dossiers';
-const description = `${count(w.us.length + w.ew.length + b.sc.length + b.au.length + b.ca.length)} dossiers from five official registers: the United States, England and Wales, Scotland, Australia and Canada, with state, NTEE, purpose, subtype and category hubs. Figures as published, never rated.`;
+const description = `${count(w.us.length + w.ew.length + b.sc.length + b.au.length + b.ca.length + c1.total)} dossiers from ${5 + DOSSIER_KEYS.length} official registers, from the United States, England and Wales, Scotland, Australia and Canada to ${DOSSIER_KEYS.map((k) => c.D[k].country).join(', ')}, plus register hubs for ${HUB_KEYS.length} more countries. Figures as published, never rated.`;
 const files = Object.values(w.manifest.outputs) as { path: string; bytes: number; sha256: string }[];
 const filesB = Object.values(b.manifest.outputs) as { path: string; bytes: number; sha256: string }[];
 const jsonLd = [
@@ -25,11 +37,14 @@ const jsonLd = [
       { name: 'Australia charity dossiers', url: absolute(AU_BASE, Astro.site) },
       { name: 'Canada charity dossiers', url: absolute(CA_BASE, Astro.site) },
       { name: 'Cause × Country: charity dossiers by registry category', url: absolute(CAUSE_PATH, Astro.site) },
+      ...DOSSIER_KEYS.map((k) => ({ name: `${c.D[k].country} charity dossiers`, url: absolute(c.base(c.D[k].slug), Astro.site) })),
+      ...HUB_KEYS.map((k) => ({ name: `${c.H[k].country} register hubs`, url: absolute(c.base(c.H[k].slug), Astro.site) })),
     ],
-    spatialCoverage: 'United States; England and Wales; Scotland; Australia; Canada',
+    spatialCoverage: ['United States', 'England and Wales', 'Scotland', 'Australia', 'Canada', ...DOSSIER_KEYS.map((k) => c.D[k].country), ...HUB_KEYS.map((k) => c.H[k].country)].join('; '),
     dataFiles: [
       absolute(`${WAVE1_DATA_PATH}manifest.json`, Astro.site), ...files.map((f) => absolute(`${WAVE1_DATA_PATH}${f.path}`, Astro.site)),
       absolute(`${WAVE1B_DATA_PATH}manifest.json`, Astro.site), ...filesB.map((f) => absolute(`${WAVE1B_DATA_PATH}${f.path}`, Astro.site)),
+      absolute(`${WAVE1C_DATA_PATH}manifest.json`, Astro.site), ...filesC.map((f) => absolute(`${WAVE1C_DATA_PATH}${f.path}`, Astro.site)),
     ],
     isBasedOn: [w.bmf.page, w.soi.page, w.register.page, b.src.oscrRegister.page, b.src.acncRegister.page, b.src.craIdentification['2024'].catalogue],
     license: 'https://creativecommons.org/licenses/by/4.0/',
@@ -68,7 +83,7 @@ const sources = [
   <h2 id="registers">Registers and thresholds</h2>
   <div class="table-wrap">
     <table class="data rw-table">
-      <caption>Dossier coverage. Each threshold uses one published figure from the latest period, in the register’s own currency. Wave 1 covers the United States and England and Wales; Wave 1b adds Scotland, Australia and Canada.</caption>
+      <caption>Dossier coverage. Each threshold uses one published figure from the latest period, in the register’s own currency. Wave 1 covers the United States and England and Wales; Wave 1b adds Scotland, Australia and Canada; Wave 1c adds {DOSSIER_KEYS.map((k) => c.D[k].country).join(', ')}.</caption>
       <thead><tr><th scope="col">Register</th><th scope="col">Inclusion threshold</th><th scope="col" class="num">Dossiers</th><th scope="col">Source dates</th></tr></thead>
       <tbody>
         <tr>
@@ -101,6 +116,14 @@ const sources = [
           <td class="num">{count(b.ca.length)}</td>
           <td>Identification files re-published {b.craIdentDate}; T3010 edition captured {b.caEdition}</td>
         </tr>
+        {DOSSIER_KEYS.map((k) => (
+          <tr>
+            <th scope="row"><a href={url(c.base(c.D[k].slug))}>{c.D[k].country}</a><span class="rw-sub">{c.D[k].register}, Wave 1c</span></th>
+            <td>{sentence(c.D[k].thresholdText)}</td>
+            <td class="num">{count(c.sorted[k].length)}</td>
+            <td>Committed edition captured {c.editionDate[k]}</td>
+          </tr>
+        ))}
       </tbody>
     </table>
   </div>
@@ -131,6 +154,15 @@ const sources = [
     {b.caCategoryHubs.map((c) => <li><a href={url(b.caCategoryPath(c))}>{b.categoryLabel(c)} ({c})</a> ({count(b.caByCategory.get(c)!.length)})</li>)}
     {b.caDesignationHubs.map((c) => <li><a href={url(b.caDesignationPath(c))}>{b.designationLabel(c)} ({c})</a> ({count(b.caByDesignation.get(c)!.length)})</li>)}
   </ul>
+  {DOSSIER_KEYS.filter((k) => c.dossierHubs[k].length).map((k) => (
+    <>
+      <p><strong>{c.D[k].country} {c.D[k].labelPlural}.</strong> {count(c.dossierHubs[k].length)} hubs by the {c.D[k].register}’s own {c.D[k].labelNoun}, Wave 1c.</p>
+      <ul class="rw-hub-grid">
+        {c.dossierHubs[k].map((l) => <li><a href={url(c.dossierHubPath(k, l))}>{c.D[k].labelText!(l)}</a> ({count(c.labelMaps[k].get(l)!.length)})</li>)}
+      </ul>
+    </>
+  ))}
+  <p><strong>Register hubs without dossiers.</strong> These committed editions carry registry and classification fields but no per-organization figures, so Wave 1c groups their entries by the register’s own labels: {HUB_KEYS.map((k, i) => <>{i > 0 && ' · '}<a href={url(c.base(c.H[k].slug))}>{c.H[k].country}</a> ({count(c.registryHubKeys(k).length)} {c.H[k].labelNoun} hubs)</>)}.</p>
   <p><strong><a href={url(CAUSE_PATH)}>Cause × Country</a>.</strong> {count(b.causes.groups.length)} label-level cause groups set the five registers’ own category labels side by side. The categories are not identical across registers, and the page is not a crosswalk.</p>
 
   <h2 id="files">Dataset files</h2>
@@ -144,6 +176,11 @@ const sources = [
   <ul>
     <li><a href={url(`${WAVE1B_DATA_PATH}manifest.json`)} download="charitology-registry-wave1b-manifest.json">manifest.json</a>: selection rules, source URLs, retrieval times and fingerprints.</li>
     {filesB.map((f) => <li><a href={url(`${WAVE1B_DATA_PATH}${f.path}`)} download={`charitology-wave1b-${f.path}`}>{f.path}</a>: {count(f.bytes)} bytes, SHA-256 <code>{f.sha256}</code>.</li>)}
+  </ul>
+  <p><strong>Wave 1c</strong> ({DOSSIER_KEYS.map((k) => c.D[k].country).join(', ')} dossiers; {HUB_KEYS.map((k) => c.H[k].country).join(', ')} register hubs), built by <code>scripts/build-registry-wave1c.py</code> from committed editions only and verified by <code>scripts/check-registry-wave1c.mjs</code>:</p>
+  <ul>
+    <li><a href={url(`${WAVE1C_DATA_PATH}manifest.json`)} download="charitology-registry-wave1c-manifest.json">manifest.json</a>: selection rules, pinned editions, source URLs, capture dates and fingerprints.</li>
+    {filesC.map((f) => <li><a href={url(`${WAVE1C_DATA_PATH}${f.path}`)} download={`charitology-wave1c-${f.path}`}>{f.path}</a>: {count(f.bytes)} bytes, SHA-256 <code>{f.sha256}</code>.</li>)}
   </ul>
 
   <Faq faqs={faqs} />

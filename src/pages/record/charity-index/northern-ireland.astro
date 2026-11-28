@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1c } from '../../../lib/registry-wave1c';
 import manifest from '../../../../public/data/charity-registry/northern-ireland/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
@@ -70,6 +71,7 @@ const regYears = Object.entries(manifest.counts.registrationsByYear).map(([year,
     (see <a href="#coverage">anomalies</a> regarding one unverified £106.47M parish filing preserved verbatim from CCNI).
   </p>
 
+  <p>For {wave1c().sorted.ni.length.toLocaleString('en-US')} of these organizations, a <a href={url(wave1c().base(wave1c().D.ni.slug))}>verified charity dossier</a> puts the register record and every published figure on one page, with its source record. They are the organizations whose record reports {wave1c().D.ni.thresholdText}.</p>
   <section
     class="charity-financial-search"
     data-ni-registry

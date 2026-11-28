@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import { wave1c } from '../../../lib/registry-wave1c';
 import manifest from '../../../../public/data/charity-registry/latvia/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
@@ -23,6 +24,7 @@ const formEntries = Object.entries(manifest.forms).sort((a, b) => b[1].count - a
   filePath="src/pages/record/charity-index/latvia.astro" sources={sources}>
   <p>This edition joins three official Latvian open-data tables captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time> under <a href={manifest.license}>CC0 1.0</a> by exact 11-digit registration code: the Enterprise Register (<em>Uzņēmumu reģistrs</em>, scanning {count(manifest.counts.urTotalEntitiesScanned)} legal entities to extract all <strong>{count(manifest.counts.includedOrganizations - 1)} associations, foundations, trade unions and religious organizations</strong>), the Enterprise Register’s statutory activity-field table (<strong>{count(manifest.counts.withUrAreaOfActivity)}</strong> organizations classified), and the State Revenue Service (VID) Public Benefit Organization (<em>Sabiedriskā labuma organizācija</em>, SLO) register (<strong>{count(manifest.counts.vidSloDistinctOrganizations)}</strong> distinct organizations across {count(manifest.counts.vidSloSourceRows)} decision rows, including <strong>1</strong> parish absent from the current UR extract). Across the combined <strong>{count(manifest.counts.includedOrganizations)}</strong> entities, <strong>{count(manifest.counts.byStatus.active)}</strong> are active, <strong>{count(manifest.counts.vidSloByStatus.activeSlo)}</strong> currently hold active tax-deductible SLO status, and <strong>{count(manifest.counts.vidSloByStatus.revokedSlo)}</strong> have had SLO status revoked.</p>
 
+  <p><a href={url(wave1c().base(wave1c().H.lv.slug))}>Browse {wave1c().registryHubKeys('lv').length} register hubs</a> that group {wave1c().hubs.lv.counts.population.toLocaleString('en-US')} {wave1c().H.lv.population} by the register’s own {wave1c().H.lv.labelPlural}, with each entry as published.</p>
   <section class="charity-financial-search" data-latvia-registry data-base={url(dataPath)}
     data-flow={url(flowPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="lv-search-heading">
     <h2 id="lv-search-heading">Search Latvian nonprofits</h2>
