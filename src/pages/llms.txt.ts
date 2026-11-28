@@ -6,12 +6,14 @@ import {
 } from '../lib/global-index-catalog';
 import { absolute } from '../lib/site';
 import { wave1, usStatePath, US_BASE, EW_BASE, WAVE1_BASE, WAVE1_DATA_PATH } from '../lib/registry-wave1';
+import { wave1b, sentence, SC_BASE, AU_BASE, CA_BASE, CAUSE_PATH, WAVE1B_DATA_PATH, WAVE1B_SITEMAP } from '../lib/registry-wave1b';
 
 export const GET: APIRoute = ({ site }) => {
   const lookupCount = FUNDING_FLOW_GROUPS[0].items.length;
   const caseCount = FUNDING_FLOW_GROUPS[1].items.length;
   const totalFlows = lookupCount + caseCount;
   const w = wave1();
+  const b = wave1b();
 
   const lines: string[] = [
     '# Charitology',
@@ -59,6 +61,18 @@ export const GET: APIRoute = ({ site }) => {
     `- U.S. state x NTEE group hubs (${w.stateGroupHubs.length}, each with >= ${w.stateMin} dossiers): listed in ${absolute('/sitemap-registries-wave1.xml', site)}`,
     `- England and Wales purpose hubs (${w.purposeHubs.length}): ${w.purposeHubs.map((c) => `[${w.ewHubs.purposes[c].description}](${absolute(w.purposePath(c), site)})`).join(' | ')}`,
     '',
+    `## Verified Charity Dossiers, Wave 1b (${(b.sc.length + b.au.length + b.ca.length).toLocaleString('en-US')} Organizations | Scotland, Australia, Canada | No Ratings)`,
+    '',
+    `- [Scotland (${b.sc.length.toLocaleString('en-US')} OSCR dossiers, gross income >= GBP ${b.manifest.selection.scotland.thresholdGBP.toLocaleString('en-US')})](${absolute(SC_BASE, site)}): Scottish Charity Register download + OSCR five-year return export | data: ${absolute(`${WAVE1B_DATA_PATH}scotland-dossiers.json`, site)}`,
+    `- [Australia (${b.au.length.toLocaleString('en-US')} ACNC dossiers, total revenue >= AUD ${b.manifest.selection.australia.thresholdAUD.toLocaleString('en-US')})](${absolute(AU_BASE, site)}): ACNC Registered Charities dataset + AIS 2023/2024 | data: ${absolute(`${WAVE1B_DATA_PATH}australia-dossiers.json`, site)}`,
+    `- [Canada (${b.ca.length.toLocaleString('en-US')} CRA dossiers, T3010 line 4700 >= CAD ${b.manifest.selection.canada.thresholdCAD.toLocaleString('en-US')})](${absolute(CA_BASE, site)}): CRA List of charities identification + T3010 financial files | data: ${absolute(`${WAVE1B_DATA_PATH}canada-dossiers.json`, site)}`,
+    `- [Cause x Country index](${absolute(CAUSE_PATH, site)}): ${b.causes.groups.length} label-level cause groups across NTEE, Charity Commission, OSCR, ACNC and CRA labels; categories are not identical across registers and this is not a crosswalk | data: ${absolute(`${WAVE1B_DATA_PATH}cause-groups.json`, site)}`,
+    `- Wave 1b manifest (sources, retrieval times, SHA-256): ${absolute(`${WAVE1B_DATA_PATH}manifest.json`, site)} | sitemap: ${absolute(`/${WAVE1B_SITEMAP}`, site)}`,
+    `- Scotland purpose hubs (${b.scPurposeHubs.length}, each with >= ${b.hubMin} dossiers): ${b.scPurposeHubs.map((p) => `[${sentence(p)}](${absolute(b.scPurposePath(p), site)})`).join(' | ')}`,
+    `- Australia charity subtype hubs (${b.auSubtypeHubs.length}, each with >= ${b.hubMin} dossiers): ${b.auSubtypeHubs.map((c) => `[${b.subtypeLabel(c)}](${absolute(b.auSubtypePath(c), site)})`).join(' | ')}`,
+    `- Canada category hubs (${b.caCategoryHubs.length}, each with >= ${b.hubMin} dossiers): ${b.caCategoryHubs.map((c) => `[${b.categoryLabel(c)} (${c})](${absolute(b.caCategoryPath(c), site)})`).join(' | ')}`,
+    `- Canada designation hubs (${b.caDesignationHubs.length}, each with >= ${b.hubMin} dossiers): ${b.caDesignationHubs.map((c) => `[${b.designationLabel(c)} (${c})](${absolute(b.caDesignationPath(c), site)})`).join(' | ')}`,
+    '',
     `## Key Funding-Flow Datasets (${lookupCount} Lookups, ${caseCount} Case Studies)`,
     '',
     `- [Browse all ${totalFlows} funding flows](${absolute('/record/funding-flows/', site)})`,
@@ -83,7 +97,7 @@ export const GET: APIRoute = ({ site }) => {
     `- ${absolute('/api/v1/conditions.json', site)}`,
     `- ${absolute('/api/v1/open-problems.json', site)}`,
     `- ${absolute('/api/v1/checklist.json', site)}`,
-    `- ${absolute('/sitemap.xml', site)} (sitemap index: ${absolute('/sitemap-core.xml', site)} | ${absolute('/sitemap-registries-wave1.xml', site)})`,
+    `- ${absolute('/sitemap.xml', site)} (sitemap index: ${absolute('/sitemap-core.xml', site)} | ${absolute('/sitemap-registries-wave1.xml', site)} | ${absolute(`/${WAVE1B_SITEMAP}`, site)})`,
     '',
   ];
 

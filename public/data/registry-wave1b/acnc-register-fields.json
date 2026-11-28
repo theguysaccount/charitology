@@ -1,0 +1,201 @@
+{
+ "format": "charitology-acnc-register-fields-v1",
+ "source": {
+  "title": "User guide – Registered Charities Dataset (December 2024)",
+  "publisher": "Australian Charities and Not-for-profits Commission",
+  "url": "https://data.gov.au/data/dataset/b050b242-4487-4306-abf5-07ca073e5594/resource/8687e783-a9de-4431-a8fc-d677bc475c03/download/acnc-registered-charities-dataset-user-notes-dec-2024.pdf",
+  "dataset": "https://data.gov.au/data/dataset/b050b242-4487-4306-abf5-07ca073e5594",
+  "lastModified": "Wed, 04 Dec 2024 00:21:16 GMT",
+  "retrievedAt": "2026-11-27T23:12:56Z",
+  "bytes": 252028,
+  "sha256": "24af393ea4e8fced4a436b8561138c97f0aab52207a6121755d27809c89c7240",
+  "licence": "https://creativecommons.org/licenses/by/3.0/au/"
+ },
+ "transcription": "Text layer of the ACNC user guide, read with macOS PDFKit. Subtype labels are the field names listed in paragraph 31, in column order AA to AN; PBI and HPC use the expansions given in paragraph 30, and the label for column AG keeps the bracketed “prac[tice]” exactly as printed. Beneficiary labels are the list in paragraph 33, in column order AO to BQ. Each label is paired with the CSV column header it describes; the builder checks that the register file has exactly these headers in this order.",
+ "subtypes": [
+  {
+   "column": "PBI",
+   "label": "Public Benevolent Institution (PBI)"
+  },
+  {
+   "column": "HPC",
+   "label": "Health Promotion Charity (HPC)"
+  },
+  {
+   "column": "Preventing_or_relieving_suffering_of_animals",
+   "label": "Preventing or relieving suffering of animals"
+  },
+  {
+   "column": "Advancing_Culture",
+   "label": "Advancing Culture"
+  },
+  {
+   "column": "Advancing_Education",
+   "label": "Advancing Education"
+  },
+  {
+   "column": "Advancing_Health",
+   "label": "Advancing Health"
+  },
+  {
+   "column": "Promote_or_oppose_a_change_to_law__government_poll_or_prac",
+   "label": "Promote or oppose a change to law government poll or prac[tice]"
+  },
+  {
+   "column": "Advancing_natual_environment",
+   "label": "Advancing natural environment"
+  },
+  {
+   "column": "Promoting_or_protecting_human_rights",
+   "label": "Promoting or protecting human rights"
+  },
+  {
+   "column": "Purposes_beneficial_to_ther_general_public_and_other_analogous",
+   "label": "Purposes beneficial to the general public and other analogous"
+  },
+  {
+   "column": "Promoting_reconciliation__mutual_respect_and_tolerance",
+   "label": "Promoting reconciliation mutual respect and tolerance"
+  },
+  {
+   "column": "Advancing_Religion",
+   "label": "Advancing Religion"
+  },
+  {
+   "column": "Advancing_social_or_public_welfare",
+   "label": "Advancing social or public welfare"
+  },
+  {
+   "column": "Advancing_security_or_safety_of_Australia_or_Australian_public",
+   "label": "Advancing security or safety of Australia or Australian public"
+  }
+ ],
+ "beneficiaries": [
+  {
+   "column": "Aboriginal_or_TSI",
+   "label": "Aboriginal or TSI"
+  },
+  {
+   "column": "Adults",
+   "label": "Adults"
+  },
+  {
+   "column": "Aged_Persons",
+   "label": "Aged Persons"
+  },
+  {
+   "column": "Children",
+   "label": "Children"
+  },
+  {
+   "column": "Communities_Overseas",
+   "label": "Communities Overseas"
+  },
+  {
+   "column": "Early_Childhood",
+   "label": "Early Childhood"
+  },
+  {
+   "column": "Ethnic_Groups",
+   "label": "Ethnic Groups"
+  },
+  {
+   "column": "Families",
+   "label": "Families"
+  },
+  {
+   "column": "Females",
+   "label": "Females"
+  },
+  {
+   "column": "Financially_Disadvantaged",
+   "label": "Financially Disadvantaged"
+  },
+  {
+   "column": "LGBTIQA+",
+   "label": "LGBTIQA+"
+  },
+  {
+   "column": "General_Community_in_Australia",
+   "label": "General Community in Australia"
+  },
+  {
+   "column": "Males",
+   "label": "Males"
+  },
+  {
+   "column": "Migrants_Refugees_or_Asylum_Seekers",
+   "label": "Migrants Refugees or Asylum Seekers"
+  },
+  {
+   "column": "Other_Beneficiaries",
+   "label": "Other Beneficiaries"
+  },
+  {
+   "column": "Other_Charities",
+   "label": "Other Charities"
+  },
+  {
+   "column": "People_at_risk_of_homelessness",
+   "label": "People at risk of homelessness"
+  },
+  {
+   "column": "People_with_Chronic_Illness",
+   "label": "People with Chronic Illness"
+  },
+  {
+   "column": "People_with_Disabilities",
+   "label": "People with Disabilities"
+  },
+  {
+   "column": "Pre_Post_Release_Offenders",
+   "label": "Pre Post Release Offenders"
+  },
+  {
+   "column": "Rural_Regional_Remote_Communities",
+   "label": "Rural Regional Remote Communities"
+  },
+  {
+   "column": "Unemployed_Person",
+   "label": "Unemployed Person"
+  },
+  {
+   "column": "Veterans_or_their_families",
+   "label": "Veterans or their families"
+  },
+  {
+   "column": "Victims_of_crime",
+   "label": "Victims of crime"
+  },
+  {
+   "column": "Victims_of_Disasters",
+   "label": "Victims of Disasters"
+  },
+  {
+   "column": "Youth",
+   "label": "Youth"
+  },
+  {
+   "column": "animals",
+   "label": "Animals"
+  },
+  {
+   "column": "environment",
+   "label": "Environment"
+  },
+  {
+   "column": "other_gender_identities",
+   "label": "Other gender identities"
+  }
+ ],
+ "operatingStates": [
+  "ACT",
+  "NSW",
+  "NT",
+  "QLD",
+  "SA",
+  "TAS",
+  "VIC",
+  "WA"
+ ]
+}

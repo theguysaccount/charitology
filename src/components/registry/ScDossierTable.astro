@@ -1,0 +1,41 @@
+---
+// Alphabetical list of Scotland dossiers. Ordering is by register name, never by amount.
+import { url } from '../../lib/site';
+import { dayLabel, gbp } from '../../lib/registry-wave1';
+import { scDossierPath, type ScDossier } from '../../lib/registry-wave1b';
+
+interface Props {
+  items: ScDossier[];
+  caption: string;
+}
+const { items, caption } = Astro.props;
+---
+
+<div class="table-wrap">
+  <table class="data rw-table">
+    <caption>{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Charity (register name)</th>
+        <th scope="col">Regulatory type</th>
+        <th scope="col">Latest financial year ending</th>
+        <th scope="col" class="num">Gross income</th>
+        <th scope="col" class="num">Gross expenditure</th>
+      </tr>
+    </thead>
+    <tbody>
+      {items.map((d) => {
+        const p = d.periods[0];
+        return (
+          <tr>
+            <th scope="row"><a href={url(scDossierPath(d.number))}>{d.name}</a><span class="rw-sub">Charity number {d.number}</span></th>
+            <td>{d.regulatoryType}</td>
+            <td>{dayLabel(p.end)}</td>
+            <td class="num">{gbp(p.grossIncome)}</td>
+            <td class="num">{gbp(p.grossExpenditure)}</td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>

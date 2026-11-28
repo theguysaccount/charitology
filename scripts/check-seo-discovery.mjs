@@ -28,7 +28,7 @@ const locs = sitemapSet.locs;
 assert.equal(new Set(locs).size, locs.length, 'sitemap.xml contains duplicate <loc> entries');
 assert.ok(locs.length >= 580, `Expected expanded sitemap with >= 580 URLs, got ${locs.length}`);
 if (sitemapSet.index) {
-  assert.deepEqual(sitemapSet.children.map((c) => c.file), ['sitemap-core.xml', 'sitemap-registries-wave1.xml'], 'Unexpected child sitemaps');
+  assert.deepEqual(sitemapSet.children.map((c) => c.file), ['sitemap-core.xml', 'sitemap-registries-wave1.xml', 'sitemap-registries-wave1b.xml'], 'Unexpected child sitemaps');
   const core = sitemapSet.children[0].locs;
   assert.ok(core.length >= 580, `Expected core sitemap with >= 580 URLs, got ${core.length}`);
   assert.ok(locs.length > 2000, 'A sitemap index is only used once the site exceeds 2,000 URLs');

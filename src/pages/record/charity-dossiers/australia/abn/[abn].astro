@@ -1,0 +1,130 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import Faq from '../../../../../components/registry/Faq.astro';
+import '../../../../../styles/registry-wave1.css';
+import { url } from '../../../../../lib/site';
+import { faqNode, dayLabel, count, WAVE1_BASE } from '../../../../../lib/registry-wave1';
+import { wave1b, aud, consolidationLabel, AU_LINES, AU_BASE, WAVE1B_DATA_PATH, type AuDossier } from '../../../../../lib/registry-wave1b';
+
+export function getStaticPaths() {
+  return wave1b().au.map((d) => ({ params: { abn: d.abn }, props: { d } }));
+}
+
+const { d } = Astro.props as { d: AuDossier };
+const w = wave1b();
+const latest = d.periods[0];
+const faqs = w.auDossierFaqs(d);
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const place = w.auPlace(d);
+const reg = w.src.acncRegister;
+const ais = w.src.acncAis;
+const title = `${d.name}: ACNC dossier (ABN ${d.abn})`;
+const description = `ABN ${d.abn}${place ? ` · ${place}` : ''}. ACNC register details and Annual Information Statement figures for the period ending ${dayLabel(latest.end)}${latest.totalRevenue !== null ? `: total revenue ${aud(latest.totalRevenue)}` : ''}${latest.totalExpenses !== null ? `, total expenses ${aud(latest.totalExpenses)}` : ''}.`;
+const years = [...new Set(d.periods.map((p) => String(p.aisYear)))].sort();
+const sources = [
+  { title: 'Download Charity Register data', publisher: reg.publisher, url: reg.page },
+  { title: 'ACNC Registered Charities dataset (datadotgov_main.csv)', publisher: reg.publisher, url: reg.url, note: `last modified ${w.acncDate}; retrieved ${reg.retrievedAt}; SHA-256 ${reg.sha256}` },
+  ...years.map((y) => ({ title: `${y} Annual Information Statement data`, publisher: reg.publisher, url: ais.files[y].url, note: `SHA-256 ${ais.files[y].sha256}` })),
+  ...years.map((y) => ({ title: `${y} Annual Information Statement explanatory notes`, publisher: reg.publisher, url: ais.files[y].notes })),
+  { title: w.acnc.source.title, publisher: w.acnc.source.publisher, url: w.acnc.source.url },
+  { title: 'Creative Commons Attribution 3.0 Australia', publisher: 'Creative Commons', url: reg.licence },
+];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${canonical}#organization`,
+    name: d.name,
+    ...(d.otherNames ? { alternateName: d.otherNames } : {}),
+    identifier: [{ '@type': 'PropertyValue', propertyID: 'Australian Business Number (ABN)', value: d.abn }],
+    ...(d.townCity || d.state
+      ? { address: { '@type': 'PostalAddress', ...(d.townCity ? { addressLocality: d.townCity } : {}), ...(d.state ? { addressRegion: d.state } : {}), addressCountry: 'AU' } }
+      : {}),
+    mainEntityOfPage: canonical,
+  },
+  faqNode(faqs),
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified charity dossier · Australia"
+  identityCode={d.abn}
+  summary={`ACNC register details and Annual Information Statement figures for ABN ${d.abn}. Figures are copied as published, with their source file and record number.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'Australia', href: AU_BASE },
+    { label: d.name },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'register-record', text: 'Register record', symbol: 'fileSearch' },
+    { slug: 'ais', text: 'Annual Information Statement figures', symbol: 'table' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'related', text: 'Where this record appears', symbol: 'network' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>This dossier reproduces what the Australian Charities and Not-for-profits Commission (ACNC) publishes about ABN {d.abn}. It is not a rating, ranking, endorsement or effectiveness claim, and Charitology computes no ratio from these figures. A value the ACNC did not supply is shown as “Not supplied”, never as zero.</p>
+
+  <h2 id="register-record">Register record</h2>
+  <dl class="rw-facts">
+    <dt>ABN</dt><dd>{d.abn}</dd>
+    <dt>Charity legal name</dt><dd>{d.name}</dd>
+    {d.editionName !== d.name && <><dt>Name in the AIS edition</dt><dd>{d.editionName}</dd></>}
+    <dt>Other organisation names</dt><dd>{d.otherNames ?? 'Not supplied'}</dd>
+    <dt>Business address</dt><dd>{place ?? 'Not supplied'}</dd>
+    <dt>Registration date</dt><dd>{d.registered ? dayLabel(d.registered) : 'Not supplied'}</dd>
+    <dt>Date organisation established</dt><dd>{d.established ? dayLabel(d.established) : 'Not supplied'}</dd>
+    <dt>Charity size</dt><dd>{d.charitySize ?? 'Not supplied'}</dd>
+    <dt>Financial year end</dt><dd>{d.financialYearEnd ?? 'Not supplied'}</dd>
+    <dt>Operates in</dt><dd>{d.operatesIn.length ? d.operatesIn.join(', ') : 'Not supplied'}</dd>
+    <dt>Operating countries</dt><dd>{d.operatingCountries.length ? d.operatingCountries.join(', ') : 'Not supplied'}</dd>
+    <dt>Charity subtypes</dt><dd>{d.subtypes.length ? d.subtypes.map((c, i) => <>{i > 0 && '; '}{w.auHubSet.has(c) ? <a href={url(w.auSubtypePath(c))}>{w.subtypeLabel(c)}</a> : w.subtypeLabel(c)}</>) : 'None listed'}</dd>
+    <dt>Beneficiaries</dt><dd>{d.beneficiaries.length ? d.beneficiaries.map(w.beneficiaryLabel).join('; ') : 'None listed'}</dd>
+  </dl>
+  <p class="note">Source row: ACNC Registered Charities dataset last modified {w.acncDate}, row {count(d.registerRecord)}. Street address, postcode, website and the number of responsible persons are omitted. Operating countries are ISO 3166-1 alpha-3 codes as published.</p>
+
+  <h2 id="ais">Annual Information Statement figures</h2>
+  <p>{d.periods.length === 1 ? 'One reporting period' : `${count(d.periods.length)} reporting periods`} from the ACNC Annual Information Statement extracts in the committed edition of {w.auEdition}. Each column names its AIS year and the record number, which is the data row after the header in the ACNC CSV.</p>
+  <div class="table-wrap">
+    <table class="data rw-table" data-figures="ais">
+      <caption>Australian dollars, as published in the ACNC Annual Information Statement extract.</caption>
+      <thead>
+        <tr>
+          <th scope="col">AIS field</th>
+          {d.periods.map((p) => <th scope="col" class="num">{dayLabel(p.start)} to {dayLabel(p.end)}<span class="rw-sub">AIS {p.aisYear}, record {count(p.record)}</span></th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {AU_LINES.map(([key, label, field]) => (
+          <tr data-line={key}>
+            <th scope="row">{label}<span class="rw-sub">{field}</span></th>
+            {d.periods.map((p) => <td class="num">{p[key] === null ? 'Not supplied' : aud(String(p[key]))}</td>)}
+          </tr>
+        ))}
+        <tr data-line="consolidation"><th scope="row">Report consolidated with more than one entity</th>{d.periods.map((p) => <td class="num">{consolidationLabel(p.consolidation)}</td>)}</tr>
+        <tr data-line="accountingBasis"><th scope="row">Cash or accrual</th>{d.periods.map((p) => <td class="num">{p.accountingBasis ?? 'Not supplied'}</td>)}</tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">A consolidated report can cover more than one entity, so figures can overlap with another charity’s. Use the financial report on the ACNC register before comparing or adding figures.</p>
+
+  <Faq faqs={faqs} />
+
+  <h2 id="related">Where this record appears</h2>
+  <ul>
+    {d.subtypes.filter((c) => w.auHubSet.has(c)).map((c) => <li><a href={url(w.auSubtypePath(c))}>{w.subtypeLabel(c)}: Australia charity dossiers</a>.</li>)}
+    <li><a href={url(AU_BASE)}>All Australia charity dossiers</a>, with subtype counts from the register.</li>
+    <li><a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a>: ACNC subtypes beside comparable labels in four other registers.</li>
+    <li><a href={url('/record/charity-financials/')}>Search every Australian AIS record</a> in the committed edition.</li>
+    <li><a href="https://www.acnc.gov.au/charity/charities">Current ACNC Charity Register</a> for later statements, financial reports and status.</li>
+  </ul>
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Inclusion follows one rule: this organization’s latest dated reporting period in the committed AIS edition reports total revenue of at least {w.auThreshold}, and its ABN appears exactly once in the ACNC Registered Charities dataset last modified {w.acncDate}. The rule is a coverage boundary for Wave 1b, not a judgment of the charity.</p>
+  <p>Source: Australian Charities and Not-for-profits Commission, licensed under Creative Commons Attribution 3.0 Australia. Charitology selected columns, converted date formats and linked the register and AIS records by exact ABN. <a href={url(`${WAVE1B_DATA_PATH}manifest.json`)} download="charitology-registry-wave1b-manifest.json">Download the Wave 1b manifest</a> for every source URL, retrieval time and SHA-256 fingerprint, or the <a href={url(`${WAVE1B_DATA_PATH}australia-dossiers.json`)} download="charitology-australia-dossiers.json">Australia dossier dataset</a>.</p>
+</Entry>

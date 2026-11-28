@@ -1,0 +1,84 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import Faq from '../../../../../components/registry/Faq.astro';
+import CaDossierTable from '../../../../../components/registry/CaDossierTable.astro';
+import '../../../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../../../lib/site';
+import { faqNode, hubNodes, count, WAVE1_BASE } from '../../../../../lib/registry-wave1';
+import { wave1b, shortSlug, caDossierPath, CA_BASE, WAVE1B_DATA_PATH } from '../../../../../lib/registry-wave1b';
+
+export function getStaticPaths() {
+  const w = wave1b();
+  return w.caDesignationHubs.map((code) => ({ params: { designation: `${code.toLowerCase()}-${shortSlug(w.designationLabel(code))}` }, props: { code } }));
+}
+
+const { code } = Astro.props as { code: string };
+const w = wave1b();
+const label = w.designationLabel(code);
+const items = w.caByDesignation.get(code)!;
+const faqs = w.caHubFaqs('designation', code, items);
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const ident = w.src.craIdentification['2024'];
+const title = `${label} (CRA designation ${code}): Canada charity dossiers`;
+const description = `${count(items.length)} Wave 1b dossiers and ${count(w.caHubs.identification['2024'].designations[code] ?? 0)} charities in the CRA 2024 identification file with designation ${code}, ${label}. T3010 figures as published.`;
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin, dateModified: w.manifest.edition,
+    items: items.map((d) => ({ name: d.name, url: absolute(caDossierPath(d.bn), Astro.site) })),
+    spatialCoverage: 'Canada',
+    dataFiles: [absolute(`${WAVE1B_DATA_PATH}canada-dossiers.json`, Astro.site), absolute(`${WAVE1B_DATA_PATH}canada-hubs.json`, Astro.site), absolute(`${WAVE1B_DATA_PATH}cra-codes.json`, Astro.site)],
+    isBasedOn: [ident.url, ...Object.values(w.src.craFinancial.files).map((f: any) => f.url)],
+    license: ident.licence,
+    creditText: 'Contains information from the Canada Revenue Agency, licensed under the Open Government Licence – Canada; selected and formatted by Charitology.',
+  }),
+  faqNode(faqs),
+];
+const sources = [
+  { title: '2024 List of charities: identification file', publisher: 'Canada Revenue Agency', url: ident.url, note: `re-published ${w.craIdentDate}; SHA-256 ${ident.sha256}` },
+  { title: w.cra.source.title, publisher: w.cra.source.publisher, url: w.cra.source.url, note: `SHA-256 ${w.cra.source.sha256}` },
+  { title: 'Open Government Licence – Canada', publisher: 'Government of Canada', url: ident.licence },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified registry hub · Canada"
+  identityCode={`Designation ${code}`}
+  summary={`Registered charities with CRA designation ${code}, ${label}, and the ${count(items.length)} Wave 1b dossiers among them, listed alphabetically.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'Canada', href: CA_BASE },
+    { label: `${label} (${code})` },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'register-counts', text: 'Identification file counts', symbol: 'bars' },
+    { slug: 'dossiers', text: 'Wave 1b dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>The CRA designates each registered charity as a public foundation (A), a private foundation (B) or a charitable organization (C). This hub groups Wave 1b dossiers with designation {code}, {label}. It does not rank, rate or endorse any charity.</p>
+
+  <h2 id="register-counts">Identification file counts</h2>
+  <dl class="rw-facts">
+    <dt>Accounts with designation {code} in 2024</dt><dd>{count(w.caHubs.identification['2024'].designations[code] ?? 0)}</dd>
+    <dt>All accounts in the 2024 file</dt><dd>{count(w.caHubs.identification['2024'].rows)}</dd>
+    <dt>Wave 1b dossiers with designation {code}</dt><dd>{count(items.length)}</dd>
+    <dt>Identification file</dt><dd>Re-published {w.craIdentDate}</dd>
+  </dl>
+  <p>Other designations: {w.caDesignationHubs.filter((c) => c !== code).map((c, i) => <>{i > 0 && ' · '}<a href={url(w.caDesignationPath(c))}>{w.designationLabel(c)} ({c})</a></>)}.</p>
+
+  <h2 id="dossiers">Wave 1b dossiers</h2>
+  <CaDossierTable items={items} caption={`Wave 1b dossiers with CRA designation ${code}, ${label}. Canadian dollars as published in the T3010 financial file.`} />
+
+  <Faq faqs={faqs} />
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Counts come from the 2024 identification file re-published {w.craIdentDate}. Dossiers include accounts whose latest fiscal period in the committed T3010 edition captured {w.caEdition} reports total revenue of at least {w.caThreshold}; a dossier’s designation comes from the identification file for its latest fiscal year. Totals are not added across charities.</p>
+  <p>Contains information from the Canada Revenue Agency, licensed under the Open Government Licence – Canada. <a href={url(`${WAVE1B_DATA_PATH}canada-hubs.json`)} download="charitology-canada-registry-hubs.json">Download the hub counts</a> or the <a href={url(`${WAVE1B_DATA_PATH}manifest.json`)} download="charitology-registry-wave1b-manifest.json">Wave 1b manifest</a>.</p>
+</Entry>

@@ -15,6 +15,7 @@ import {
   US_ADDITIONAL_EDITIONS,
 } from "./global-index-catalog";
 import { wave1Pages } from "./registry-wave1";
+import { wave1bPages } from "./registry-wave1b";
 
 export interface PageInfo {
   path: string;
@@ -197,6 +198,8 @@ export async function allPages(): Promise<PageInfo[]> {
 
   // Wave 1 verified charity dossiers and registry hubs (own sitemap partition).
   for (const page of wave1Pages()) pages.push(page);
+  // Wave 1b: Scotland, Australia and Canada dossiers, cause hubs and Cause × Country (own sitemap partition).
+  for (const page of wave1bPages()) pages.push(page);
 
   return pages;
 }

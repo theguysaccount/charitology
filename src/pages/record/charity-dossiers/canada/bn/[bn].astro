@@ -1,0 +1,127 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import Faq from '../../../../../components/registry/Faq.astro';
+import '../../../../../styles/registry-wave1.css';
+import { url } from '../../../../../lib/site';
+import { faqNode, dayLabel, count, WAVE1_BASE } from '../../../../../lib/registry-wave1';
+import { wave1b, cad, CA_LINES, CA_BASE, WAVE1B_DATA_PATH, type CaDossier } from '../../../../../lib/registry-wave1b';
+
+export function getStaticPaths() {
+  return wave1b().ca.map((d) => ({ params: { bn: d.bn.toLowerCase() }, props: { d } }));
+}
+
+const { d } = Astro.props as { d: CaDossier };
+const w = wave1b();
+const latest = d.periods[0];
+const faqs = w.caDossierFaqs(d);
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const place = w.caPlace(d);
+const ident = w.src.craIdentification[d.identificationYear];
+const fin = w.src.craFinancial;
+const years = [...new Set(d.periods.map((p) => p.end.slice(0, 4)))].sort();
+const title = `${d.name}: CRA T3010 dossier (${d.bn})`;
+const description = `Registered charity ${d.bn}${place ? ` · ${place}` : ''}. CRA identification details and T3010 figures for the fiscal period ending ${dayLabel(latest.end)}${latest.totalRevenue !== null ? `: total revenue ${cad(latest.totalRevenue)}` : ''}${latest.totalExpenditures !== null ? `, total expenditures ${cad(latest.totalExpenditures)}` : ''}.`;
+const listing = 'https://www.canada.ca/en/revenue-agency/services/charities-giving/charities/information-about-a-charity.html';
+const sources = [
+  { title: `${d.identificationYear} List of charities: identification file`, publisher: 'Canada Revenue Agency', url: ident.url, note: `re-published ${w.craIdentDate}; retrieved ${ident.retrievedAt}; SHA-256 ${ident.sha256}` },
+  ...years.map((y) => ({ title: `${y} List of charities: financial data (${fin.files[y].file})`, publisher: 'Canada Revenue Agency', url: fin.files[y].url, note: `committed edition captured ${w.caEdition}; SHA-256 ${fin.files[y].sha256}` })),
+  { title: w.cra.source.title, publisher: w.cra.source.publisher, url: w.cra.source.url },
+  { title: 'Information about a charity (List of charities search)', publisher: 'Canada Revenue Agency', url: listing },
+  { title: 'Open Government Licence – Canada', publisher: 'Government of Canada', url: ident.licence },
+];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${canonical}#organization`,
+    name: d.name,
+    ...(d.accountName && d.accountName !== d.name ? { alternateName: d.accountName } : {}),
+    identifier: [{ '@type': 'PropertyValue', propertyID: 'Canada Revenue Agency registered charity number (BN)', value: d.bn }],
+    ...(d.city || d.province
+      ? { address: { '@type': 'PostalAddress', ...(d.city ? { addressLocality: d.city } : {}), ...(d.province ? { addressRegion: d.province } : {}), ...(d.country ? { addressCountry: d.country } : {}) } }
+      : {}),
+    mainEntityOfPage: canonical,
+  },
+  faqNode(faqs),
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified charity dossier · Canada"
+  identityCode={d.bn}
+  summary={`CRA List of charities identification details and T3010 return figures for registered charity ${d.bn}. Figures are copied as published, with their source file and record number.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'Canada', href: CA_BASE },
+    { label: d.name },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'identification', text: 'CRA identification record', symbol: 'fileSearch' },
+    { slug: 't3010', text: 'T3010 return figures', symbol: 'table' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'related', text: 'Where this record appears', symbol: 'network' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>This dossier reproduces what the Canada Revenue Agency (CRA) publishes about registered charity {d.bn} in its List of charities open data. It is not a rating, ranking, endorsement or effectiveness claim, and Charitology computes no ratio from these figures. A value the CRA did not supply is shown as “Not supplied”, never as zero.</p>
+
+  <h2 id="identification">CRA identification record</h2>
+  <dl class="rw-facts">
+    <dt>Registration number (BN)</dt><dd>{d.bn}</dd>
+    <dt>Legal name</dt><dd>{d.name}</dd>
+    {d.identificationName !== d.name && <><dt>Legal name in the re-published file</dt><dd>{d.identificationName}</dd></>}
+    <dt>Account name</dt><dd>{d.accountName ?? 'Not supplied'}</dd>
+    <dt>City, province</dt><dd>{place ?? 'Not supplied'}</dd>
+    <dt>Category</dt><dd>{w.caCategorySet.has(d.category) ? <a href={url(w.caCategoryPath(d.category))}>{d.category} {w.categoryLabel(d.category)}</a> : `${d.category} ${w.categoryLabel(d.category)}`} · {w.cra.categoryHeadings[d.category]}</dd>
+    <dt>Sub-category code</dt><dd>{d.subCategory}</dd>
+    <dt>Designation</dt><dd>{w.caDesignationSet.has(d.designation) ? <a href={url(w.caDesignationPath(d.designation))}>{d.designation} {w.designationLabel(d.designation)}</a> : `${d.designation} ${w.designationLabel(d.designation)}`}</dd>
+  </dl>
+  <p class="note">Source row: CRA {d.identificationYear} List of charities identification file re-published {w.craIdentDate}, record {count(d.identificationRecord)}. Street address and postal code are omitted. The legal name shown first comes from the committed T3010 edition captured {w.caEdition}. Category and designation labels come from the CRA codes list; sub-category labels are not transcribed.</p>
+
+  <h2 id="t3010">T3010 return figures</h2>
+  <p>{d.periods.length === 1 ? 'One fiscal period' : `${count(d.periods.length)} fiscal periods`} from the CRA financial files (Section D and Schedule 6) in the committed edition captured {w.caEdition}. Each column names its record number, which is the data row after the header in the CRA CSV.</p>
+  <div class="table-wrap">
+    <table class="data rw-table" data-figures="t3010">
+      <caption>Canadian dollars, as published in the CRA T3010 financial file. Line numbers are T3010 line numbers.</caption>
+      <thead>
+        <tr>
+          <th scope="col">T3010 line</th>
+          {d.periods.map((p) => <th scope="col" class="num">Fiscal period ending {dayLabel(p.end)}<span class="rw-sub">Financial record {count(p.record)}</span></th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {CA_LINES.map(([key, label, line]) => (
+          <tr data-line={key}>
+            <th scope="row">{label}<span class="rw-sub">{line}</span></th>
+            {d.periods.map((p) => <td class="num">{p[key] === null ? 'Not supplied' : cad(String(p[key]))}</td>)}
+          </tr>
+        ))}
+        <tr data-line="section"><th scope="row">Section used</th>{d.periods.map((p) => <td class="num">{p.section === '6' ? 'Schedule 6' : `Section ${p.section}`}</td>)}</tr>
+        <tr data-line="accountingBasis"><th scope="row">Accounting basis (line 4020)</th>{d.periods.map((p) => <td class="num">{p.accountingBasis === 'A' ? 'Accrual (A)' : p.accountingBasis === 'C' ? 'Cash (C)' : 'Not supplied'}</td>)}</tr>
+        <tr data-line="formVersion"><th scope="row">Form version</th>{d.periods.map((p) => <td class="num">{p.formVersion}</td>)}</tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Line 4510 is an incoming aggregate; lines 5050 and 5045 are outgoing gifts and grants. The CRA data dictionary describes exclusions for some lines. Read it and the filing guide before comparing amounts, and do not add figures across charities.</p>
+
+  <Faq faqs={faqs} />
+
+  <h2 id="related">Where this record appears</h2>
+  <ul>
+    {w.caCategorySet.has(d.category) && <li><a href={url(w.caCategoryPath(d.category))}>{w.categoryLabel(d.category)} (CRA category {d.category}): Canada charity dossiers</a>.</li>}
+    {w.caDesignationSet.has(d.designation) && <li><a href={url(w.caDesignationPath(d.designation))}>{w.designationLabel(d.designation)} (CRA designation {d.designation}): Canada charity dossiers</a>.</li>}
+    <li><a href={url(CA_BASE)}>All Canada charity dossiers</a>, with category and designation counts.</li>
+    <li><a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a>: CRA categories beside comparable labels in four other registers.</li>
+    <li><a href={url('/record/charity-financials/canada/')}>Search every Canadian T3010 period</a> in the committed edition.</li>
+    <li><a href={listing}>CRA List of charities</a> for current registration status and later returns.</li>
+  </ul>
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Inclusion follows one rule: this account’s latest fiscal period in the committed T3010 edition reports total revenue of at least {w.caThreshold} on line 4700, and its account number appears in the CRA identification file for that fiscal year. The rule is a coverage boundary for Wave 1b, not a judgment of the charity. The identification file describes the filed return and does not by itself establish current registration status.</p>
+  <p>Contains information from the Canada Revenue Agency, licensed under the Open Government Licence – Canada. Charitology selected and linked the fields. <a href={url(`${WAVE1B_DATA_PATH}manifest.json`)} download="charitology-registry-wave1b-manifest.json">Download the Wave 1b manifest</a> for every source URL, retrieval time and SHA-256 fingerprint, or the <a href={url(`${WAVE1B_DATA_PATH}canada-dossiers.json`)} download="charitology-canada-dossiers.json">Canada dossier dataset</a>.</p>
+</Entry>

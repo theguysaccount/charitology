@@ -1,0 +1,99 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import Faq from '../../../../components/registry/Faq.astro';
+import ScDossierTable from '../../../../components/registry/ScDossierTable.astro';
+import '../../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../../lib/site';
+import { faqNode, hubNodes, count, WAVE1_BASE } from '../../../../lib/registry-wave1';
+import { wave1b, sentence, WAVE1B_DATA_PATH } from '../../../../lib/registry-wave1b';
+
+const w = wave1b();
+const faqs = w.scIndexFaqs();
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const sel = w.manifest.selection.scotland;
+const reg = w.src.oscrRegister;
+const returns = w.src.oscrReturns;
+const title = 'Scotland charity dossiers';
+const description = `${count(w.sc.length)} verified Scottish Charity Register dossiers and ${count(w.scPurposeHubs.length)} purpose hubs built from the OSCR register download and five-year return export. Figures as published.`;
+const dossierPurposes = w.tally(w.sc.flatMap((d) => d.purposes), (p) => p);
+const kinds = w.tally(w.sc, (d) => d.regulatoryType);
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin, dateModified: w.manifest.edition,
+    items: w.scPurposeHubs.map((p) => ({ name: `${sentence(p)}: Scotland charity dossiers`, url: absolute(w.scPurposePath(p), Astro.site) })),
+    spatialCoverage: 'Scotland',
+    dataFiles: [absolute(`${WAVE1B_DATA_PATH}scotland-dossiers.json`, Astro.site), absolute(`${WAVE1B_DATA_PATH}scotland-hubs.json`, Astro.site), absolute(`${WAVE1B_DATA_PATH}manifest.json`, Astro.site)],
+    isBasedOn: [reg.url, returns.url],
+    license: reg.licence,
+    creditText: reg.attribution,
+  }),
+  faqNode(faqs),
+];
+const sources = [
+  { title: 'Download the Scottish Charity Register', publisher: reg.publisher, url: reg.page },
+  { title: `Scottish Charity Register download (${reg.member})`, publisher: reg.publisher, url: reg.url, note: `dated ${w.registerDate}; ${count(reg.bytes)} bytes; SHA-256 ${reg.sha256}` },
+  { title: `Five-year annual return export (${returns.member})`, publisher: returns.publisher, url: returns.url, note: `committed edition of ${w.scEdition}; SHA-256 ${returns.sha256}` },
+  { title: 'Description of Charity Register download fields', publisher: reg.publisher, url: reg.fieldNotes },
+  { title: 'Open Government Licence v3.0', publisher: 'The National Archives', url: reg.licence },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified charity dossiers · Wave 1b"
+  identityCode="SC"
+  summary={`${count(w.sc.length)} Scottish Charity Register dossiers, grouped by the register’s charitable purposes, listed alphabetically.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'Scotland' },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'selection', text: 'Who is included', symbol: 'filter' },
+    { slug: 'by-purpose', text: 'By charitable purpose', symbol: 'bookmark' },
+    { slug: 'dossiers', text: 'All Wave 1b Scotland dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>Each dossier reproduces one Scottish charity’s register details, purposes and annual return figures as published by the Office of the Scottish Charity Regulator (OSCR), with the source file and record number. Nothing here is a rating, ranking or endorsement.</p>
+
+  <h2 id="selection">Who is included</h2>
+  <p>Wave 1b takes the {count(sel.editionOrganizations)} charity numbers in the committed OSCR edition of {w.scEdition} and keeps the {count(sel.candidates)} whose latest included annual return reports gross income of at least <strong>{w.scThreshold}</strong>. {sel.excluded.notInRegisterDownload.length ? `${count(sel.excluded.notInRegisterDownload.length)} of those are absent from` : 'All of them are still listed in'} the register download dated {w.registerDate}, so {count(w.sc.length)} dossiers are published. The threshold is a coverage boundary, not a judgment of any charity.</p>
+  <dl class="rw-facts">
+    <dt>Charities in the register download</dt><dd>{count(w.scHubs.registerRows)}</dd>
+    <dt>Wave 1b dossiers</dt><dd>{count(w.sc.length)}</dd>
+    {Object.entries(w.scHubs.regulatoryTypes).map(([kind, n]) => <><dt>{kind} registrations</dt><dd>{count(n)} in the register; {count(kinds.get(kind) ?? 0)} with a dossier</dd></>)}
+    <dt>Purpose hubs</dt><dd>{count(w.scPurposeHubs.length)}, each with at least {w.hubMin} dossiers</dd>
+  </dl>
+
+  <h2 id="by-purpose">By charitable purpose</h2>
+  <div class="table-wrap">
+    <table class="data rw-table">
+      <caption>Charities and Wave 1b dossiers by purpose, register download dated {w.registerDate}. A charity can list several.</caption>
+      <thead><tr><th scope="col">Purpose (as worded in the register)</th><th scope="col" class="num">Charities</th><th scope="col" class="num">Wave 1b dossiers</th></tr></thead>
+      <tbody>
+        {Object.entries(w.scHubs.purposes).map(([p, n]) => (
+          <tr>
+            <th scope="row">{w.scHubSet.has(p) ? <a href={url(w.scPurposePath(p))}>{sentence(p)}</a> : sentence(p)}</th>
+            <td class="num">{count(n)}</td>
+            <td class="num">{count(dossierPurposes.get(p) ?? 0)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="dossiers">All Wave 1b Scotland dossiers</h2>
+  <ScDossierTable items={w.sc} caption="Every Scotland Wave 1b dossier, in alphabetical order. Pounds sterling as published in OSCR’s five-year return export." />
+
+  <Faq faqs={faqs} />
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Register details and purposes come from the download dated {w.registerDate}. Gross income and gross expenditure come from the five-year return export in the committed edition of {w.scEdition}, which is not downloaded again, so a return received after that date is not yet shown. Cross Border registrations can describe organizations that are also registered in England and Wales; totals are not added across charities or registers.</p>
+  <p>{reg.attribution} Downloads: <a href={url(`${WAVE1B_DATA_PATH}scotland-dossiers.json`)} download="charitology-scotland-dossiers.json">dossier records</a> · <a href={url(`${WAVE1B_DATA_PATH}scotland-hubs.json`)} download="charitology-scotland-registry-hubs.json">hub counts</a> · <a href={url(`${WAVE1B_DATA_PATH}manifest.json`)} download="charitology-registry-wave1b-manifest.json">manifest with fingerprints</a>. To search every return in the edition, use the <a href={url('/record/charity-financials/scotland/')}>Scottish financial filings search</a>.</p>
+</Entry>

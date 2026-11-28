@@ -1,0 +1,150 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import Faq from '../../../../../components/registry/Faq.astro';
+import '../../../../../styles/registry-wave1.css';
+import { url } from '../../../../../lib/site';
+import { faqNode, dayLabel, gbp, count, WAVE1_BASE } from '../../../../../lib/registry-wave1';
+import {
+  wave1b, sentence, SC_INCOME_LINES, SC_SPENDING_LINES, SC_BASE, WAVE1B_DATA_PATH, type ScDossier,
+} from '../../../../../lib/registry-wave1b';
+
+export function getStaticPaths() {
+  return wave1b().sc.map((d) => ({ params: { number: d.number.toLowerCase() }, props: { d } }));
+}
+
+const { d } = Astro.props as { d: ScDossier };
+const w = wave1b();
+const latest = d.periods[0];
+const faqs = w.scDossierFaqs(d);
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const registerEntry = `https://www.oscr.org.uk/about-charities/search-the-register/charity-details?number=${d.number}`;
+const title = `${d.name}: Scottish Charity Register dossier (${d.number})`;
+const description = `Scottish charity ${d.number}${d.mainOperatingLocation ? ` · ${d.mainOperatingLocation}` : ''}. OSCR register details and annual return figures for the financial year ending ${dayLabel(latest.end)}: gross income ${gbp(latest.grossIncome)}, gross expenditure ${gbp(latest.grossExpenditure)}.`;
+const reg = w.src.oscrRegister;
+const returns = w.src.oscrReturns;
+const hasDetail = d.periods.some((p) => p.incomeDetail || p.spendingDetail);
+const sources = [
+  { title: 'Download the Scottish Charity Register', publisher: reg.publisher, url: reg.page },
+  { title: `Scottish Charity Register download (${reg.member})`, publisher: reg.publisher, url: reg.url, note: `dated ${w.registerDate}; retrieved ${reg.retrievedAt}; SHA-256 ${reg.sha256}` },
+  { title: `Five-year annual return export (${returns.member})`, publisher: returns.publisher, url: returns.url, note: `committed edition of ${w.scEdition}; SHA-256 ${returns.sha256}` },
+  { title: 'Description of Charity Register download fields', publisher: reg.publisher, url: reg.fieldNotes },
+  { title: `Register entry for ${d.number}`, publisher: reg.publisher, url: registerEntry },
+  { title: 'Open Government Licence v3.0', publisher: 'The National Archives', url: reg.licence },
+];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${canonical}#organization`,
+    name: d.name,
+    ...(d.knownAs ? { alternateName: d.knownAs } : {}),
+    identifier: [{ '@type': 'PropertyValue', propertyID: 'Scottish Charity Register charity number (OSCR)', value: d.number }],
+    sameAs: [registerEntry],
+    mainEntityOfPage: canonical,
+  },
+  faqNode(faqs),
+];
+const listed = (items: string[]) => (items.length ? items.map((x) => `“${x}”`).join('; ') : 'None listed');
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified charity dossier · Scotland"
+  identityCode={d.number}
+  summary={`Scottish Charity Register details and annual return figures for charity ${d.number}. Figures are copied as published, with their source file and record number.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'Scotland', href: SC_BASE },
+    { label: d.name },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'register-record', text: 'Register record', symbol: 'fileSearch' },
+    { slug: 'annual-returns', text: 'Annual return figures', symbol: 'table' },
+    ...(hasDetail ? [{ slug: 'breakdown', text: 'Income and spending breakdown', symbol: 'bars' as const }] : []),
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'related', text: 'Where this record appears', symbol: 'network' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>This dossier reproduces what the Office of the Scottish Charity Regulator (OSCR) publishes about charity {d.number}. It is not a rating, ranking, endorsement or effectiveness claim, and Charitology computes no ratio from these figures. A value OSCR did not supply is shown as “Not supplied”, never as zero.</p>
+
+  <h2 id="register-record">Register record</h2>
+  <dl class="rw-facts">
+    <dt>Scottish charity number</dt><dd>{d.number}</dd>
+    <dt>Register name</dt><dd>{d.name}</dd>
+    {d.editionName !== d.name && <><dt>Name in the committed edition</dt><dd>{d.editionName}</dd></>}
+    <dt>Known as</dt><dd>{d.knownAs ?? 'Not supplied'}</dd>
+    <dt>Charity status</dt><dd>{d.status}</dd>
+    <dt>Date registered</dt><dd>{d.registered ? dayLabel(d.registered) : 'Not supplied'}</dd>
+    <dt>Constitutional form</dt><dd>{d.constitutionalForm ?? 'Not supplied'}</dd>
+    <dt>Regulatory type</dt><dd>{d.regulatoryType}</dd>
+    <dt>Main operating location</dt><dd>{d.mainOperatingLocation ?? 'Not supplied'}</dd>
+    <dt>Geographical spread</dt><dd>{d.geographicalSpread ?? 'Not supplied'}</dd>
+    <dt>Designated religious body</dt><dd>{d.designatedReligiousBody ?? 'Not supplied'}</dd>
+    {d.parent && <><dt>Parent charity</dt><dd>{[d.parent.name, d.parent.number, d.parent.country].filter(Boolean).join(' · ')}</dd></>}
+    <dt>Purposes</dt><dd>{d.purposes.length ? d.purposes.map((p, i) => <>{i > 0 && '; '}{w.scHubSet.has(p) ? <a href={url(w.scPurposePath(p))}>{sentence(p)}</a> : sentence(p)}</>) : 'None listed'}</dd>
+    <dt>Beneficiaries</dt><dd>{listed(d.beneficiaries)}</dd>
+    <dt>Activities</dt><dd>{listed(d.activities)}</dd>
+  </dl>
+  <p class="note">Source row: Scottish Charity Register download dated {w.registerDate}, row {count(d.registerRecord)} of {reg.member}. Postcode, principal office address, website, staff and volunteer counts, objectives and the charity’s own activity description are omitted.</p>
+
+  <h2 id="annual-returns">Annual return figures</h2>
+  <p>{d.periods.length === 1 ? 'One financial year' : `${count(d.periods.length)} financial years`} from OSCR’s five-year return export in the committed edition of {w.scEdition}. Each row cites its record number in that export.</p>
+  <div class="table-wrap">
+    <table class="data rw-table" data-figures="returns">
+      <caption>Pounds sterling, as published in OSCR’s five-year return export (“Most recent year income” and “Most recent year expenditure”).</caption>
+      <thead><tr><th scope="col">Financial year ending</th><th scope="col">Return received</th><th scope="col" class="num">Gross income</th><th scope="col" class="num">Gross expenditure</th></tr></thead>
+      <tbody>
+        {d.periods.map((p) => (
+          <tr data-record={p.record}>
+            <th scope="row">{dayLabel(p.end)}<span class="rw-sub">Record {count(p.record)}</span></th>
+            <td>{dayLabel(p.received)}</td>
+            <td class="num">{gbp(p.grossIncome)}</td>
+            <td class="num">{gbp(p.grossExpenditure)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {hasDetail && (
+    <>
+      <h2 id="breakdown">Income and spending breakdown</h2>
+      <p>OSCR’s export breaks down income and spending for some returns. Where a return carries no breakdown, the cell reads “Not supplied”.</p>
+      <div class="table-wrap">
+        <table class="data rw-table" data-figures="breakdown">
+          <caption>Pounds sterling, as published in OSCR’s five-year return export.</caption>
+          <thead><tr><th scope="col">Export field</th>{d.periods.map((p) => <th scope="col" class="num">Year ending {dayLabel(p.end)}<span class="rw-sub">Record {count(p.record)}</span></th>)}</tr></thead>
+          <tbody>
+            {SC_INCOME_LINES.map(([key, label]) => (
+              <tr data-line={key}><th scope="row">{label}</th>{d.periods.map((p) => <td class="num">{p.incomeDetail ? gbp(p.incomeDetail[key]) : 'Not supplied'}</td>)}</tr>
+            ))}
+            {SC_SPENDING_LINES.map(([key, label]) => (
+              <tr data-line={key}><th scope="row">{label}</th>{d.periods.map((p) => <td class="num">{p.spendingDetail ? gbp(p.spendingDetail[key]) : 'Not supplied'}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
+  <p class="note">The export’s headline figures do not establish the boundaries of consolidated accounts. Use the charity’s published accounts before comparing or adding figures.</p>
+
+  <Faq faqs={faqs} />
+
+  <h2 id="related">Where this record appears</h2>
+  <ul>
+    {d.purposes.filter((p) => w.scHubSet.has(p)).map((p) => <li><a href={url(w.scPurposePath(p))}>{sentence(p)}: Scotland charity dossiers</a>.</li>)}
+    <li><a href={url(SC_BASE)}>All Scotland charity dossiers</a>, with purpose counts from the register.</li>
+    <li><a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a>: the same purposes beside comparable labels in four other registers.</li>
+    <li><a href={url('/record/charity-financials/scotland/')}>Search every Scottish return</a> in the committed edition.</li>
+    <li><a href={registerEntry}>Current OSCR register entry</a> for later returns, accounts and status.</li>
+  </ul>
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Inclusion follows one rule: this charity’s latest included annual return in the committed OSCR edition reports gross income of at least {w.scThreshold}, and the register download dated {w.registerDate} still lists it. The rule is a coverage boundary for Wave 1b, not a judgment of the charity.{d.regulatoryType === 'Cross Border' ? ' As a Cross Border charity, this registration can describe an organization that is also registered elsewhere in the UK; do not add its figures to another register’s.' : ''}</p>
+  <p>{reg.attribution} Charitology selected and reformatted the records. <a href={url(`${WAVE1B_DATA_PATH}manifest.json`)} download="charitology-registry-wave1b-manifest.json">Download the Wave 1b manifest</a> for every source URL, retrieval time and SHA-256 fingerprint, or the <a href={url(`${WAVE1B_DATA_PATH}scotland-dossiers.json`)} download="charitology-scotland-dossiers.json">Scotland dossier dataset</a>.</p>
+</Entry>

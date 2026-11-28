@@ -2,6 +2,7 @@
 import Entry from '../../../layouts/Entry.astro';
 import ScotlandCharityFinancialSearch from '../../../components/ScotlandCharityFinancialSearch.astro';
 import { url } from '../../../lib/site';
+import { wave1b } from '../../../lib/registry-wave1b';
 import manifest from '../../../../public/data/charity-financials/scotland/manifest.json';
 import comparison from '../../../../public/data/charity-financials/scotland/cross-register.json';
 
@@ -27,6 +28,7 @@ const sources = [
 
 <Entry title={title} eyebrow="The Record · Global Charity Index" summary="Search the Scottish regulator’s dated public snapshot. Read reported income and spending, and compare selected charities filed with two regulators." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Financial filings',href:'/record/charity-financials/'},{label:'Scotland'}]} sources={sources}>
   <p>This edition includes {count(manifest.identities)} Scottish registration numbers. {count(manifest.withReturns)} have at least one included annual return, and {count(manifest.multiPeriod)} have more than one. The {count(manifest.counts.included)} included returns have year-ends from {manifest.firstYearEnd} through {manifest.lastYearEnd}. These dates come from the records in the regulator’s five-year download.</p>
+  <p>For {count(wave1b().sc.length)} of these charities, a <a href={url('/record/charity-dossiers/scotland/')}>verified charity dossier</a> adds the register’s purposes, beneficiaries and activities on one page, grouped by charitable purpose. They are the charities whose latest included return reports gross income of at least {wave1b().scThreshold}.</p>
   <ScotlandCharityFinancialSearch />
 
   <h2 id="cross-register">Compare records across two regulators</h2>

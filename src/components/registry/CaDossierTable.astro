@@ -1,0 +1,43 @@
+---
+// Alphabetical list of Canada dossiers. Ordering is by legal name, never by amount.
+import { url } from '../../lib/site';
+import { dayLabel } from '../../lib/registry-wave1';
+import { cad, caDossierPath, type CaDossier } from '../../lib/registry-wave1b';
+
+interface Props {
+  items: CaDossier[];
+  caption: string;
+}
+const { items, caption } = Astro.props;
+---
+
+<div class="table-wrap">
+  <table class="data rw-table">
+    <caption>{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Charity (legal name)</th>
+        <th scope="col">City, province</th>
+        <th scope="col">Category</th>
+        <th scope="col">Latest fiscal period ending</th>
+        <th scope="col" class="num">Total revenue (4700)</th>
+        <th scope="col" class="num">Total expenditures (5100)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {items.map((d) => {
+        const p = d.periods[0];
+        return (
+          <tr>
+            <th scope="row"><a href={url(caDossierPath(d.bn))}>{d.name}</a><span class="rw-sub">{d.bn}</span></th>
+            <td>{[d.city, d.province].filter(Boolean).join(', ') || 'Not supplied'}</td>
+            <td>{d.category}</td>
+            <td>{dayLabel(p.end)}</td>
+            <td class="num">{p.totalRevenue === null ? 'Not supplied' : cad(p.totalRevenue)}</td>
+            <td class="num">{p.totalExpenditures === null ? 'Not supplied' : cad(p.totalExpenditures)}</td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>

@@ -3,18 +3,21 @@
 import { allPages } from './pages';
 import { absolute } from './site';
 import { WAVE1_SITEMAP_SECTIONS } from './registry-wave1';
+import { WAVE1B_SITEMAP_SECTIONS } from './registry-wave1b';
 
 const EXCLUDED_FROM_SITEMAP = new Set(['/search/', '/404/', '/browser-data/']);
-export const SITEMAP_CHILDREN = ['sitemap-core.xml', 'sitemap-registries-wave1.xml'] as const;
+export const SITEMAP_CHILDREN = ['sitemap-core.xml', 'sitemap-registries-wave1.xml', 'sitemap-registries-wave1b.xml'] as const;
 export type SitemapChild = (typeof SITEMAP_CHILDREN)[number];
 
 export async function sitemapPaths(): Promise<Record<SitemapChild, string[]>> {
   const seen = new Set<string>();
-  const parts: Record<SitemapChild, string[]> = { 'sitemap-core.xml': [], 'sitemap-registries-wave1.xml': [] };
+  const parts: Record<SitemapChild, string[]> = { 'sitemap-core.xml': [], 'sitemap-registries-wave1.xml': [], 'sitemap-registries-wave1b.xml': [] };
   for (const page of await allPages()) {
     if (page.path.includes('#') || EXCLUDED_FROM_SITEMAP.has(page.path) || seen.has(page.path)) continue;
     seen.add(page.path);
-    parts[WAVE1_SITEMAP_SECTIONS.has(page.section) ? 'sitemap-registries-wave1.xml' : 'sitemap-core.xml'].push(page.path);
+    const child = WAVE1_SITEMAP_SECTIONS.has(page.section) ? 'sitemap-registries-wave1.xml'
+      : WAVE1B_SITEMAP_SECTIONS.has(page.section) ? 'sitemap-registries-wave1b.xml' : 'sitemap-core.xml';
+    parts[child].push(page.path);
   }
   return parts;
 }
