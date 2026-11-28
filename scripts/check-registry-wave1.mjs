@@ -178,6 +178,10 @@ for (const [key, items] of usStateGroup) {
 }
 for (const [code, items] of ewPurpose) add(`${W}england-wales/purposes/${slug(ewHubs.purposes[code].description)}/`, items.map(ewPath));
 const allRoutes = [...routes.hubs.keys(), ...routes.dossiers.keys()];
+// The dossier index also lists the four Wave 1b index pages (Scotland, Australia, Canada,
+// Cause × Country). scripts/check-registry-wave1b.mjs verifies those pages in full; here the
+// index's ItemList must be exactly the two Wave 1 registers plus these four built pages.
+const WAVE1B_INDEXES = [`${W}scotland/`, `${W}australia/`, `${W}canada/`, `${W}cause-by-country/`];
 assert.equal(new Set(allRoutes).size, allRoutes.length, 'Duplicate Wave 1 route');
 assert.ok(routes.dossiers.size >= 2000, 'Wave 1 should publish at least 2,000 dossiers');
 
@@ -324,10 +328,16 @@ for (const path of allRoutes) {
         assert.ok(html.includes(`href="${base}${member}"`), `${label}: missing link to ${member}`);
       }
     }
+    if (path === W) {
+      assert.deepEqual(list.itemListElement.map((i) => new URL(i.url).pathname.slice(base.length)),
+        [`${W}united-states/`, `${W}england-wales/`, ...WAVE1B_INDEXES], `${label}: ItemList must list exactly the five registers and Cause × Country`);
+    }
     list.itemListElement.forEach((item, i) => {
       assert.equal(item.position, i + 1);
       const target = new URL(item.url).pathname.slice(base.length);
-      assert.ok(routes.hubs.has(target) || routes.dossiers.has(target), `${label}: ItemList points outside Wave 1: ${item.url}`);
+      const wave1bIndex = path === W && WAVE1B_INDEXES.includes(target) && existsSync(join(dist, target.slice(1), 'index.html'))
+        && html.includes(`href="${base}${target}"`);
+      assert.ok(routes.hubs.has(target) || routes.dossiers.has(target) || wave1bIndex, `${label}: ItemList points outside Wave 1: ${item.url}`);
     });
     assert.equal(dataset[0].isAccessibleForFree, true, `${label}: free dataset`);
     assert.ok(dataset[0].license && dataset[0].dateModified === manifest.edition);

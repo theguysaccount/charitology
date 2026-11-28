@@ -3,6 +3,7 @@ import Entry from '../../layouts/Entry.astro';
 import CharityFinancialSearch from '../../components/CharityFinancialSearch.astro';
 import { url } from '../../lib/site';
 import { wave1 } from '../../lib/registry-wave1';
+import { wave1b } from '../../lib/registry-wave1b';
 import manifest from '../../../public/data/charity-financials/manifest.json';
 
 const title = 'Charity financial filings';
@@ -15,7 +16,7 @@ const sources = manifest.sources.map(source => ({
 
 <Entry title={title} eyebrow="The Record · Global Charity Index" summary="Read charity revenue, spending and grants alongside their fiscal periods and original sources." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:title}]} sources={sources}>
   <p>This edition covers {count(manifest.organizations)} Australian organizations with dated financial reporting in the 2023 or 2024 Annual Information Statement extracts. {count(manifest.organizationsWithBothYears)} have a dated record in both. You can also search dated filings for <a href={url('/record/charity-financials/canada/')}>Canada</a>, <a href={url('/record/charity-financials/mexico/')}>Mexico</a>, <a href={url('/record/charity-financials/england-wales/')}>England and Wales</a>, <a href={url('/record/charity-financials/scotland/')}>Scotland</a> or the <a href={url('/record/charity-financials/united-states/')}>United States</a>. The <a href={url('/observations/')}>separate historical financial panels</a> cover two consolidated reporting groups with U.S. parent identities.</p>
-  <p><a href={url('/record/charity-dossiers/')}>Verified charity dossiers</a> give one page per organization for U.S. Form 990 filers reporting at least {wave1().usThreshold} in total revenue and England and Wales charities reporting at least {wave1().ewThreshold} in gross income, built only from official registry figures.</p>
+  <p><a href={url('/record/charity-dossiers/')}>Verified charity dossiers</a> give one page per organization for U.S. Form 990 filers reporting at least {wave1().usThreshold} in total revenue and England and Wales charities reporting at least {wave1().ewThreshold} in gross income, built only from official registry figures. Wave 1b adds <a href={url('/record/charity-dossiers/australia/')}>{count(wave1b().au.length)} Australian dossiers</a> for organizations whose latest AIS reports total revenue of at least {wave1b().auThreshold}, with register details and ACNC charity subtypes, alongside Scotland, Canada and a <a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a> index.</p>
   <CharityFinancialSearch />
   <h2 id="coverage">Coverage and original data</h2>
   <p><a class="identity-link" href={url('/record/charity-financials/france/')}>Search original French association and foundation filings</a>. Find notices and corrected versions by name or published identifier.</p>

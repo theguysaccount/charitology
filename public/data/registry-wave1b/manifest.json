@@ -1,0 +1,611 @@
+{
+ "format": "charitology-registry-wave1b-v1",
+ "edition": "2026-11-27",
+ "builder": "scripts/build-registry-wave1b.py",
+ "checker": "scripts/check-registry-wave1b.mjs",
+ "policy": "Figures are copied as published. Inclusion follows one published-figure threshold per register and is a coverage boundary, not a rating, ranking or endorsement. Null means not supplied; it is never zero. Cause groups match published category labels only and are not a crosswalk.",
+ "selection": {
+  "scotland": {
+   "rule": "Charities in the committed OSCR edition whose latest included annual return reports gross income (\"Most recent year income\") of at least the threshold, and which the OSCR register download below still lists under the same charity number.",
+   "thresholdGBP": 10000000,
+   "editionOrganizations": 24994,
+   "candidates": 518,
+   "dossiers": 518,
+   "excluded": {
+    "notInRegisterDownload": []
+   }
+  },
+  "australia": {
+   "rule": "Organizations in the committed ACNC Annual Information Statement edition whose latest dated reporting period reports total revenue of at least the threshold, and whose ABN appears exactly once in the ACNC Registered Charities dataset below.",
+   "thresholdAUD": 100000000,
+   "editionOrganizations": 46622,
+   "candidates": 307,
+   "dossiers": 236,
+   "excluded": {
+    "notInRegisterDataset": [
+     "28608054379",
+     "37191313308",
+     "61249878937",
+     "91111111119",
+     "91111111131",
+     "91111111140",
+     "91111111157",
+     "91111111162",
+     "91111111171",
+     "91111111188",
+     "91111111211",
+     "91111111214",
+     "91111111221",
+     "91111111224",
+     "91111111256",
+     "91111111259",
+     "91111111268",
+     "91111111278",
+     "91111111283",
+     "91111111284",
+     "91111111294",
+     "91111111317",
+     "91111111322",
+     "91111111324",
+     "91111111325",
+     "91111111327",
+     "91111111328",
+     "91111111330",
+     "91111111341",
+     "91111111344",
+     "91111111351",
+     "91111111353",
+     "91111111355",
+     "91111111371",
+     "91111111379",
+     "91111111420",
+     "91111111425",
+     "91111111428",
+     "91111111436",
+     "91111111443",
+     "91111111451",
+     "91111111455",
+     "91111111456",
+     "91111111457",
+     "91111111461",
+     "91111111462",
+     "91111111464",
+     "91111111467",
+     "91111111469",
+     "91111111471",
+     "91111111474",
+     "91111111481",
+     "91111111486",
+     "91111111487",
+     "91111111488",
+     "91111111493",
+     "91111111494",
+     "91111111499",
+     "91111111529",
+     "91111111545",
+     "91111111547",
+     "91111111551",
+     "91111111555",
+     "91111111570",
+     "91111111572",
+     "91111111574",
+     "91111111578",
+     "91111111584",
+     "91111111611",
+     "91111111613",
+     "91111111614"
+    ],
+    "repeatedInRegisterDataset": []
+   },
+   "excludedEditionNames": [
+    [
+     "28608054379",
+     "St John of God Hawkesbury District Health Campus Ltd"
+    ],
+    [
+     "37191313308",
+     "University Of South Australia"
+    ],
+    [
+     "61249878937",
+     "The University Of Adelaide"
+    ],
+    [
+     "91111111119",
+     "Anglican Schools Corporation_ACNC GROUP"
+    ],
+    [
+     "91111111131",
+     "Australian Regional and Remote Community Services_ACNC Group"
+    ],
+    [
+     "91111111140",
+     "Bond University ACNC GROUP"
+    ],
+    [
+     "91111111157",
+     "Christian Community Ministries Ltd_ACNC Group"
+    ],
+    [
+     "91111111162",
+     "Churches of Christ Queensland_ACNC GROUP"
+    ],
+    [
+     "91111111171",
+     "Edmund Rice Education Australia_ACNC GROUP"
+    ],
+    [
+     "91111111188",
+     "HammondCare_ACNC GROUP"
+    ],
+    [
+     "91111111211",
+     "James Cook University_ACNC Group"
+    ],
+    [
+     "91111111214",
+     "KU Children's Services_ACNC GROUP"
+    ],
+    [
+     "91111111221",
+     "Little Company of Mary Health Care Limited_ACNC Group"
+    ],
+    [
+     "91111111224",
+     "Lutheran Services_ACNC GROUP"
+    ],
+    [
+     "91111111256",
+     "Opera Australia_ACNC Group"
+    ],
+    [
+     "91111111259",
+     "PMSA_ACNC GROUP"
+    ],
+    [
+     "91111111268",
+     "RSL Care RDNS_ACNC Group"
+    ],
+    [
+     "91111111278",
+     "Seventh-day Adventist Church in Australia_ACNC Group"
+    ],
+    [
+     "91111111283",
+     "St Vincent de Paul Society NSW_ACNC GROUP"
+    ],
+    [
+     "91111111284",
+     "St Vincent's Private Hospital Sydney_ACNC Group"
+    ],
+    [
+     "91111111294",
+     "The Corporation of the Synod of the Diocese of Brisbane_ACNC GROUP"
+    ],
+    [
+     "91111111317",
+     "The Whiddon Group_ACNC GROUP"
+    ],
+    [
+     "91111111322",
+     "Uniting NSW.ACT_ACNC GROUP"
+    ],
+    [
+     "91111111324",
+     "UnitingCare QLD_ACNC Group"
+    ],
+    [
+     "91111111325",
+     "University of Melbourne_ACNC GROUP"
+    ],
+    [
+     "91111111327",
+     "University of NSW_ACNC Group"
+    ],
+    [
+     "91111111328",
+     "The University of Queensland_ACNC Group"
+    ],
+    [
+     "91111111330",
+     "Vision Australia_ACNC GROUP"
+    ],
+    [
+     "91111111341",
+     "Cerebral Palsy Alliance_ACNC GROUP"
+    ],
+    [
+     "91111111344",
+     "Mind Australia_ACNC GROUP"
+    ],
+    [
+     "91111111351",
+     "Uniting Communities Incorporated_ACNC GROUP"
+    ],
+    [
+     "91111111353",
+     "Neami Limited_ACNC GROUP"
+    ],
+    [
+     "91111111355",
+     "National Affordable Housing Consortium_ACNC GROUP"
+    ],
+    [
+     "91111111371",
+     "Endeavour Foundation_ACNC GROUP"
+    ],
+    [
+     "91111111379",
+     "MercyCare_ACNC GROUP"
+    ],
+    [
+     "91111111420",
+     "The Northcott Society_ACNC Group"
+    ],
+    [
+     "91111111425",
+     "RSL LifeCare Limited_ACNC Group"
+    ],
+    [
+     "91111111428",
+     "Cabrini_ACNC Group"
+    ],
+    [
+     "91111111436",
+     "Aruma_ACNC Group"
+    ],
+    [
+     "91111111443",
+     "Life Without Barriers_ACNC Group"
+    ],
+    [
+     "91111111451",
+     "Karingal St Laurence_ACNC Group"
+    ],
+    [
+     "91111111455",
+     "Baptistcare_ACNC Group"
+    ],
+    [
+     "91111111456",
+     "The Disability Trust_ACNC Group"
+    ],
+    [
+     "91111111457",
+     "Community Housing_ACNC Group"
+    ],
+    [
+     "91111111461",
+     "St Vincent de Paul Society Queensland_ACNC Group"
+    ],
+    [
+     "91111111462",
+     "LiveBetter Services_ACNC Group"
+    ],
+    [
+     "91111111464",
+     "Minda_ACNC Group"
+    ],
+    [
+     "91111111467",
+     "Scope_ACNC Group"
+    ],
+    [
+     "91111111469",
+     "LifeFlight Australia_ACNC Group"
+    ],
+    [
+     "91111111471",
+     "Ability Options Limited_ACNC Group"
+    ],
+    [
+     "91111111474",
+     "Sunnyfield_ACNC_Group"
+    ],
+    [
+     "91111111481",
+     "Catholic Church Endowment Society_ACNC Group"
+    ],
+    [
+     "91111111486",
+     "Salvation Army - Social Work_ACNC Group"
+    ],
+    [
+     "91111111487",
+     "Garvan Institute of Medical Research_ACNC Group"
+    ],
+    [
+     "91111111488",
+     "Achieve Australia_ACNC Group"
+    ],
+    [
+     "91111111493",
+     "Possability Group_ACNC Group"
+    ],
+    [
+     "91111111494",
+     "Goodstart Early Learning_ACNC Group"
+    ],
+    [
+     "91111111499",
+     "ACHA_ACNC Group"
+    ],
+    [
+     "91111111529",
+     "LUTHERAN EDUCATION VIC, NSW, TAS AND ACT_ACNC GROUP"
+    ],
+    [
+     "91111111545",
+     "Mercy Community Services SEQ Limited_ACNC Group"
+    ],
+    [
+     "91111111547",
+     "Royal Rehab_ACNC Group"
+    ],
+    [
+     "91111111551",
+     "CPL - Choice, Passion, Life _ACNC Group"
+    ],
+    [
+     "91111111555",
+     "VERTAVIEW LIMITED_ACNC Group"
+    ],
+    [
+     "91111111570",
+     "Save the Children Australia_ACNC Group"
+    ],
+    [
+     "91111111572",
+     "PEOPLEKIND GROUP LTD_ACNC Group"
+    ],
+    [
+     "91111111574",
+     "The Royal Australian College Of General Practitioners Ltd_ACNC Group"
+    ],
+    [
+     "91111111578",
+     "Melbourne Archdiocese Catholic Schools Ltd_ACNC Group"
+    ],
+    [
+     "91111111584",
+     "Silver Chain Group Limited_ACNC Group"
+    ],
+    [
+     "91111111611",
+     "St. John Ambulance Western Australia Limited_ACNC group"
+    ],
+    [
+     "91111111613",
+     "Lifeline Australia_ACNC group"
+    ],
+    [
+     "91111111614",
+     "Anglican Community Services_ACNC Group"
+    ]
+   ]
+  },
+  "canada": {
+   "rule": "Registered charity accounts in the committed CRA T3010 edition whose latest fiscal period reports total revenue (line 4700) of at least the threshold, and whose account number appears in the CRA identification file for that fiscal year below.",
+   "thresholdCAD": 100000000,
+   "editionOrganizations": 85951,
+   "candidates": 477,
+   "dossiers": 477,
+   "excluded": {
+    "notInIdentificationFile": []
+   }
+  },
+  "hubMinimumDossiers": 5
+ },
+ "pinnedEditions": {
+  "scotland": {
+   "path": "public/data/charity-financials/scotland/manifest.json",
+   "sha256": "50d00c95d7c68ce3dd187c613f22ea60f75e2b87a2cf44e489cfc700e1815e7d"
+  },
+  "australia": {
+   "path": "public/data/charity-financials/manifest.json",
+   "sha256": "88f858ddf4e0264c05546124f93d0f075442b45d2605ec74ff844b6f1311befc"
+  },
+  "canada": {
+   "path": "public/data/charity-financials/ca/manifest.json",
+   "sha256": "2012a8df9b160fc8fd50f1106f0668e089d8c6a5faccae4be7882dc91802c380"
+  }
+ },
+ "sources": {
+  "oscrRegister": {
+   "publisher": "Office of the Scottish Charity Regulator",
+   "title": "Scottish Charity Register download",
+   "page": "https://www.oscr.org.uk/about-charities/search-the-register/download-the-scottish-charity-register/",
+   "fieldNotes": "https://www.oscr.org.uk/media/uixby3ex/2023-03-22-description-of-charity-register-download-fields.pdf",
+   "licence": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+   "attribution": "© Crown Copyright and database right 2026. Contains information from the Scottish Charity Register supplied by the Office of the Scottish Charity Regulator and licensed under the Open Government Licence v.3.0.",
+   "url": "https://www.oscr.org.uk/download/charity-register",
+   "served": "CharityExport-27-Nov-2026.zip",
+   "member": "CharityExport-27-Nov-2026.csv",
+   "memberDate": "2026-11-27",
+   "responseDate": "Fri, 27 Nov 2026 23:10:12 GMT",
+   "retrievedAt": "2026-11-27T23:10:16Z",
+   "bytes": 8809655,
+   "sha256": "75b7308b1bfff5cc2b25d2e58a972ba6613dcf6bbf5d860b246f09babb2807d5",
+   "rows": 25027
+  },
+  "oscrReturns": {
+   "publisher": "Office of the Scottish Charity Regulator",
+   "edition": "2026-11-12",
+   "url": "https://www.oscr.org.uk/download/5-years-charity-register",
+   "member": "CharityExport-5Years-12-Nov-2026.csv",
+   "sha256": "fd0712d90956c95dd8162abfc1157e5f93f947c1656637075acc5e4a72379c48",
+   "registerMember": "CharityExport-12-Nov-2026.csv",
+   "registerSha256": "3cd98e1d462ea52e9d3f414b5269b7addc3da911b3e90e62f39f46c72d5550b2",
+   "note": "Read from the committed Scotland edition; not downloaded again."
+  },
+  "acncRegister": {
+   "publisher": "Australian Charities and Not-for-profits Commission",
+   "title": "ACNC Registered Charities",
+   "page": "https://www.acnc.gov.au/charity/about-charity-register/download-charity-register-data",
+   "dataset": "https://data.gov.au/data/dataset/b050b242-4487-4306-abf5-07ca073e5594",
+   "licence": "https://creativecommons.org/licenses/by/3.0/au/",
+   "url": "https://data.gov.au/data/dataset/b050b242-4487-4306-abf5-07ca073e5594/resource/8fb32972-24e9-4c95-885e-7140be51be8a/download/datadotgov_main.csv",
+   "lastModified": "Sun, 22 Nov 2026 17:39:55 GMT",
+   "retrievedAt": "2026-11-27T23:12:56Z",
+   "bytes": 15227773,
+   "sha256": "559c29245442d98abc473ffa60a2832b4d25ead3ebbf6734dd2857237fef328d",
+   "rows": 66645
+  },
+  "acncUserGuide": {
+   "title": "User guide – Registered Charities Dataset (December 2024)",
+   "publisher": "Australian Charities and Not-for-profits Commission",
+   "url": "https://data.gov.au/data/dataset/b050b242-4487-4306-abf5-07ca073e5594/resource/8687e783-a9de-4431-a8fc-d677bc475c03/download/acnc-registered-charities-dataset-user-notes-dec-2024.pdf",
+   "dataset": "https://data.gov.au/data/dataset/b050b242-4487-4306-abf5-07ca073e5594",
+   "lastModified": "Wed, 04 Dec 2024 00:21:16 GMT",
+   "retrievedAt": "2026-11-27T23:12:56Z",
+   "bytes": 252028,
+   "sha256": "24af393ea4e8fced4a436b8561138c97f0aab52207a6121755d27809c89c7240",
+   "licence": "https://creativecommons.org/licenses/by/3.0/au/"
+  },
+  "acncAis": {
+   "publisher": "Australian Charities and Not-for-profits Commission",
+   "edition": "2026-11-10",
+   "licence": "https://creativecommons.org/licenses/by/3.0/au/",
+   "files": {
+    "2023": {
+     "dataset": "https://data.gov.au/data/dataset/ff6905d6-9d5d-4ef1-8478-72b833864fb7",
+     "url": "https://data.gov.au/data/dataset/ff6905d6-9d5d-4ef1-8478-72b833864fb7/resource/2b0fb746-57c5-4523-bb4c-74b7b78279d9/download/datadotgov_ais23.csv",
+     "notes": "https://data.gov.au/data/dataset/ff6905d6-9d5d-4ef1-8478-72b833864fb7/resource/ff1aad35-e468-453b-bad1-d3bedf457c01/download/2023-ais-data.gov.au-explanatory-notes.pdf",
+     "bytes": 36891002,
+     "sha256": "79c8e766113a5a0843ba9d838e30391ebf74608ca9ab31ffec610f288a0c8fcf",
+     "rows": 53566
+    },
+    "2024": {
+     "dataset": "https://data.gov.au/data/dataset/276ec1bc-4971-461c-88bc-be9f3c99a0f8",
+     "url": "https://data.gov.au/data/dataset/276ec1bc-4971-461c-88bc-be9f3c99a0f8/resource/710630ea-1202-4bbb-95f7-3973a972ddf8/download/datadotgov_ais24.csv",
+     "notes": "https://data.gov.au/data/dataset/276ec1bc-4971-461c-88bc-be9f3c99a0f8/resource/014d919b-aa79-4da4-8aab-438141391f99/download/explanatory-notes.pdf",
+     "bytes": 38104147,
+     "sha256": "7213b28f384ca4bea48cb5001d8ad69c4d1a97d2cb825bcc79c1637896456a9d",
+     "rows": 54198
+    }
+   },
+   "note": "Read from the committed ACNC AIS edition; not downloaded again."
+  },
+  "craIdentification": {
+   "2023": {
+    "publisher": "Canada Revenue Agency",
+    "title": "2023 List of charities: Identification",
+    "catalogue": "https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6",
+    "url": "https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6/resource/31a52caf-fa79-4ab3-bded-1ccc7b61c17f/download/ident_2023_updated.csv",
+    "lastModified": "Fri, 13 Nov 2026 19:26:09 GMT",
+    "retrievedAt": "2026-11-27T23:11:29Z",
+    "bytes": 13326572,
+    "sha256": "5cc34d277f27d02d36c77936122654062c0ec5645fe5d4385911ef76b3859376",
+    "rows": 84585,
+    "licence": "https://open.canada.ca/en/open-government-licence-canada"
+   },
+   "2024": {
+    "publisher": "Canada Revenue Agency",
+    "title": "2024 List of charities: Identification",
+    "catalogue": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8",
+    "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/694fdc72-eae4-4ee0-83eb-832ab7b230e3/download/ident_2024_updated.csv",
+    "lastModified": "Fri, 13 Nov 2026 20:33:47 GMT",
+    "retrievedAt": "2026-11-27T23:11:26Z",
+    "bytes": 13226927,
+    "sha256": "3686d66f31ca030e61d03a246c118e2223d47c1d64dc9b3817a429bb6d06cc23",
+    "rows": 84057,
+    "licence": "https://open.canada.ca/en/open-government-licence-canada"
+   }
+  },
+  "craFinancial": {
+   "publisher": "Canada Revenue Agency",
+   "edition": "2026-11-11",
+   "licence": "https://open.canada.ca/en/open-government-licence-canada",
+   "files": {
+    "2023": {
+     "catalogue": "https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6",
+     "url": "https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6/resource/0b9b4b01-5cb6-4981-b007-ae88f48cc799/download/financial_d_and_schedule_6_2023_updated.csv",
+     "file": "financial_d_and_schedule_6_2023_updated.csv",
+     "sha256": "65c6321c4d58de4012d1011e0b39378ae5ebffaf76a231c295e7c1b3d9d3d974",
+     "identificationFile": "ident_2023_updated.csv",
+     "identificationSha256": "416c98d1ff52303f9f042c4e7ef5ac36bc1c16b146cd11eb64627ba8ceabee11"
+    },
+    "2024": {
+     "catalogue": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8",
+     "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/e545170c-3689-4833-b2a8-e9e83100ab59/download/financial_d_and_schedule_6_2024_updated.csv",
+     "file": "financial_d_and_schedule_6_2024_updated.csv",
+     "sha256": "221ab68ea499a51bb9ecf84ae189cd48fe7919f1d7cc21abe4ad5f13aa891165",
+     "identificationFile": "ident_2024_updated.csv",
+     "identificationSha256": "4f214ff2a9e659185b20f50431fd98f1d89e2d08fff8c2a9583b82b24fc4cd8e"
+    }
+   },
+   "amountLines": {
+    "4700": "totalRevenueCAD",
+    "5100": "totalExpendituresCAD",
+    "5000": "charitableProgramExpendituresCAD",
+    "4510": "receivedFromRegisteredCharitiesCAD",
+    "5050": "giftsToQualifiedDoneesCAD",
+    "5045": "grantsToOtherGranteesCAD"
+   },
+   "note": "Read from the committed CRA T3010 edition (files captured 2026-11-11); not downloaded again. The identification files above are the later re-publication of 2026-11-13."
+  },
+  "craCodes": {
+   "title": "List of charities: Codes Lists (English), version 1.0",
+   "publisher": "Canada Revenue Agency",
+   "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/e9f81074-9fc7-456f-8ce1-6fd101b77963/download/codes_en.pdf",
+   "dataset": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8",
+   "lastModified": "Thu, 05 Mar 2026 16:55:04 GMT",
+   "retrievedAt": "2026-11-27T23:11:31Z",
+   "bytes": 768177,
+   "sha256": "3572ee7455a6465430f5b05ad2ba7b2f4d2e72696a370b4256dc392303f5a995",
+   "licence": "https://open.canada.ca/en/open-government-licence-canada"
+  },
+  "wave1": {
+   "path": "public/data/registry-wave1/manifest.json",
+   "sha256": "8a5250b6d109c1535df5e603f1ae1b321801ba721146e4b9ccb470d19d288c75",
+   "note": "NTEE major groups and Charity Commission purposes for the Cause x Country labels."
+  }
+ },
+ "outputs": {
+  "scotland": {
+   "path": "scotland-dossiers.json",
+   "bytes": 1102135,
+   "sha256": "a447a60d61321b51179ccbe1bf7a871c2b00c4389af80d84ce4f4baeec1e31f7"
+  },
+  "scotlandHubs": {
+   "path": "scotland-hubs.json",
+   "bytes": 1280,
+   "sha256": "188fc323d8ee74203ff2d1c0573a1b0326344a984bcf40155a77fa03e81998e6"
+  },
+  "australia": {
+   "path": "australia-dossiers.json",
+   "bytes": 264227,
+   "sha256": "9f25c0ad44948453e069297e8d6d8c238e3a26a1e5f83835049d8a36f5f4120d"
+  },
+  "australiaHubs": {
+   "path": "australia-hubs.json",
+   "bytes": 710,
+   "sha256": "b066f54a72917fcb4a211186bd1ea6c1215aea2f7692fa8a7eb9b94bd7afffe4"
+  },
+  "canada": {
+   "path": "canada-dossiers.json",
+   "bytes": 497887,
+   "sha256": "b8d51d82068fd4f7f331a0465e7e5d77222a2a97d64ead0280059cc09b18ec08"
+  },
+  "canadaHubs": {
+   "path": "canada-hubs.json",
+   "bytes": 867,
+   "sha256": "8c5b72e0c1c464260551e83dcd69bc3ab79c02d9a85da422ea28bb2b8a79e5c1"
+  },
+  "causes": {
+   "path": "cause-groups.json",
+   "bytes": 10817,
+   "sha256": "87b1a49ffad5d166682f550557ee913c143447146c7ff1a9536cb9093ee9a4d4"
+  },
+  "craCodes": {
+   "path": "cra-codes.json",
+   "bytes": 4043,
+   "sha256": "6949a98db0322f234c7b2b6fd1252c663c913024126995f3655826ace6b5ca10"
+  },
+  "acncFields": {
+   "path": "acnc-register-fields.json",
+   "bytes": 5158,
+   "sha256": "6827de9a59923f9b4ddf38d1e4c75d6ef39fa921b1a65da933919d9d30e5806d"
+  }
+ }
+}

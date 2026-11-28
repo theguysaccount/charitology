@@ -2,6 +2,7 @@
 import Entry from '../../../layouts/Entry.astro';
 import CaCharityFinancialSearch from '../../../components/CaCharityFinancialSearch.astro';
 import { url } from '../../../lib/site';
+import { wave1b } from '../../../lib/registry-wave1b';
 import manifest from '../../../../public/data/charity-financials/ca/manifest.json';
 
 const title = 'Canada charity financial filings';
@@ -19,6 +20,7 @@ const sources = Object.entries(manifest.editions).map(([year, edition]) => ({
   <p>Search {count(manifest.financialPeriods)} fiscal periods for {count(manifest.accounts)} charity accounts in the Canada Revenue Agency’s 2023 and 2024 files. {count(manifest.multiYearAccounts)} accounts have a period in both years. A charity account can have more than one fiscal period ending in the same year.</p>
   <p><a href={url('/record/funding-flows/canada-qualified-donees/')}>Follow gifts reported between charity accounts</a> in the separate T1236 worksheet edition.</p>
   <p><a href={url('/record/funding-flows/canada-grant-geography/')}>Explore reported Canadian grant activities by country</a> with separate cash and noncash totals.</p>
+  <p>For {count(wave1b().ca.length)} of these accounts, a <a href={url('/record/charity-dossiers/canada/')}>verified charity dossier</a> adds the CRA category, sub-category and designation on one page, grouped by category and designation. They are the accounts whose latest fiscal period reports total revenue of at least {wave1b().caThreshold} on line 4700.</p>
   <CaCharityFinancialSearch />
   <h2 id="coverage">Coverage and original data</h2>
   <p>Each financial record links to an identity row in the same edition by the full charity account number, including its RR suffix. The displayed legal name comes from the most recent included identification extract. Charitology captured the files on <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>. Check the <a href={regulator}>CRA’s List of charities</a> for current registration status and later filings.</p>

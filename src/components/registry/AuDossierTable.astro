@@ -1,0 +1,41 @@
+---
+// Alphabetical list of Australia dossiers. Ordering is by register legal name, never by amount.
+import { url } from '../../lib/site';
+import { dayLabel } from '../../lib/registry-wave1';
+import { aud, auDossierPath, type AuDossier } from '../../lib/registry-wave1b';
+
+interface Props {
+  items: AuDossier[];
+  caption: string;
+}
+const { items, caption } = Astro.props;
+---
+
+<div class="table-wrap">
+  <table class="data rw-table">
+    <caption>{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Charity (register legal name)</th>
+        <th scope="col">Business address</th>
+        <th scope="col">Latest reporting period ending</th>
+        <th scope="col" class="num">Total revenue</th>
+        <th scope="col" class="num">Total expenses</th>
+      </tr>
+    </thead>
+    <tbody>
+      {items.map((d) => {
+        const p = d.periods[0];
+        return (
+          <tr>
+            <th scope="row"><a href={url(auDossierPath(d.abn))}>{d.name}</a><span class="rw-sub">ABN {d.abn}</span></th>
+            <td>{[d.townCity, d.state].filter(Boolean).join(', ') || 'Not supplied'}</td>
+            <td>{dayLabel(p.end)}</td>
+            <td class="num">{p.totalRevenue === null ? 'Not supplied' : aud(p.totalRevenue)}</td>
+            <td class="num">{p.totalExpenses === null ? 'Not supplied' : aud(p.totalExpenses)}</td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>

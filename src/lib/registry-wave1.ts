@@ -634,7 +634,7 @@ export function faqNode(faqs: readonly FaqEntry[]) {
 
 /** CollectionPage + Dataset nodes for a hub page. */
 export function hubNodes({
-  name, description, canonical, items, spatialCoverage, dataFiles, isBasedOn, license, creditText, origin,
+  name, description, canonical, items, spatialCoverage, dataFiles, isBasedOn, license, creditText, origin, dateModified,
 }: {
   name: string;
   description: string;
@@ -646,6 +646,8 @@ export function hubNodes({
   license: string;
   creditText: string;
   origin: string;
+  /** Edition date of the dataset behind the hub; defaults to the Wave 1 edition. */
+  dateModified?: string;
 }) {
   const w = wave1();
   return [
@@ -673,7 +675,7 @@ export function hubNodes({
       isAccessibleForFree: true,
       license,
       creditText,
-      dateModified: w.manifest.edition,
+      dateModified: dateModified ?? w.manifest.edition,
       spatialCoverage,
       isBasedOn,
       creator: { '@type': 'Organization', name: 'Charitology', url: origin },

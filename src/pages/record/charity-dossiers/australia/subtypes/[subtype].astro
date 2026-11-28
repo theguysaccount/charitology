@@ -1,0 +1,85 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import Faq from '../../../../../components/registry/Faq.astro';
+import AuDossierTable from '../../../../../components/registry/AuDossierTable.astro';
+import '../../../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../../../lib/site';
+import { faqNode, hubNodes, count, WAVE1_BASE } from '../../../../../lib/registry-wave1';
+import { wave1b, shortSlug, auDossierPath, AU_BASE, WAVE1B_DATA_PATH } from '../../../../../lib/registry-wave1b';
+
+export function getStaticPaths() {
+  const w = wave1b();
+  return w.auSubtypeHubs.map((column) => ({ params: { subtype: shortSlug(w.subtypeLabel(column)) }, props: { column } }));
+}
+
+const { column } = Astro.props as { column: string };
+const w = wave1b();
+const label = w.subtypeLabel(column);
+const items = w.auBySubtype.get(column)!;
+const faqs = w.auSubtypeFaqs(column, items);
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const reg = w.src.acncRegister;
+const title = `${label}: Australia charity dossiers`;
+const description = `${count(items.length)} Wave 1b dossiers and ${count(w.auHubs.subtypes[column])} registered charities with the ACNC charity subtype “${label}”. Figures as published by the ACNC.`;
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin, dateModified: w.manifest.edition,
+    items: items.map((d) => ({ name: d.name, url: absolute(auDossierPath(d.abn), Astro.site) })),
+    spatialCoverage: 'Australia',
+    dataFiles: [absolute(`${WAVE1B_DATA_PATH}australia-dossiers.json`, Astro.site), absolute(`${WAVE1B_DATA_PATH}australia-hubs.json`, Astro.site)],
+    isBasedOn: [reg.url, ...Object.values(w.src.acncAis.files).map((f: any) => f.url)],
+    license: reg.licence,
+    creditText: 'Australian Charities and Not-for-profits Commission, licensed under Creative Commons Attribution 3.0 Australia; selected and formatted by Charitology.',
+  }),
+  faqNode(faqs),
+];
+const sources = [
+  { title: 'Download Charity Register data', publisher: reg.publisher, url: reg.page },
+  { title: 'ACNC Registered Charities dataset (datadotgov_main.csv)', publisher: reg.publisher, url: reg.url, note: `last modified ${w.acncDate}; SHA-256 ${reg.sha256}` },
+  { title: w.acnc.source.title, publisher: w.acnc.source.publisher, url: w.acnc.source.url },
+  { title: 'Creative Commons Attribution 3.0 Australia', publisher: 'Creative Commons', url: reg.licence },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified registry hub · Australia"
+  identityCode="ACNC subtype"
+  summary={`Registered charities with the ACNC subtype “${label}”, and the ${count(items.length)} Wave 1b dossiers among them, listed alphabetically.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'Australia', href: AU_BASE },
+    { label },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'register-counts', text: 'Register counts', symbol: 'bars' },
+    { slug: 'dossiers', text: 'Wave 1b dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>The ACNC registers each charity with one or more of 14 subtypes. This hub groups Wave 1b dossiers by the subtype “{label}”, using the field name in the ACNC user guide. It does not rank, rate or endorse any charity.</p>
+
+  <h2 id="register-counts">Register counts</h2>
+  <dl class="rw-facts">
+    <dt>Register rows with this subtype</dt><dd>{count(w.auHubs.subtypes[column])}</dd>
+    <dt>All rows in the register dataset</dt><dd>{count(w.auHubs.registerRows)}</dd>
+    <dt>Wave 1b dossiers with this subtype</dt><dd>{count(items.length)}</dd>
+    <dt>Register dataset</dt><dd>Last modified {w.acncDate}</dd>
+  </dl>
+  <p>A charity can hold several subtypes, so counts across subtypes overlap. Other subtypes: {w.auSubtypeHubs.filter((c) => c !== column).map((c, i) => <>{i > 0 && ' · '}<a href={url(w.auSubtypePath(c))}>{w.subtypeLabel(c)}</a></>)}. Compare comparable labels in other registers on the <a href={url('/record/charity-dossiers/cause-by-country/')}>Cause × Country</a> page.</p>
+
+  <h2 id="dossiers">Wave 1b dossiers</h2>
+  <AuDossierTable items={items} caption={`Wave 1b dossiers with the subtype “${label}”. Australian dollars as published in the AIS extract.`} />
+
+  <Faq faqs={faqs} />
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Counts include every row in the ACNC Registered Charities dataset last modified {w.acncDate}, including rows whose ABN is withheld. Dossiers include organizations whose latest dated reporting period in the committed AIS edition of {w.auEdition} reports total revenue of at least {w.auThreshold}. Totals are not added across charities because consolidated reports can overlap.</p>
+  <p>Source: Australian Charities and Not-for-profits Commission, licensed under Creative Commons Attribution 3.0 Australia. <a href={url(`${WAVE1B_DATA_PATH}australia-hubs.json`)} download="charitology-australia-registry-hubs.json">Download the hub counts</a> or the <a href={url(`${WAVE1B_DATA_PATH}manifest.json`)} download="charitology-registry-wave1b-manifest.json">Wave 1b manifest</a>.</p>
+</Entry>

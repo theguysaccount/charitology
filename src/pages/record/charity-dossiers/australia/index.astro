@@ -1,0 +1,98 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import Faq from '../../../../components/registry/Faq.astro';
+import AuDossierTable from '../../../../components/registry/AuDossierTable.astro';
+import '../../../../styles/registry-wave1.css';
+import { absolute, url } from '../../../../lib/site';
+import { faqNode, hubNodes, count, WAVE1_BASE } from '../../../../lib/registry-wave1';
+import { wave1b, WAVE1B_DATA_PATH } from '../../../../lib/registry-wave1b';
+
+const w = wave1b();
+const faqs = w.auIndexFaqs();
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const origin = absolute('/', Astro.site);
+const sel = w.manifest.selection.australia;
+const reg = w.src.acncRegister;
+const ais = w.src.acncAis;
+const title = 'Australia charity dossiers';
+const description = `${count(w.au.length)} verified ACNC dossiers and ${count(w.auSubtypeHubs.length)} charity subtype hubs built from the ACNC Registered Charities dataset and Annual Information Statements. Figures as published.`;
+const dossierSubtypes = w.tally(w.au.flatMap((d) => d.subtypes), (c) => c);
+const jsonLd = [
+  ...hubNodes({
+    name: title, description, canonical, origin, dateModified: w.manifest.edition,
+    items: w.auSubtypeHubs.map((c) => ({ name: `${w.subtypeLabel(c)}: Australia charity dossiers`, url: absolute(w.auSubtypePath(c), Astro.site) })),
+    spatialCoverage: 'Australia',
+    dataFiles: [absolute(`${WAVE1B_DATA_PATH}australia-dossiers.json`, Astro.site), absolute(`${WAVE1B_DATA_PATH}australia-hubs.json`, Astro.site), absolute(`${WAVE1B_DATA_PATH}acnc-register-fields.json`, Astro.site), absolute(`${WAVE1B_DATA_PATH}manifest.json`, Astro.site)],
+    isBasedOn: [reg.url, ...Object.values(ais.files).map((f: any) => f.url)],
+    license: reg.licence,
+    creditText: 'Australian Charities and Not-for-profits Commission, licensed under Creative Commons Attribution 3.0 Australia; selected and formatted by Charitology.',
+  }),
+  faqNode(faqs),
+];
+const sources = [
+  { title: 'Download Charity Register data', publisher: reg.publisher, url: reg.page },
+  { title: 'ACNC Registered Charities dataset (datadotgov_main.csv)', publisher: reg.publisher, url: reg.url, note: `last modified ${w.acncDate}; ${count(reg.bytes)} bytes; SHA-256 ${reg.sha256}` },
+  ...Object.entries(ais.files).map(([y, f]: [string, any]) => ({ title: `${y} Annual Information Statement data`, publisher: reg.publisher, url: f.url, note: `${count(f.rows)} rows; SHA-256 ${f.sha256}` })),
+  { title: w.acnc.source.title, publisher: w.acnc.source.publisher, url: w.acnc.source.url, note: `SHA-256 ${w.acnc.source.sha256}` },
+  { title: 'Creative Commons Attribution 3.0 Australia', publisher: 'Creative Commons', url: reg.licence },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="Verified charity dossiers · Wave 1b"
+  identityCode="AU"
+  summary={`${count(w.au.length)} ACNC dossiers, grouped by charity subtype, listed alphabetically.`}
+  description={description}
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Charity dossiers', href: WAVE1_BASE },
+    { label: 'Australia' },
+  ]}
+  sources={sources}
+  jsonLd={jsonLd}
+  sections={[
+    { slug: 'selection', text: 'Who is included', symbol: 'filter' },
+    { slug: 'by-subtype', text: 'By charity subtype', symbol: 'bookmark' },
+    { slug: 'dossiers', text: 'All Wave 1b Australia dossiers', symbol: 'folder' },
+    { slug: 'questions', text: 'Questions answered from the record', symbol: 'question' },
+    { slug: 'limits', text: 'Sources and limits', symbol: 'alert' },
+  ]}
+>
+  <p>Each dossier reproduces one Australian charity’s ACNC register details and Annual Information Statement (AIS) figures, with the source file and record number. Nothing here is a rating, ranking or endorsement.</p>
+
+  <h2 id="selection">Who is included</h2>
+  <p>Wave 1b takes the {count(sel.editionOrganizations)} organizations in the committed AIS edition of {w.auEdition} and keeps the {count(sel.candidates)} whose latest dated reporting period reports total revenue of at least <strong>{w.auThreshold}</strong>. {count(sel.excluded.notInRegisterDataset.length)} of those identifiers do not appear in the ACNC Registered Charities dataset last modified {w.acncDate}, so {count(w.au.length)} dossiers are published. The excluded identifiers and their AIS names are listed in the manifest. The threshold is a coverage boundary, not a judgment of any charity.</p>
+  <dl class="rw-facts">
+    <dt>Rows in the register dataset</dt><dd>{count(w.auHubs.registerRows)}</dd>
+    <dt>Rows with a withheld ABN</dt><dd>{count(w.auHubs.withheldAbns)}</dd>
+    <dt>Wave 1b dossiers</dt><dd>{count(w.au.length)}</dd>
+    <dt>Subtype hubs</dt><dd>{count(w.auSubtypeHubs.length)}, each with at least {w.hubMin} dossiers</dd>
+  </dl>
+
+  <h2 id="by-subtype">By charity subtype</h2>
+  <div class="table-wrap">
+    <table class="data rw-table">
+      <caption>Register rows and Wave 1b dossiers by ACNC charity subtype, dataset last modified {w.acncDate}. A charity can hold several.</caption>
+      <thead><tr><th scope="col">Charity subtype (ACNC user guide field name)</th><th scope="col" class="num">Register rows</th><th scope="col" class="num">Wave 1b dossiers</th></tr></thead>
+      <tbody>
+        {w.acnc.subtypes.map(({ column, label }) => (
+          <tr>
+            <th scope="row">{w.auHubSet.has(column) ? <a href={url(w.auSubtypePath(column))}>{label}</a> : label}</th>
+            <td class="num">{count(w.auHubs.subtypes[column])}</td>
+            <td class="num">{count(dossierSubtypes.get(column) ?? 0)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="dossiers">All Wave 1b Australia dossiers</h2>
+  <AuDossierTable items={w.au} caption="Every Australia Wave 1b dossier, in alphabetical order. Australian dollars as published in the AIS extract." />
+
+  <Faq faqs={faqs} />
+
+  <h2 id="limits">Sources and limits</h2>
+  <p>Register details, subtypes and beneficiaries come from the dataset last modified {w.acncDate}. Financial figures come from the 2023 and 2024 AIS extracts in the committed edition of {w.auEdition}, which are not downloaded again. A consolidated report can cover more than one entity, so totals are not added across charities. Some records are withheld by the regulator.</p>
+  <p>Source: Australian Charities and Not-for-profits Commission, licensed under Creative Commons Attribution 3.0 Australia. Downloads: <a href={url(`${WAVE1B_DATA_PATH}australia-dossiers.json`)} download="charitology-australia-dossiers.json">dossier records</a> · <a href={url(`${WAVE1B_DATA_PATH}australia-hubs.json`)} download="charitology-australia-registry-hubs.json">hub counts</a> · <a href={url(`${WAVE1B_DATA_PATH}acnc-register-fields.json`)} download="charitology-acnc-register-fields.json">field label transcription</a> · <a href={url(`${WAVE1B_DATA_PATH}manifest.json`)} download="charitology-registry-wave1b-manifest.json">manifest with fingerprints</a>. To search every AIS record in the edition, use the <a href={url('/record/charity-financials/')}>Australian financial filings search</a>.</p>
+</Entry>
